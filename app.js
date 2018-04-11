@@ -1,5 +1,6 @@
 const globals = {
 	expectedElements: [],
+	start: 0,
 };
 
 const randomNum = (min = 1, max = 1) => {
@@ -51,7 +52,7 @@ const createWorkspace = () => {
 const drawStartPoint = () => {
 	
 	// Generate start point
-	const startAt = randomNum(1, 70);
+	globals.start = randomNum(1, 70);
 	let isStartPointChosen = false;
 	let startDirection = 0;
 
@@ -59,7 +60,7 @@ const drawStartPoint = () => {
 		startDirection = randomNum(0, 3);
 
 		// Prevent dead-end
-		switch (startAt) {
+		switch (globals.start) {
 			case 1:
 			{
 				if (startDirection !== 0 && startDirection !== 3) {
@@ -112,11 +113,11 @@ const drawStartPoint = () => {
 			}
 			default:
 			{
-				if (startAt >= 2 && startAt <= 9) {
+				if (globals.start >= 2 && globals.start <= 9) {
 					if (startDirection !== 0) {
 						isStartPointChosen = true;
 					}
-				} else if (startAt >= 62 && startAt <= 69) {
+				} else if (globals.start >= 62 && globals.start <= 69) {
 					if (startDirection !== 2) {
 						isStartPointChosen = true;
 					}
@@ -129,7 +130,7 @@ const drawStartPoint = () => {
 	}
 
 	// Draw start point
-	const startCell = document.getElementById(`cell-${startAt}`);
+	const startCell = document.getElementById(`cell-${globals.start}`);
 	
 	ctx = startCell.getContext('2d');
 	ctx.fillStyle = 'black';
@@ -211,19 +212,21 @@ const pushNewExpectedElement = () => {
 };
 
 const onBoardCellClick = (cell) => {
-	const currentCell = document.getElementById(`cell-${cell}`);
-	const nextElement = globals.expectedElements[0];
+	if (cell !== globals.start) {
+		const currentCell = document.getElementById(`cell-${cell}`);
+		const nextElement = globals.expectedElements[0];
+			
+		ctx = currentCell.getContext('2d');
+		ctx.fillStyle = 'black';
+
+		drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
+
+		currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
+
+		globals.expectedElements.shift();
 		
-	ctx = currentCell.getContext('2d');
-	ctx.fillStyle = 'black';
-
-	drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
-
-	currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
-
-	globals.expectedElements.shift();
-	
-	pushNewExpectedElement();
+		pushNewExpectedElement();
+	}
 };
 
 const startNewGame = () => {
