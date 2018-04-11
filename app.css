@@ -1,0 +1,58 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: black;
+}
+
+#root {
+	display: flex;
+	flex-direction: row;
+}
+
+.board {
+	display: flex;
+	flex-wrap: wrap;
+	width: 110vmin;
+	height: 77vmin;
+	background-color: lightgrey;
+}
+
+.board__cell,
+.toolbox__expected-element {
+	width: calc(11vmin - 2px);
+	height: calc(11vmin - 2px);
+	border: 1px solid white;
+}
+
+.toolbox {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	width: 15vmin;
+	height: 77vmin;
+	margin-left: 1vmin;
+	background-color: red;
+}
+
+.toolbox__expected {
+	display: flex;
+	flex-wrap: wrap;
+	width: 11vmin;
+	height: 55vmin;
+	margin-top: 2vmin;
+	background-color: black;
+}
+
+@media screen and (orientation:portrait) and (max-device-width: 900px) {
+	body {
+		transform: rotate(90deg);
+	}
+}
