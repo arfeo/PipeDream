@@ -1,6 +1,7 @@
 const globals = {
 	expectedElements: [],
 	startPoint: {},
+	elementsMap: [],
 };
 
 const randomNum = (min = 1, max = 1) => {
@@ -210,6 +211,17 @@ const pushNewExpectedElement = () => {
 	drawExpectedElements();
 };
 
+const updateElementsMap = (cell, type, direction) => {
+	globals.elementsMap = [
+		...globals.elementsMap.filter(e => e.cell !== cell),
+		{
+			cell,
+			type,
+			direction,
+		},
+	];
+};
+
 const onBoardCellClick = (cell) => {
 	if (cell !== globals.startPoint.position) {
 		const currentCell = document.getElementById(`cell-${cell}`);
@@ -219,12 +231,12 @@ const onBoardCellClick = (cell) => {
 		ctx.fillStyle = 'black';
 
 		drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
-
 		currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
 
 		globals.expectedElements.shift();
-		
 		pushNewExpectedElement();
+
+		updateElementsMap(cell, globals.expectedElements[0].type, globals.expectedElements[0].direction);
 	}
 };
 
