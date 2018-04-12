@@ -1,6 +1,8 @@
 const globals = {
 	expectedElements: [],
-	startPoint: {},
+	startPoint: {
+		position: {},
+	},
 	elementsMap: [],
 };
 
@@ -24,17 +26,19 @@ const createWorkspace = () => {
 	appTools.appendChild(toolboxNext);
 
 	// Create game board cells
-	for (let i = 0; i < 70; i += 1) {
-		const boardCell = document.createElement('canvas');
+	for (let row = 1; row <= 7; row += 1) {
+		for (let column = 1; column <= 10; column += 1) {
+			const boardCell = document.createElement('canvas');
 
-		boardCell.id = `cell-${i + 1}`;
-		boardCell.className = 'board__cell';
-		boardCell.width = 100;
-		boardCell.height = 100;
+			boardCell.id = `cell-${row}-${column}`;
+			boardCell.className = 'board__cell';
+			boardCell.width = 100;
+			boardCell.height = 100;
 
-		appBoard.appendChild(boardCell);
+			appBoard.appendChild(boardCell);
 
-		boardCell.addEventListener('click', () => onBoardCellClick(i + 1));
+			boardCell.addEventListener('click', () => onBoardCellClick(row, column));
+		}
 	}
 
 	// Create expected elements view
@@ -51,86 +55,61 @@ const createWorkspace = () => {
 };
 
 const drawStartPoint = () => {
+	globals.startPoint.position.row = randomNum(1, 7);
+	globals.startPoint.position.column = randomNum(1, 10);
 	
 	// Generate start point
-	globals.startPoint.position = randomNum(1, 70);
 	let isStartPointChosen = false;
 
 	while (!isStartPointChosen) {
 		globals.startPoint.direction = randomNum(0, 3);
 
 		// Prevent dead-end
-		switch (globals.startPoint.position) {
-			case 1:
-			{
+		if (globals.startPoint.position.row === 1) {
+			if (globals.startPoint.position.column === 1) {
 				if (globals.startPoint.direction !== 0 && globals.startPoint.direction !== 3) {
 					isStartPointChosen = true;
 				}
-				break;
-			}
-			case 10:
-			{
+			} else if (globals.startPoint.position.column === 10) {
 				if (globals.startPoint.direction !== 0 && globals.startPoint.direction !== 1) {
 					isStartPointChosen = true;
 				}
-				break;
+			} else {
+				if (globals.startPoint.direction !== 0) {
+					isStartPointChosen = true;
+				}
 			}
-			case 61:
-			{
+		} else if (globals.startPoint.position.row === 7) {
+			if (globals.startPoint.position.column === 1) {
 				if (globals.startPoint.direction !== 2 && globals.startPoint.direction !== 3) {
 					isStartPointChosen = true;
 				}
-				break;
-			}
-			case 70:
-			{
+			} else if (globals.startPoint.position.column === 10) {
 				if (globals.startPoint.direction !== 1 && globals.startPoint.direction !== 2) {
 					isStartPointChosen = true;
 				}
-				break;
+			} else {
+				if (globals.startPoint.direction !== 2) {
+					isStartPointChosen = true;
+				}
 			}
-			case 11:
-			case 21:
-			case 31:
-			case 41:
-			case 51:
-			{
+		} else {
+			if (globals.startPoint.position.column === 1) {
 				if (globals.startPoint.direction !== 3) {
 					isStartPointChosen = true;
 				}
-				break;
-			}
-			case 20:
-			case 30:
-			case 40:
-			case 50:
-			case 60:
-			{
+			} else if (globals.startPoint.position.column === 10) {
 				if (globals.startPoint.direction !== 1) {
 					isStartPointChosen = true;
 				}
-				break;
-			}
-			default:
-			{
-				if (globals.startPoint.position >= 2 && globals.startPoint.position <= 9) {
-					if (globals.startPoint.direction !== 0) {
-						isStartPointChosen = true;
-					}
-				} else if (globals.startPoint.position >= 62 && globals.startPoint.position <= 69) {
-					if (globals.startPoint.direction !== 2) {
-						isStartPointChosen = true;
-					}
-				} else {
-					isStartPointChosen = true;
-				}
-				break;
+			} else {
+				isStartPointChosen = true;
 			}
 		}
 	}
 
 	// Draw start point
-	const startCell = document.getElementById(`cell-${globals.startPoint.position}`);
+	const startCell = document.getElementById(`cell-${globals.startPoint.position.row}-${globals.startPoint.position.column}`);
 	
 	ctx = startCell.getContext('2d');
 	ctx.fillStyle = 'black';
@@ -166,11 +145,29 @@ const drawElementByType = (type, ctx, item) => {
 	switch (type) {
 		case 1:
 		{
+
+			/*
+			 *			| |
+			 *			| |
+			 *			| |
+			 *			| |
+			 *			| |
+			 */
+
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height);
 			break;
 		}
 		case 2:
 		{
+
+			/*
+			 *			
+			 *			 _	
+			 *			| |
+			 *			| |
+			 *			| |
+			 */
+
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
 			ctx.beginPath();
 			ctx.arc(item.width / 2, item.height / 2, 12, 0, 2 * Math.PI, false);
@@ -179,18 +176,45 @@ const drawElementByType = (type, ctx, item) => {
 		}
 		case 3:
 		{
+
+			/*
+			 *			| |
+			 *		____| |____
+			 *		____   ____
+			 *			| |
+			 *			| |
+			 */
+
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height);
 			ctx.fillRect(0, item.height / 2 - item.height / 8, item.width, item.height / 4);
 			break;
 		}
 		case 4:
 		{
+
+			/*
+			 *			| |
+			 *		____| |____
+			 *		___________
+			 *
+			 *
+			 */
+
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
 			ctx.fillRect(0, item.height / 2 - item.height / 8, item.width, item.height / 4);
 			break;
 		}
 		case 5:
 		{
+
+			/*
+			 *			| |
+			 *			| |____
+			 *			|______
+			 *
+			 *
+			 */
+
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
 			ctx.fillRect(item.width / 2 - item.width / 8, item.height / 2 - item.height / 8, item.width, item.height / 4);
 			break;
@@ -211,20 +235,23 @@ const pushNewExpectedElement = () => {
 	drawExpectedElements();
 };
 
-const updateElementsMap = (cell, type, direction) => {
+const updateElementsMap = (row, column, type, direction) => {
 	globals.elementsMap = [
-		...globals.elementsMap.filter(e => e.cell !== cell),
+		...globals.elementsMap.filter(e => JSON.stringify({ row, column }) !== JSON.stringify(e.position)),
 		{
-			cell,
+			position: {
+				row,
+				column,
+			},
 			type,
 			direction,
 		},
 	];
 };
 
-const onBoardCellClick = (cell) => {
-	if (cell !== globals.startPoint.position) {
-		const currentCell = document.getElementById(`cell-${cell}`);
+const onBoardCellClick = (row, column) => {
+	if (JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
+		const currentCell = document.getElementById(`cell-${row}-${column}`);
 		const nextElement = globals.expectedElements[0];
 			
 		ctx = currentCell.getContext('2d');
@@ -236,8 +263,72 @@ const onBoardCellClick = (cell) => {
 		globals.expectedElements.shift();
 		pushNewExpectedElement();
 
-		updateElementsMap(cell, globals.expectedElements[0].type, globals.expectedElements[0].direction);
+		updateElementsMap(row, column, globals.expectedElements[0].type, globals.expectedElements[0].direction);
 	}
+};
+
+const animateComponent = (ctx, type, cell) => {
+	let interval = null;
+	let i = 0;
+	let s = 0;
+
+	switch (type) {
+		case 'pump':
+		{
+			i = 13;
+			s = 21;
+			break;
+		}
+		case 'halfpipe':
+		{
+			i = 0;
+			s = 50;
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
+	interval = setInterval(animate.bind(null, s), 100);
+
+	function animate(stop) {
+		i += 1;
+
+		if (i > stop) {
+			clearInterval(interval);
+		} else {
+			switch (type) {
+				case 'pump':
+				{
+					ctx.beginPath();
+					ctx.arc(cell.width / 2, cell.height / 2, i, 0, 2 * Math.PI, false);
+					ctx.fill();
+					break;
+				}
+				case 'halfpipe':
+				{
+					ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50 - i, cell.width / 4 - 8, i);
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+		}
+	}
+};
+
+const openValve = () => {
+	const startCell = document.getElementById(`cell-${globals.startPoint.position.row}-${globals.startPoint.position.column}`);
+
+	ctx = startCell.getContext('2d');
+	ctx.fillStyle = 'lightblue';
+
+	animateComponent(ctx, 'pump', startCell);
+	animateComponent(ctx, 'halfpipe', startCell);
 };
 
 const startNewGame = () => {
