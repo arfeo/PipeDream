@@ -1,6 +1,6 @@
 const globals = {
 	expectedElements: [],
-	start: 0,
+	startPoint: {},
 };
 
 const randomNum = (min = 1, max = 1) => {
@@ -52,39 +52,38 @@ const createWorkspace = () => {
 const drawStartPoint = () => {
 	
 	// Generate start point
-	globals.start = randomNum(1, 70);
+	globals.startPoint.position = randomNum(1, 70);
 	let isStartPointChosen = false;
-	let startDirection = 0;
 
 	while (!isStartPointChosen) {
-		startDirection = randomNum(0, 3);
+		globals.startPoint.direction = randomNum(0, 3);
 
 		// Prevent dead-end
-		switch (globals.start) {
+		switch (globals.startPoint.position) {
 			case 1:
 			{
-				if (startDirection !== 0 && startDirection !== 3) {
+				if (globals.startPoint.direction !== 0 && globals.startPoint.direction !== 3) {
 					isStartPointChosen = true;
 				}
 				break;
 			}
 			case 10:
 			{
-				if (startDirection !== 0 && startDirection !== 1) {
+				if (globals.startPoint.direction !== 0 && globals.startPoint.direction !== 1) {
 					isStartPointChosen = true;
 				}
 				break;
 			}
 			case 61:
 			{
-				if (startDirection !== 2 && startDirection !== 3) {
+				if (globals.startPoint.direction !== 2 && globals.startPoint.direction !== 3) {
 					isStartPointChosen = true;
 				}
 				break;
 			}
 			case 70:
 			{
-				if (startDirection !== 1 && startDirection !== 2) {
+				if (globals.startPoint.direction !== 1 && globals.startPoint.direction !== 2) {
 					isStartPointChosen = true;
 				}
 				break;
@@ -95,7 +94,7 @@ const drawStartPoint = () => {
 			case 41:
 			case 51:
 			{
-				if (startDirection !== 3) {
+				if (globals.startPoint.direction !== 3) {
 					isStartPointChosen = true;
 				}
 				break;
@@ -106,19 +105,19 @@ const drawStartPoint = () => {
 			case 50:
 			case 60:
 			{
-				if (startDirection !== 1) {
+				if (globals.startPoint.direction !== 1) {
 					isStartPointChosen = true;
 				}
 				break;
 			}
 			default:
 			{
-				if (globals.start >= 2 && globals.start <= 9) {
-					if (startDirection !== 0) {
+				if (globals.startPoint.position >= 2 && globals.startPoint.position <= 9) {
+					if (globals.startPoint.direction !== 0) {
 						isStartPointChosen = true;
 					}
-				} else if (globals.start >= 62 && globals.start <= 69) {
-					if (startDirection !== 2) {
+				} else if (globals.startPoint.position >= 62 && globals.startPoint.position <= 69) {
+					if (globals.startPoint.direction !== 2) {
 						isStartPointChosen = true;
 					}
 				} else {
@@ -130,7 +129,7 @@ const drawStartPoint = () => {
 	}
 
 	// Draw start point
-	const startCell = document.getElementById(`cell-${globals.start}`);
+	const startCell = document.getElementById(`cell-${globals.startPoint.position}`);
 	
 	ctx = startCell.getContext('2d');
 	ctx.fillStyle = 'black';
@@ -144,7 +143,7 @@ const drawStartPoint = () => {
 	ctx.arc(startCell.width / 2, startCell.height / 2, 12, 0, 2 * Math.PI, false);
 	ctx.fill();
 
-	startCell.style.transform = `rotate(${startDirection * 90}deg)`;
+	startCell.style.transform = `rotate(${globals.startPoint.direction * 90}deg)`;
 };
 
 const drawExpectedElements = () => {
@@ -212,7 +211,7 @@ const pushNewExpectedElement = () => {
 };
 
 const onBoardCellClick = (cell) => {
-	if (cell !== globals.start) {
+	if (cell !== globals.startPoint.position) {
 		const currentCell = document.getElementById(`cell-${cell}`);
 		const nextElement = globals.expectedElements[0];
 			
