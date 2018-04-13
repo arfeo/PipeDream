@@ -453,8 +453,6 @@ const animateElement = async (row, column, ent) => {
 	ctx = cell.getContext('2d');
 	ctx.fillStyle = 'lightblue';
 
-	console.log(element);
-
 	switch (element.type) {
 		case 0:
 		{
@@ -471,13 +469,22 @@ const animateElement = async (row, column, ent) => {
 		case 4:
 		case 5:
 		{
+			const animatePromises = [];
+			const nextPromises = [];
+
 			await animateComponent(ctx, 'pipe-in', cell, ent);
+
 			for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-				animateComponent(ctx, 'pipe-out', cell, out);
+				animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out));
 			}
-			for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-				await getNextElement(row, column, out);
+
+			await Promise.all(animatePromises);
+
+			for (out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
+				nextPromises.push(getNextElement(row, column, out));
 			}
+
+			await Promise.all(nextPromises);
 			break;
 		}
 		default:
@@ -488,41 +495,37 @@ const animateElement = async (row, column, ent) => {
 };
 
 const getNextElement = (row, column, direction) => {
+	let nextRow = 0;
+	let nextColumn = 0;
+	let nextEnt = 0;
+
 	switch (direction) {
 		case 0:
 		{
-			animateElement(
-				row - 1,
-				column,
-				2,
-			);
+			nextRow = row - 1;
+			nextColumn = column;
+			nextEnt = 2;
 			break;
 		}
 		case 1:
 		{
-			animateElement(
-				row,
-				column + 1,
-				3,
-			);
+			nextRow = row;
+			nextColumn = column + 1;
+			nextEnt = 3;
 			break;
 		}
 		case 2:
 		{
-			animateElement(
-				row + 1,
-				column,
-				0,
-			);
+			nextRow = row + 1;
+			nextColumn = column;
+			nextEnt = 0;
 			break;
 		}
 		case 3:
 		{
-			animateElement(
-				row,
-				column - 1,
-				1,
-			);
+			nextRow = row;
+			nextColumn = column - 1;
+			nextEnt = 1;
 			break;
 		}
 		default:
@@ -530,6 +533,16 @@ const getNextElement = (row, column, direction) => {
 			break;
 		}
 	}
+
+	if (globals.elementsMap.filter(e => JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position)).length > 0) {
+		return animateElement(
+			nextRow,
+			nextColumn,
+			nextEnt,
+		);
+	}
+
+	return;
 }
 
 const openValve = () => {
