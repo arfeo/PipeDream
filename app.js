@@ -7,9 +7,14 @@ const globals = {
 };
 
 const constants = {
-	elementsDescr: [
+	elementsSpec: [
 		{
-
+			type: 0,
+			outlets: [
+				[ 0 ], [ 1 ], [ 2 ], [ 3 ],
+			],
+		},
+		{
 			/*
 			 *			| |
 			 *			| |
@@ -19,15 +24,11 @@ const constants = {
 			 */
 
 			type: 1,
-			entries: [
-				[ 0, 2 ],
-				[ 1, 3 ],
-				[ 2, 0 ],
-				[ 3, 1 ],
+			outlets: [
+				[ 0, 2 ], [ 1, 3 ], [ 2, 0 ], [ 3, 1 ],
 			],
 		},
 		{
-
 			/*
 			 *			| |
 			 *			| |
@@ -37,15 +38,11 @@ const constants = {
 			 */
 
 			type: 2,
-			entries: [
-				[ 0 ],
-				[ 1 ],
-				[ 2 ],
-				[ 3 ],
+			outlets: [
+				[ 0 ], [ 1 ], [ 2 ], [ 3 ],
 			],
 		},
 		{
-
 			/*
 			 *			| |
 			 *		____| |____
@@ -55,15 +52,11 @@ const constants = {
 			 */
 
 			type: 3,
-			entries: [
-				[ 0, 1, 2, 3 ],
-				[ 1, 2, 3, 0 ],
-				[ 2, 3, 0, 1 ],
-				[ 3, 0, 1, 2 ],
+			outlets: [
+				[ 0, 1, 2, 3 ], [ 1, 2, 3, 0 ], [ 2, 3, 0, 1 ], [ 3, 0, 1, 2 ],
 			],
 		},
 		{
-
 			/*
 			 *			| |
 			 *		____| |____
@@ -73,15 +66,11 @@ const constants = {
 			 */
 
 			type: 4,
-			entries: [
-				[ 0, 1, 3 ],
-				[ 1, 2, 0 ],
-				[ 2, 3, 1 ],
-				[ 3, 0, 2 ],
+			outlets: [
+				[ 0, 1, 3 ], [ 0, 1, 2 ], [ 1, 2, 3 ], [ 2, 3, 0 ],
 			],
 		},
 		{
-
 			/*
 			 *			| |
 			 *			| |____
@@ -91,11 +80,8 @@ const constants = {
 			 */
 
 			type: 5,
-			entries: [
-				[ 0, 1 ],
-				[ 1, 2 ],
-				[ 2, 3 ],
-				[ 3, 0 ],
+			outlets: [
+				[ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 0 ],
 			],
 		},
 	],
@@ -237,6 +223,13 @@ const drawStartPoint = () => {
 	ctx.fill();
 
 	startCell.style.transform = `rotate(${globals.startPoint.direction * 90}deg)`;
+
+	updateElementsMap(
+		globals.startPoint.position.row,
+		globals.startPoint.position.column,
+		0,
+		globals.startPoint.direction
+	);
 };
 
 const drawExpectedElements = () => {
@@ -348,16 +341,16 @@ const animateComponent = (ctx, type, cell, ent) => {
 				s = 21;
 				break;
 			}
-			case 'halfpipe-out':
+			case 'pipe-out':
 			{
-				i = 0;
+				i = 10;
 				s = 50;
 				break;
 			}
-			case 'halfpipe-in':
+			case 'pipe-in':
 			{
 				i = 0;
-				s = 50;
+				s = 59;
 				break;
 			}
 			default:
@@ -383,37 +376,7 @@ const animateComponent = (ctx, type, cell, ent) => {
 						ctx.fill();
 						break;
 					}
-					case 'halfpipe-out':
-					{
-						switch (ent) {
-							case 0:
-							{
-								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50 - i, cell.width / 4 - 8, i);
-								break;
-							}
-							case 1:
-							{
-								ctx.fillRect(50, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
-								break;
-							}
-							case 2:
-							{
-								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50, cell.width / 4 - 8, i);
-								break;
-							}
-							case 3:
-							{
-								ctx.fillRect(50 - i, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
-								break;
-							}
-							default:
-							{
-								break;
-							}
-						}
-						break;
-					}
-					case 'halfpipe-in':
+					case 'pipe-in':
 					{
 						switch (ent) {
 							case 0:
@@ -443,6 +406,36 @@ const animateComponent = (ctx, type, cell, ent) => {
 						}
 						break;
 					}
+					case 'pipe-out':
+					{
+						switch (ent) {
+							case 0:
+							{
+								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50 - i, cell.width / 4 - 8, i);
+								break;
+							}
+							case 1:
+							{
+								ctx.fillRect(50, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
+								break;
+							}
+							case 2:
+							{
+								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50, cell.width / 4 - 8, i);
+								break;
+							}
+							case 3:
+							{
+								ctx.fillRect(50 - i, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
+								break;
+							}
+							default:
+							{
+								break;
+							}
+						}
+						break;
+					}
 					default:
 					{
 						break;
@@ -453,78 +446,94 @@ const animateComponent = (ctx, type, cell, ent) => {
 	});
 };
 
-const animateElement = (row, column, ent) => {
+const animateElement = async (row, column, ent) => {
 	const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
 	const cell = document.getElementById(`cell-animation-${row}-${column}`);
 
 	ctx = cell.getContext('2d');
 	ctx.fillStyle = 'lightblue';
 
-	/*switch (element.type) {
-		case 3:
-		{*/
-			animateComponent(ctx, 'halfpipe-in', cell, ent);
-			/*break;
-		}
-	}*/
-
 	console.log(element);
+
+	switch (element.type) {
+		case 0:
+		{
+			await Promise.all([
+				animateComponent(ctx, 'pump', cell, element.direction),
+				animateComponent(ctx, 'pipe-out', cell, element.direction),
+			]);
+			await getNextElement(row, column, element.direction);
+			break;
+		}
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		{
+			await animateComponent(ctx, 'pipe-in', cell, ent);
+			for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
+				animateComponent(ctx, 'pipe-out', cell, out);
+			}
+			for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
+				await getNextElement(row, column, out);
+			}
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
 };
 
-const openValve = () => {
-	const startCell = document.getElementById(`cell-animation-${globals.startPoint.position.row}-${globals.startPoint.position.column}`);
-
-	ctx = startCell.getContext('2d');
-	ctx.fillStyle = 'lightblue';
-
-	// Animate start point
-	Promise.all([
-		animateComponent(ctx, 'pump', startCell, globals.startPoint.direction),
-		animateComponent(ctx, 'halfpipe-out', startCell, globals.startPoint.direction),
-	]).then(() => {
-		switch (globals.startPoint.direction) {
-			case 0:
-			{
-				animateElement(
-					globals.startPoint.position.row - 1,
-					globals.startPoint.position.column,
-					2,
-				);
-				break;
-			}
-			case 1:
-			{
-				animateElement(
-					globals.startPoint.position.row,
-					globals.startPoint.position.column + 1,
-					3,
-				);
-				break;
-			}
-			case 2:
-			{
-				animateElement(
-					globals.startPoint.position.row + 1,
-					globals.startPoint.position.column,
-					0,
-				);
-				break;
-			}
-			case 3:
-			{
-				animateElement(
-					globals.startPoint.position.row,
-					globals.startPoint.position.column - 1,
-					1,
-				);
-				break;
-			}
-			default:
-			{
-				break;
-			}
+const getNextElement = (row, column, direction) => {
+	switch (direction) {
+		case 0:
+		{
+			animateElement(
+				row - 1,
+				column,
+				2,
+			);
+			break;
 		}
-	});
+		case 1:
+		{
+			animateElement(
+				row,
+				column + 1,
+				3,
+			);
+			break;
+		}
+		case 2:
+		{
+			animateElement(
+				row + 1,
+				column,
+				0,
+			);
+			break;
+		}
+		case 3:
+		{
+			animateElement(
+				row,
+				column - 1,
+				1,
+			);
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+}
+
+const openValve = () => {
+	animateElement(globals.startPoint.position.row, globals.startPoint.position.column);
 };
 
 const startNewGame = () => {
