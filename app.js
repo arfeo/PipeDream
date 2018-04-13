@@ -428,7 +428,7 @@ const animateComponent = (ctx, type, cell, ent) => {
 							}
 							case 2:
 							{
-								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 100, cell.width / 4 - 8, 100 - i);
+								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 100 - i, cell.width / 4 - 8, 100 - i);
 								break;
 							}
 							case 3:
