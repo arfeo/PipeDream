@@ -6,6 +6,101 @@ const globals = {
 	elementsMap: [],
 };
 
+const constants = {
+	elementsDescr: [
+		{
+
+			/*
+			 *			| |
+			 *			| |
+			 *			| |
+			 *			| |
+			 *			| |
+			 */
+
+			type: 1,
+			entries: [
+				[ 0, 2 ],
+				[ 1, 3 ],
+				[ 2, 0 ],
+				[ 3, 1 ],
+			],
+		},
+		{
+
+			/*
+			 *			| |
+			 *			| |
+			 *			|_|
+			 *				
+			 *			
+			 */
+
+			type: 2,
+			entries: [
+				[ 0 ],
+				[ 1 ],
+				[ 2 ],
+				[ 3 ],
+			],
+		},
+		{
+
+			/*
+			 *			| |
+			 *		____| |____
+			 *		____   ____
+			 *			| |
+			 *			| |
+			 */
+
+			type: 3,
+			entries: [
+				[ 0, 1, 2, 3 ],
+				[ 1, 2, 3, 0 ],
+				[ 2, 3, 0, 1 ],
+				[ 3, 0, 1, 2 ],
+			],
+		},
+		{
+
+			/*
+			 *			| |
+			 *		____| |____
+			 *		___________
+			 *
+			 *
+			 */
+
+			type: 4,
+			entries: [
+				[ 0, 1, 3 ],
+				[ 1, 2, 0 ],
+				[ 2, 3, 1 ],
+				[ 3, 0, 2 ],
+			],
+		},
+		{
+
+			/*
+			 *			| |
+			 *			| |____
+			 *			|______
+			 *
+			 *
+			 */
+
+			type: 5,
+			entries: [
+				[ 0, 1 ],
+				[ 1, 2 ],
+				[ 2, 3 ],
+				[ 3, 0 ],
+			],
+		},
+	],
+};
+
 const randomNum = (min = 1, max = 1) => {
 	return Math.floor(min + Math.random() * (max + 1 - min));
 };
@@ -13,31 +108,44 @@ const randomNum = (min = 1, max = 1) => {
 const createWorkspace = () => {
 	const appRoot = document.getElementById('root');
 	const appBoard = document.createElement('div');
-	const appTools = document.createElement('div');
+	const appToolbox = document.createElement('div');
 	const toolboxNext = document.createElement('div');
+	const openValveButton = document.createElement('button');
 
 	// Create the workspace
 	appBoard.className = 'board';
-	appTools.className = 'toolbox';
+	appToolbox.className = 'toolbox';
 	toolboxNext.className = 'toolbox__expected';
+	openValveButton.className = 'open-valve-button';
 
 	appRoot.appendChild(appBoard);
-	appRoot.appendChild(appTools);
-	appTools.appendChild(toolboxNext);
+	appRoot.appendChild(appToolbox);
+	appToolbox.appendChild(toolboxNext);
 
-	// Create game board cells
+	// Create game board cell containers
 	for (let row = 1; row <= 7; row += 1) {
 		for (let column = 1; column <= 10; column += 1) {
+			const boardCellContainer = document.createElement('div');
 			const boardCell = document.createElement('canvas');
+			const boardCellAnimation = document.createElement('canvas');
+
+			boardCellContainer.className = 'board__cell-container';
 
 			boardCell.id = `cell-${row}-${column}`;
 			boardCell.className = 'board__cell';
 			boardCell.width = 100;
 			boardCell.height = 100;
 
-			appBoard.appendChild(boardCell);
+			boardCellAnimation.id = `cell-animation-${row}-${column}`;
+			boardCellAnimation.className = 'board__cell-animation';
+			boardCellAnimation.width = 100;
+			boardCellAnimation.height = 100;
 
-			boardCell.addEventListener('click', () => onBoardCellClick(row, column));
+			appBoard.appendChild(boardCellContainer);
+			boardCellContainer.appendChild(boardCell);
+			boardCellContainer.appendChild(boardCellAnimation);
+
+			boardCellAnimation.addEventListener('click', () => onBoardCellClick(row, column));
 		}
 	}
 
@@ -52,6 +160,11 @@ const createWorkspace = () => {
 
 		toolboxNext.appendChild(toolboxNextElement);
 	}
+
+	// Create open valve button
+	openValveButton.innerHTML = '▶';
+	appToolbox.appendChild(openValveButton);
+	openValveButton.addEventListener('click', openValve);
 };
 
 const drawStartPoint = () => {
@@ -145,29 +258,11 @@ const drawElementByType = (type, ctx, item) => {
 	switch (type) {
 		case 1:
 		{
-
-			/*
-			 *			| |
-			 *			| |
-			 *			| |
-			 *			| |
-			 *			| |
-			 */
-
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height);
 			break;
 		}
 		case 2:
 		{
-
-			/*
-			 *			
-			 *			 _	
-			 *			| |
-			 *			| |
-			 *			| |
-			 */
-
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
 			ctx.beginPath();
 			ctx.arc(item.width / 2, item.height / 2, 12, 0, 2 * Math.PI, false);
@@ -176,45 +271,18 @@ const drawElementByType = (type, ctx, item) => {
 		}
 		case 3:
 		{
-
-			/*
-			 *			| |
-			 *		____| |____
-			 *		____   ____
-			 *			| |
-			 *			| |
-			 */
-
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height);
 			ctx.fillRect(0, item.height / 2 - item.height / 8, item.width, item.height / 4);
 			break;
 		}
 		case 4:
 		{
-
-			/*
-			 *			| |
-			 *		____| |____
-			 *		___________
-			 *
-			 *
-			 */
-
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
 			ctx.fillRect(0, item.height / 2 - item.height / 8, item.width, item.height / 4);
 			break;
 		}
 		case 5:
 		{
-
-			/*
-			 *			| |
-			 *			| |____
-			 *			|______
-			 *
-			 *
-			 */
-
 			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
 			ctx.fillRect(item.width / 2 - item.width / 8, item.height / 2 - item.height / 8, item.width, item.height / 4);
 			break;
@@ -260,75 +328,203 @@ const onBoardCellClick = (row, column) => {
 		drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
 		currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
 
+		updateElementsMap(row, column, globals.expectedElements[0].type, globals.expectedElements[0].direction);
+
 		globals.expectedElements.shift();
 		pushNewExpectedElement();
-
-		updateElementsMap(row, column, globals.expectedElements[0].type, globals.expectedElements[0].direction);
 	}
 };
 
-const animateComponent = (ctx, type, cell) => {
-	let interval = null;
-	let i = 0;
-	let s = 0;
+const animateComponent = (ctx, type, cell, ent) => {
+	return new Promise((resolve) => {
+		let interval = null;
+		let i = 0;
+		let s = 0;
 
-	switch (type) {
-		case 'pump':
-		{
-			i = 13;
-			s = 21;
-			break;
+		switch (type) {
+			case 'pump':
+			{
+				i = 13;
+				s = 21;
+				break;
+			}
+			case 'halfpipe-out':
+			{
+				i = 0;
+				s = 50;
+				break;
+			}
+			case 'halfpipe-in':
+			{
+				i = 0;
+				s = 50;
+				break;
+			}
+			default:
+			{
+				break;
+			}
 		}
-		case 'halfpipe':
-		{
-			i = 0;
-			s = 50;
-			break;
-		}
-		default:
-		{
-			break;
-		}
-	}
 
-	interval = setInterval(animate.bind(null, s), 100);
+		interval = setInterval(animate.bind(null, s), 100);
 
-	function animate(stop) {
-		i += 1;
+		function animate(stop) {
+			i += 1;
 
-		if (i > stop) {
-			clearInterval(interval);
-		} else {
-			switch (type) {
-				case 'pump':
-				{
-					ctx.beginPath();
-					ctx.arc(cell.width / 2, cell.height / 2, i, 0, 2 * Math.PI, false);
-					ctx.fill();
-					break;
-				}
-				case 'halfpipe':
-				{
-					ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50 - i, cell.width / 4 - 8, i);
-					break;
-				}
-				default:
-				{
-					break;
+			if (i > stop) {
+				clearInterval(interval);
+				resolve();
+			} else {
+				switch (type) {
+					case 'pump':
+					{
+						ctx.beginPath();
+						ctx.arc(cell.width / 2, cell.height / 2, i, 0, 2 * Math.PI, false);
+						ctx.fill();
+						break;
+					}
+					case 'halfpipe-out':
+					{
+						switch (ent) {
+							case 0:
+							{
+								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50 - i, cell.width / 4 - 8, i);
+								break;
+							}
+							case 1:
+							{
+								ctx.fillRect(50, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
+								break;
+							}
+							case 2:
+							{
+								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50, cell.width / 4 - 8, i);
+								break;
+							}
+							case 3:
+							{
+								ctx.fillRect(50 - i, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
+								break;
+							}
+							default:
+							{
+								break;
+							}
+						}
+						break;
+					}
+					case 'halfpipe-in':
+					{
+						switch (ent) {
+							case 0:
+							{
+								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 0, cell.width / 4 - 8, i);
+								break;
+							}
+							case 1:
+							{
+								ctx.fillRect(100 - i, cell.height / 2 - cell.height / 8 + 4, 100, cell.height / 4 - 8);
+								break;
+							}
+							case 2:
+							{
+								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 100, cell.width / 4 - 8, 100 - i);
+								break;
+							}
+							case 3:
+							{
+								ctx.fillRect(0, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
+								break;
+							}
+							default:
+							{
+								break;
+							}
+						}
+						break;
+					}
+					default:
+					{
+						break;
+					}
 				}
 			}
 		}
-	}
+	});
+};
+
+const animateElement = (row, column, ent) => {
+	const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
+	const cell = document.getElementById(`cell-animation-${row}-${column}`);
+
+	ctx = cell.getContext('2d');
+	ctx.fillStyle = 'lightblue';
+
+	/*switch (element.type) {
+		case 3:
+		{*/
+			animateComponent(ctx, 'halfpipe-in', cell, ent);
+			/*break;
+		}
+	}*/
+
+	console.log(element);
 };
 
 const openValve = () => {
-	const startCell = document.getElementById(`cell-${globals.startPoint.position.row}-${globals.startPoint.position.column}`);
+	const startCell = document.getElementById(`cell-animation-${globals.startPoint.position.row}-${globals.startPoint.position.column}`);
 
 	ctx = startCell.getContext('2d');
 	ctx.fillStyle = 'lightblue';
 
-	animateComponent(ctx, 'pump', startCell);
-	animateComponent(ctx, 'halfpipe', startCell);
+	// Animate start point
+	Promise.all([
+		animateComponent(ctx, 'pump', startCell, globals.startPoint.direction),
+		animateComponent(ctx, 'halfpipe-out', startCell, globals.startPoint.direction),
+	]).then(() => {
+		switch (globals.startPoint.direction) {
+			case 0:
+			{
+				animateElement(
+					globals.startPoint.position.row - 1,
+					globals.startPoint.position.column,
+					2,
+				);
+				break;
+			}
+			case 1:
+			{
+				animateElement(
+					globals.startPoint.position.row,
+					globals.startPoint.position.column + 1,
+					3,
+				);
+				break;
+			}
+			case 2:
+			{
+				animateElement(
+					globals.startPoint.position.row + 1,
+					globals.startPoint.position.column,
+					0,
+				);
+				break;
+			}
+			case 3:
+			{
+				animateElement(
+					globals.startPoint.position.row,
+					globals.startPoint.position.column - 1,
+					1,
+				);
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
+	});
 };
 
 const startNewGame = () => {

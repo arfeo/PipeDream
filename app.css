@@ -11,6 +11,12 @@ body {
 	background-color: black;
 }
 
+button {
+	outline: none;
+	border: 0;
+	cursor: pointer;
+}
+
 #root {
 	display: flex;
 	flex-direction: row;
@@ -24,11 +30,31 @@ body {
 	background-color: lightgrey;
 }
 
-.board__cell,
-.toolbox__expected-element {
+.board__cell-container {
+	position: relative;
+	width: calc(11vmin - 2px);
+	height: calc(11vmin - 2px);
+}
+
+.board__cell {
+	position: absolute;
+	top: 0;
+	left: 0;
 	width: calc(11vmin - 2px);
 	height: calc(11vmin - 2px);
 	border: 1px solid white;
+	z-index: 1;
+}
+
+.board__cell-animation {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: calc(11vmin - 2px);
+	height: calc(11vmin - 2px);
+	background: transparent;
+	border: 1px solid transparent;
+	z-index: 2;
 }
 
 .toolbox {
@@ -37,8 +63,9 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	width: 15vmin;
-	height: 77vmin;
+	height: 73vmin;
 	margin-left: 1vmin;
+	padding: 2vmin 0;
 	background-color: red;
 }
 
@@ -47,8 +74,18 @@ body {
 	flex-wrap: wrap;
 	width: 11vmin;
 	height: 55vmin;
-	margin-top: 2vmin;
 	background-color: black;
+}
+
+.toolbox__expected-element {
+	width: calc(11vmin - 2px);
+	height: calc(11vmin - 2px);
+	border: 1px solid white;
+}
+
+.open-valve-button {
+	padding: 1vmin 2vmin;
+	font-size: 3vmin;
 }
 
 @media screen and (orientation:portrait) and (max-device-width: 900px) {
