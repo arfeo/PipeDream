@@ -164,45 +164,55 @@ const drawStartPoint = () => {
 		globals.startPoint.direction = randomNum(0, 3);
 
 		// Prevent dead-end
-		if (globals.startPoint.position.row === 1) {
-			if (globals.startPoint.position.column === 1) {
-				if (globals.startPoint.direction !== 0 && globals.startPoint.direction !== 3) {
-					isStartPointChosen = true;
+		switch (globals.startPoint.position.row) {
+			case 1:
+			{
+				if (globals.startPoint.position.column === 1) {
+					if (globals.startPoint.direction !== 0 && globals.startPoint.direction !== 3) {
+						isStartPointChosen = true;
+					}
+				} else if (globals.startPoint.position.column === 10) {
+					if (globals.startPoint.direction !== 0 && globals.startPoint.direction !== 1) {
+						isStartPointChosen = true;
+					}
+				} else {
+					if (globals.startPoint.direction !== 0) {
+						isStartPointChosen = true;
+					}
 				}
-			} else if (globals.startPoint.position.column === 10) {
-				if (globals.startPoint.direction !== 0 && globals.startPoint.direction !== 1) {
-					isStartPointChosen = true;
-				}
-			} else {
-				if (globals.startPoint.direction !== 0) {
-					isStartPointChosen = true;
-				}
+				break;
 			}
-		} else if (globals.startPoint.position.row === 7) {
-			if (globals.startPoint.position.column === 1) {
-				if (globals.startPoint.direction !== 2 && globals.startPoint.direction !== 3) {
+			case 7:
+			{
+				if (globals.startPoint.position.column === 1) {
+					if (globals.startPoint.direction !== 2 && globals.startPoint.direction !== 3) {
+						isStartPointChosen = true;
+					}
+				} else if (globals.startPoint.position.column === 10) {
+					if (globals.startPoint.direction !== 1 && globals.startPoint.direction !== 2) {
+						isStartPointChosen = true;
+					}
+				} else {
+					if (globals.startPoint.direction !== 2) {
+						isStartPointChosen = true;
+					}
+				}
+				break;
+			}	
+			default:
+			{
+				if (globals.startPoint.position.column === 1) {
+					if (globals.startPoint.direction !== 3) {
+						isStartPointChosen = true;
+					}
+				} else if (globals.startPoint.position.column === 10) {
+					if (globals.startPoint.direction !== 1) {
+						isStartPointChosen = true;
+					}
+				} else {
 					isStartPointChosen = true;
 				}
-			} else if (globals.startPoint.position.column === 10) {
-				if (globals.startPoint.direction !== 1 && globals.startPoint.direction !== 2) {
-					isStartPointChosen = true;
-				}
-			} else {
-				if (globals.startPoint.direction !== 2) {
-					isStartPointChosen = true;
-				}
-			}
-		} else {
-			if (globals.startPoint.position.column === 1) {
-				if (globals.startPoint.direction !== 3) {
-					isStartPointChosen = true;
-				}
-			} else if (globals.startPoint.position.column === 10) {
-				if (globals.startPoint.direction !== 1) {
-					isStartPointChosen = true;
-				}
-			} else {
-				isStartPointChosen = true;
+				break;
 			}
 		}
 	}
@@ -359,7 +369,7 @@ const animateComponent = (ctx, type, cell, ent) => {
 			}
 		}
 
-		interval = setInterval(animate.bind(null, s), 100);
+		interval = setInterval(animate.bind(null, s), 50);
 
 		function animate(stop) {
 			i += 1;
@@ -456,11 +466,11 @@ const animateElement = async (row, column, ent) => {
 	switch (element.type) {
 		case 0:
 		{
-			await Promise.all([
-				animateComponent(ctx, 'pump', cell, element.direction),
-				animateComponent(ctx, 'pipe-out', cell, element.direction),
-			]);
-			await getNextElement(row, column, element.direction);
+			await animateComponent(ctx, 'pump', cell, element.direction);
+			await animateComponent(ctx, 'pipe-out', cell, element.direction);
+			
+			const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
+			animateElement(nextRow, nextColumn, nextEnt);
 			break;
 		}
 		case 1:
@@ -475,13 +485,18 @@ const animateElement = async (row, column, ent) => {
 			await animateComponent(ctx, 'pipe-in', cell, ent);
 
 			for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-				animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out));
+				if (out !== ent) {
+					animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out) || null);
+				}
 			}
 
 			await Promise.all(animatePromises);
 
-			for (out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
-				nextPromises.push(getNextElement(row, column, out));
+			for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
+				if (out !== ent) {
+					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
+					nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+				}
 			}
 
 			await Promise.all(nextPromises);
@@ -494,12 +509,12 @@ const animateElement = async (row, column, ent) => {
 	}
 };
 
-const getNextElement = (row, column, direction) => {
+const getNextElement = (row, column, ent) => {
 	let nextRow = 0;
 	let nextColumn = 0;
 	let nextEnt = 0;
 
-	switch (direction) {
+	switch (ent) {
 		case 0:
 		{
 			nextRow = row - 1;
@@ -535,14 +550,14 @@ const getNextElement = (row, column, direction) => {
 	}
 
 	if (globals.elementsMap.filter(e => JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position)).length > 0) {
-		return animateElement(
+		return {
 			nextRow,
 			nextColumn,
 			nextEnt,
-		);
+		};
 	}
 
-	return;
+	return false;
 }
 
 const openValve = () => {
