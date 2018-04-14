@@ -9,6 +9,12 @@ body {
 	align-items: center;
 	height: 100vh;
 	background-color: black;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 button {
@@ -32,8 +38,8 @@ button {
 
 .board__cell-container {
 	position: relative;
-	width: calc(11vmin - 2px);
-	height: calc(11vmin - 2px);
+	width: 11vmin;
+	height: 11vmin;
 }
 
 .board__cell {

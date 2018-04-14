@@ -436,7 +436,7 @@ const animateComponent = (ctx, type, cell, ent) => {
 					}
 				}
 			}
-		}, 50);
+		}, 30);
 	});
 };
 
@@ -475,19 +475,16 @@ const animateElement = (row, column, ent) => {
 
 					animateComponent(ctx, 'pipe-in', cell, ent);
 					
-					for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-						if (out !== ent) {
-							animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out) || null);
-						}
+					for (out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
+						animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out) || null);
 					}
 
 					await Promise.all(animatePromises);
 
-					for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-						if (out !== ent) {
-							const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
-							nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
-						}
+					for (out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
+						const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
+						
+						nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
 					}
 
 					await Promise.all(nextPromises);
