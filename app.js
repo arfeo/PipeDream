@@ -291,10 +291,6 @@ const drawElementByType = (type, ctx, item) => {
 			ctx.fillRect(item.width / 2 - item.width / 8, item.height / 2 - item.height / 8, item.width, item.height / 4);
 			break;
 		}
-		default:
-		{
-			break;
-		}
 	}
 };
 
@@ -369,18 +365,12 @@ const animateComponent = (ctx, type, cell, ent) => {
 				s = 59;
 				break;
 			}
-			default:
-			{
-				break;
-			}
 		}
 
-		interval = setInterval(animate.bind(null, s), 50);
-
-		function animate(stop) {
+		interval = setInterval(() => {
 			i += 1;
 
-			if (i > stop) {
+			if (i > s) {
 				clearInterval(interval);
 				resolve();
 			} else {
@@ -415,10 +405,6 @@ const animateComponent = (ctx, type, cell, ent) => {
 								ctx.fillRect(0, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
 								break;
 							}
-							default:
-							{
-								break;
-							}
 						}
 						break;
 					}
@@ -445,78 +431,73 @@ const animateComponent = (ctx, type, cell, ent) => {
 								ctx.fillRect(50 - i, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
 								break;
 							}
-							default:
-							{
-								break;
-							}
 						}
 						break;
 					}
-					default:
-					{
-						break;
-					}
 				}
 			}
-		}
+		}, 50);
 	});
 };
 
-const animateElement = async (row, column, ent) => {
-	const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
-	const cell = document.getElementById(`cell-animation-${row}-${column}`);
+const animateElement = (row, column, ent) => {
+	return new Promise(async (resolve) => {
+		const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
+		const cell = document.getElementById(`cell-animation-${row}-${column}`);
 
-	if (cell) {
-		ctx = cell.getContext('2d');
-		ctx.fillStyle = 'lightblue';
+		if (cell) {
+			ctx = cell.getContext('2d');
+			ctx.fillStyle = 'lightblue';
 
-		switch (element.type) {
-			case 0:
-			{
-				await animateComponent(ctx, 'pump', cell, element.direction);
-				await animateComponent(ctx, 'pipe-out', cell, element.direction);
-				
-				const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
-				animateElement(nextRow, nextColumn, nextEnt);
-				break;
-			}
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			{
-				const animatePromises = [];
-				const nextPromises = [];
+			switch (element.type) {
+				case 0:
+				{
+					await Promise.all([
+						animateComponent(ctx, 'pump', cell, element.direction),
+						animateComponent(ctx, 'pipe-out', cell, element.direction),
+					]);
+					
+					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
 
-				updateElementsMap(row, column, element.type, element.direction, true);
-
-				await animateComponent(ctx, 'pipe-in', cell, ent);
-
-				for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-					if (out !== ent) {
-						animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out) || null);
-					}
+					animateElement(nextRow, nextColumn, nextEnt);
+					break;
 				}
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				{
+					const animatePromises = [];
+					const nextPromises = [];
 
-				await Promise.all(animatePromises);
+					updateElementsMap(row, column, element.type, element.direction, true);
 
-				for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-					if (out !== ent) {
-						const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
-						nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+					animateComponent(ctx, 'pipe-in', cell, ent);
+					
+					for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
+						if (out !== ent) {
+							animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out) || null);
+						}
 					}
-				}
 
-				await Promise.all(nextPromises);
-				break;
+					await Promise.all(animatePromises);
+
+					for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
+						if (out !== ent) {
+							const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
+							nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+						}
+					}
+
+					await Promise.all(nextPromises);
+					break;
+				}
 			}
-			default:
-			{
-				break;
-			}
+
+			resolve();
 		}
-	}
+	});
 };
 
 const getNextElement = (row, column, ent) => {
@@ -551,10 +532,6 @@ const getNextElement = (row, column, ent) => {
 			nextRow = row;
 			nextColumn = column - 1;
 			nextEnt = 1;
-			break;
-		}
-		default:
-		{
 			break;
 		}
 	}
