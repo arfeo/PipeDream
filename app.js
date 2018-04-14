@@ -238,7 +238,8 @@ const drawStartPoint = () => {
 		globals.startPoint.position.row,
 		globals.startPoint.position.column,
 		0,
-		globals.startPoint.direction
+		globals.startPoint.direction,
+		false,
 	);
 };
 
@@ -306,7 +307,7 @@ const pushNewExpectedElement = () => {
 	drawExpectedElements();
 };
 
-const updateElementsMap = (row, column, type, direction) => {
+const updateElementsMap = (row, column, type, direction, active) => {
 	globals.elementsMap = [
 		...globals.elementsMap.filter(e => JSON.stringify({ row, column }) !== JSON.stringify(e.position)),
 		{
@@ -316,12 +317,17 @@ const updateElementsMap = (row, column, type, direction) => {
 			},
 			type,
 			direction,
+			active,
 		},
 	];
 };
 
 const onBoardCellClick = (row, column) => {
-	if (JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
+	const searchCell = globals.elementsMap.filter(e => {
+		return JSON.stringify({ row, column }) === JSON.stringify(e.position);
+	})[0];
+
+	if ((!searchCell || (searchCell && searchCell.active === false)) && JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
 		const currentCell = document.getElementById(`cell-${row}-${column}`);
 		const nextElement = globals.expectedElements[0];
 			
@@ -331,7 +337,7 @@ const onBoardCellClick = (row, column) => {
 		drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
 		currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
 
-		updateElementsMap(row, column, globals.expectedElements[0].type, globals.expectedElements[0].direction);
+		updateElementsMap(row, column, globals.expectedElements[0].type, globals.expectedElements[0].direction, false);
 
 		globals.expectedElements.shift();
 		pushNewExpectedElement();
@@ -460,51 +466,55 @@ const animateElement = async (row, column, ent) => {
 	const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
 	const cell = document.getElementById(`cell-animation-${row}-${column}`);
 
-	ctx = cell.getContext('2d');
-	ctx.fillStyle = 'lightblue';
+	if (cell) {
+		ctx = cell.getContext('2d');
+		ctx.fillStyle = 'lightblue';
 
-	switch (element.type) {
-		case 0:
-		{
-			await animateComponent(ctx, 'pump', cell, element.direction);
-			await animateComponent(ctx, 'pipe-out', cell, element.direction);
-			
-			const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
-			animateElement(nextRow, nextColumn, nextEnt);
-			break;
-		}
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		{
-			const animatePromises = [];
-			const nextPromises = [];
-
-			await animateComponent(ctx, 'pipe-in', cell, ent);
-
-			for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-				if (out !== ent) {
-					animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out) || null);
-				}
+		switch (element.type) {
+			case 0:
+			{
+				await animateComponent(ctx, 'pump', cell, element.direction);
+				await animateComponent(ctx, 'pipe-out', cell, element.direction);
+				
+				const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
+				animateElement(nextRow, nextColumn, nextEnt);
+				break;
 			}
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			{
+				const animatePromises = [];
+				const nextPromises = [];
 
-			await Promise.all(animatePromises);
+				updateElementsMap(row, column, element.type, element.direction, true);
 
-			for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
-				if (out !== ent) {
-					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
-					nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+				await animateComponent(ctx, 'pipe-in', cell, ent);
+
+				for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
+					if (out !== ent) {
+						animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out) || null);
+					}
 				}
-			}
 
-			await Promise.all(nextPromises);
-			break;
-		}
-		default:
-		{
-			break;
+				await Promise.all(animatePromises);
+
+				for (out of constants.elementsSpec[element.type].outlets[element.direction]) {
+					if (out !== ent) {
+						const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
+						nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+					}
+				}
+
+				await Promise.all(nextPromises);
+				break;
+			}
+			default:
+			{
+				break;
+			}
 		}
 	}
 };
@@ -549,7 +559,9 @@ const getNextElement = (row, column, ent) => {
 		}
 	}
 
-	if (globals.elementsMap.filter(e => JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position)).length > 0) {
+	if (globals.elementsMap.filter((e) => {
+		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position) && e.active === false
+	}).length > 0) {
 		return {
 			nextRow,
 			nextColumn,
