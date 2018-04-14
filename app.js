@@ -4,6 +4,7 @@ const globals = {
 		position: {},
 	},
 	elementsMap: [],
+	animationSpeed: 30,
 };
 
 const constants = {
@@ -219,8 +220,8 @@ const drawStartPoint = () => {
 
 	// Draw start point
 	const startCell = document.getElementById(`cell-${globals.startPoint.position.row}-${globals.startPoint.position.column}`);
-	
-	ctx = startCell.getContext('2d');
+	const ctx = startCell.getContext('2d');
+
 	ctx.fillStyle = 'black';
 	ctx.fillRect(startCell.width / 2 - startCell.width / 8, 0, startCell.width / 4, startCell.height / 2);
 	ctx.beginPath();
@@ -235,9 +236,9 @@ const drawStartPoint = () => {
 	startCell.style.transform = `rotate(${globals.startPoint.direction * 90}deg)`;
 
 	updateElementsMap(
+		0,
 		globals.startPoint.position.row,
 		globals.startPoint.position.column,
-		0,
 		globals.startPoint.direction,
 		false,
 	);
@@ -246,8 +247,8 @@ const drawStartPoint = () => {
 const drawExpectedElements = () => {
 	for (el in globals.expectedElements) {
 		const expectedElement = document.getElementById(`element-${el}`);
-		
-		ctx = expectedElement.getContext('2d');
+		const ctx = expectedElement.getContext('2d');
+
 		ctx.fillStyle = 'white';
 
 		drawElementByType(globals.expectedElements[el].type, ctx, expectedElement);
@@ -303,7 +304,7 @@ const pushNewExpectedElement = () => {
 	drawExpectedElements();
 };
 
-const updateElementsMap = (row, column, type, direction, active) => {
+const updateElementsMap = (type, row, column, direction, locked) => {
 	globals.elementsMap = [
 		...globals.elementsMap.filter(e => JSON.stringify({ row, column }) !== JSON.stringify(e.position)),
 		{
@@ -313,7 +314,7 @@ const updateElementsMap = (row, column, type, direction, active) => {
 			},
 			type,
 			direction,
-			active,
+			locked,
 		},
 	];
 };
@@ -323,177 +324,179 @@ const onBoardCellClick = (row, column) => {
 		return JSON.stringify({ row, column }) === JSON.stringify(e.position);
 	})[0];
 
-	if ((!searchCell || (searchCell && searchCell.active === false)) && JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
+	if ((!searchCell || (searchCell && searchCell.locked === false)) && JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
 		const currentCell = document.getElementById(`cell-${row}-${column}`);
 		const nextElement = globals.expectedElements[0];
-			
-		ctx = currentCell.getContext('2d');
+		const ctx = currentCell.getContext('2d');
+
 		ctx.fillStyle = 'black';
 
 		drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
 		currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
 
-		updateElementsMap(row, column, globals.expectedElements[0].type, globals.expectedElements[0].direction, false);
+		updateElementsMap(globals.expectedElements[0].type, row, column, globals.expectedElements[0].direction, false);
 
 		globals.expectedElements.shift();
 		pushNewExpectedElement();
 	}
 };
 
-const animateComponent = (ctx, type, cell, ent) => {
-	return new Promise((resolve) => {
-		let interval = null;
-		let i = 0;
-		let s = 0;
+const animateComponent = (type, row, column, ent) => {
+	return new Promise((resolve, reject) => {
+		const cell = document.getElementById(`cell-animation-${row}-${column}`);
 
-		switch (type) {
-			case 'pump':
-			{
-				i = 13;
-				s = 21;
-				break;
-			}
-			case 'pipe-out':
-			{
-				i = 10;
-				s = 50;
-				break;
-			}
-			case 'pipe-in':
-			{
-				i = 0;
-				s = 59;
-				break;
-			}
-		}
-
-		interval = setInterval(() => {
-			i += 1;
-
-			if (i > s) {
-				clearInterval(interval);
-				resolve();
-			} else {
-				switch (type) {
-					case 'pump':
-					{
-						ctx.beginPath();
-						ctx.arc(cell.width / 2, cell.height / 2, i, 0, 2 * Math.PI, false);
-						ctx.fill();
-						break;
-					}
-					case 'pipe-in':
-					{
-						switch (ent) {
-							case 0:
-							{
-								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 0, cell.width / 4 - 8, i);
-								break;
-							}
-							case 1:
-							{
-								ctx.fillRect(100 - i, cell.height / 2 - cell.height / 8 + 4, 100, cell.height / 4 - 8);
-								break;
-							}
-							case 2:
-							{
-								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 100 - i, cell.width / 4 - 8, 100 - i);
-								break;
-							}
-							case 3:
-							{
-								ctx.fillRect(0, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
-								break;
-							}
-						}
-						break;
-					}
-					case 'pipe-out':
-					{
-						switch (ent) {
-							case 0:
-							{
-								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50 - i, cell.width / 4 - 8, i);
-								break;
-							}
-							case 1:
-							{
-								ctx.fillRect(50, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
-								break;
-							}
-							case 2:
-							{
-								ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50, cell.width / 4 - 8, i);
-								break;
-							}
-							case 3:
-							{
-								ctx.fillRect(50 - i, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
-								break;
-							}
-						}
-						break;
-					}
+		if (cell) {
+			let interval = null;
+			let i = 0;
+			let s = 0;
+		
+			switch (type) {
+				case 'pump':
+				{
+					i = 13;
+					s = 21;
+					break;
+				}
+				case 'pipe-out':
+				{
+					i = 10;
+					s = 50;
+					break;
+				}
+				case 'pipe-in':
+				{
+					i = 0;
+					s = 59;
+					break;
 				}
 			}
-		}, 30);
+
+			interval = setInterval(() => {
+				i += 1;
+
+				if (i > s) {
+					clearInterval(interval);
+					resolve();
+				} else {
+					const ctx = cell.getContext('2d');
+					
+					ctx.fillStyle = 'lightblue';
+
+					switch (type) {
+						case 'pump':
+						{
+							ctx.beginPath();
+							ctx.arc(cell.width / 2, cell.height / 2, i, 0, 2 * Math.PI, false);
+							ctx.fill();
+							break;
+						}
+						case 'pipe-in':
+						{
+							switch (ent) {
+								case 0:
+								{
+									ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 0, cell.width / 4 - 8, i);
+									break;
+								}
+								case 1:
+								{
+									ctx.fillRect(100 - i, cell.height / 2 - cell.height / 8 + 4, 100, cell.height / 4 - 8);
+									break;
+								}
+								case 2:
+								{
+									ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 100 - i, cell.width / 4 - 8, 100 - i);
+									break;
+								}
+								case 3:
+								{
+									ctx.fillRect(0, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
+									break;
+								}
+							}
+							break;
+						}
+						case 'pipe-out':
+						{
+							switch (ent) {
+								case 0:
+								{
+									ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50 - i, cell.width / 4 - 8, i);
+									break;
+								}
+								case 1:
+								{
+									ctx.fillRect(50, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
+									break;
+								}
+								case 2:
+								{
+									ctx.fillRect(cell.width / 2 - cell.width / 8 + 4, 50, cell.width / 4 - 8, i);
+									break;
+								}
+								case 3:
+								{
+									ctx.fillRect(50 - i, cell.height / 2 - cell.height / 8 + 4, i, cell.height / 4 - 8);
+									break;
+								}
+							}
+							break;
+						}
+					}
+				}
+			}, globals.animationSpeed);
+		}
 	});
 };
 
 const animateElement = (row, column, ent) => {
 	return new Promise(async (resolve) => {
-		const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
-		const cell = document.getElementById(`cell-animation-${row}-${column}`);
+		const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0] || {};
+		
+		switch (element.type) {
+			case 0:
+			{
+				await Promise.all([
+					animateComponent('pump', row, column, element.direction),
+					animateComponent('pipe-out', row, column, element.direction),
+				]);
+				
+				const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
 
-		if (cell) {
-			ctx = cell.getContext('2d');
-			ctx.fillStyle = 'lightblue';
-
-			switch (element.type) {
-				case 0:
-				{
-					await Promise.all([
-						animateComponent(ctx, 'pump', cell, element.direction),
-						animateComponent(ctx, 'pipe-out', cell, element.direction),
-					]);
-					
-					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
-
-					animateElement(nextRow, nextColumn, nextEnt);
-					break;
-				}
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5:
-				{
-					const animatePromises = [];
-					const nextPromises = [];
-
-					updateElementsMap(row, column, element.type, element.direction, true);
-
-					animateComponent(ctx, 'pipe-in', cell, ent);
-					
-					for (out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
-						animatePromises.push(animateComponent(ctx, 'pipe-out', cell, out) || null);
-					}
-
-					await Promise.all(animatePromises);
-
-					for (out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
-						const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
-						
-						nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
-					}
-
-					await Promise.all(nextPromises);
-					break;
-				}
+				await animateElement(nextRow, nextColumn, nextEnt);
+				break;
 			}
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			{
+				const animatePromises = [];
+				const nextPromises = [];
 
-			resolve();
+				updateElementsMap(element.type, row, column, element.direction, true);
+
+				await animateComponent('pipe-in', row, column, ent);
+				
+				for (const out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
+					animatePromises.push(animateComponent('pipe-out', row, column, out));
+				}
+
+				await Promise.all(animatePromises);
+
+				for (const out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
+					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
+					
+					nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+				}
+
+				await Promise.all(nextPromises);
+				break;
+			}
 		}
+
+		resolve();
 	});
 };
 
@@ -534,7 +537,7 @@ const getNextElement = (row, column, ent) => {
 	}
 
 	if (globals.elementsMap.filter((e) => {
-		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position) && e.active === false
+		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position) && e.locked === false
 	}).length > 0) {
 		return {
 			nextRow,
