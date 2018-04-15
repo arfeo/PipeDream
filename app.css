@@ -7,8 +7,11 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	width: 100vw;
 	height: 100vh;
 	background-color: black;
+	font-family: 'Helvetica', 'Arial', 'sans-serif';
+	font-size: 2.5vmin;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -18,14 +21,40 @@ body {
 }
 
 button {
-	outline: none;
+	padding: 1vmin;
 	border: 0;
+	font-size: 2.5vmin;
+	outline: none;
 	cursor: pointer;
+}
+
+input {
+	width: calc(100% - 2vmin);
+	padding: 1vmin;
+	outline: none;
+	font-size: 2.5vmin;
 }
 
 #root {
 	display: flex;
 	flex-direction: row;
+}
+
+.modal {
+	width: 50vmin;
+	height: auto;
+	padding: 2vmin;
+	background-color: lightgrey;
+}
+
+.label {
+	margin-bottom: 1vmin;
+}
+
+.submit-block {
+	display: flex;
+	justify-content: center;
+	margin-top: 1vmin;
 }
 
 .board {
@@ -99,8 +128,6 @@ button {
 .reset-game-button {
 	width: 5vmin;
 	max-width: 5vmin;
-	padding: 1vmin;
-	font-size: 2.5vmin;
 }
 
 @media screen and (orientation:portrait) and (max-device-width: 900px) {

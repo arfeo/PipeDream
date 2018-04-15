@@ -1,4 +1,5 @@
 const globals = {
+	userName: getData('username') || '',
 	expectedElements: [],
 	startPoint: {
 		position: {},
@@ -35,8 +36,8 @@ const constants = {
 			 *			| |
 			 *			| |
 			 *			|_|
-			 *				
-			 *			
+			 *
+			 *
 			 */
 
 			type: 2,
@@ -46,11 +47,11 @@ const constants = {
 		},
 		{
 			/*
-			 *			| |
+			 *				| |
 			 *		____| |____
 			 *		____   ____
-			 *			| |
-			 *			| |
+			 *				| |
+			 *				| |
 			 */
 
 			type: 3,
@@ -60,7 +61,7 @@ const constants = {
 		},
 		{
 			/*
-			 *			| |
+			 *				| |
 			 *		____| |____
 			 *		___________
 			 *
@@ -93,75 +94,112 @@ const randomNum = (min = 1, max = 1) => {
 	return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
-const createWorkspace = () => {
+function getData(item) {
+  try {
+    const data = JSON.parse(localStorage.getItem(item));
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+function saveData(item, data) {
+  try {
+    localStorage.setItem(item, JSON.stringify(data));
+    return data;
+  } catch (error) {
+  	console.error(error);
+  }
+};
+
+const setUsernameModal = () => {
 	const appRoot = document.getElementById('root');
-	const appBoard = document.createElement('div');
-	const appToolbox = document.createElement('div');
-	const toolboxNext = document.createElement('div');
-	const toolboxButtons = document.createElement('div');
-	const openValveButton = document.createElement('button');
-	const resetGameButton = document.createElement('button');
+	const userNameModal = document.createElement('div');
+
+	// Reset app root element
+	appRoot.innerHTML = '';
+
+	userNameModal.className = 'modal';
+	userNameModal.innerHTML = (`
+		<div class="label">
+			Set user name:
+		</div>
+		<div>
+			<input id="username-input" type="text" value="" />
+		</div>
+		<div class="submit-block">
+			<button id="username-contimue">Continue</button>
+		</div>
+	`);
+
+	appRoot.appendChild(userNameModal);
+
+	document.getElementById('username-contimue').addEventListener('click', () => {
+		const userName = document.getElementById('username-input').value;
+
+		if (userName !== '') {
+			saveData('username', userName);
+			startNewGame();
+		}
+	});
+};
+
+const createGameWorkspace = () => {
+	const appRoot = document.getElementById('root');
+	const gameBoard = document.createElement('div');
+	const gameToolbox = document.createElement('div');
+	const toolboxExpected = document.createElement('div');
+
+	// Reset app root element
+	appRoot.innerHTML = '';
 
 	// Create the workspace
-	appBoard.className = 'board';
-	appToolbox.className = 'toolbox';
-	toolboxNext.className = 'toolbox__expected';
-	toolboxButtons.className = 'toolbox__buttons';
-	openValveButton.className = 'open-valve-button';
-	resetGameButton.className = 'reset-game-button';
+	gameBoard.className = 'board';
+	gameToolbox.className = 'toolbox';
+	gameToolbox.innerHTML = (`
+		<div class="toolbox__buttons">
+			<button id="open-valve-button" class="open-valve-button">▶</button>
+			<button id="reset-game-button" class="reset-game-button">⟲</button>
+		</div>
+	`);
+	toolboxExpected.className = 'toolbox__expected';
 
-	appRoot.appendChild(appBoard);
-	appRoot.appendChild(appToolbox);
-	appToolbox.appendChild(toolboxNext);
-	appToolbox.appendChild(toolboxButtons);
+	appRoot.appendChild(gameBoard);
+	appRoot.appendChild(gameToolbox);
+	gameToolbox.appendChild(toolboxExpected);
 
 	// Create game board cell containers
 	for (let row = 1; row <= 7; row += 1) {
 		for (let column = 1; column <= 10; column += 1) {
 			const boardCellContainer = document.createElement('div');
-			const boardCell = document.createElement('canvas');
-			const boardCellAnimation = document.createElement('canvas');
 
 			boardCellContainer.className = 'board__cell-container';
+			boardCellContainer.innerHTML = (`
+				<canvas id="cell-${row}-${column}" class="board__cell" width="100" height="100"></canvas>
+				<canvas id="cell-animation-${row}-${column}" class="board__cell-animation" width="100" height="100"></canvas>
+			`);
 
-			boardCell.id = `cell-${row}-${column}`;
-			boardCell.className = 'board__cell';
-			boardCell.width = 100;
-			boardCell.height = 100;
+			gameBoard.appendChild(boardCellContainer);
 
-			boardCellAnimation.id = `cell-animation-${row}-${column}`;
-			boardCellAnimation.className = 'board__cell-animation';
-			boardCellAnimation.width = 100;
-			boardCellAnimation.height = 100;
-
-			appBoard.appendChild(boardCellContainer);
-			boardCellContainer.appendChild(boardCell);
-			boardCellContainer.appendChild(boardCellAnimation);
-
-			boardCellAnimation.addEventListener('click', () => onBoardCellClick(row, column));
+			document.getElementById(`cell-animation-${row}-${column}`)
+				.addEventListener('click', () => onBoardCellClick(row, column));
 		}
 	}
 
 	// Create expected elements view
 	for (let i = 0; i < 5; i += 1) {
-		const toolboxNextElement = document.createElement('canvas');
+		const toolboxExpectedElement = document.createElement('canvas');
 
-		toolboxNextElement.id = `element-${i}`;
-		toolboxNextElement.className = 'toolbox__expected-element';
-		toolboxNextElement.width = 100;
-		toolboxNextElement.height = 100;
+		toolboxExpectedElement.id = `element-${i}`;
+		toolboxExpectedElement.className = 'toolbox__expected-element';
+		toolboxExpectedElement.width = 100;
+		toolboxExpectedElement.height = 100;
 
-		toolboxNext.appendChild(toolboxNextElement);
+		toolboxExpected.appendChild(toolboxExpectedElement);
 	}
 
-	// Create open valve button
-	openValveButton.innerHTML = '▶';
-	toolboxButtons.appendChild(openValveButton);
-	openValveButton.addEventListener('click', onOpenValve);
-
-	resetGameButton.innerHTML = '⟲';
-	toolboxButtons.appendChild(resetGameButton);
-	resetGameButton.addEventListener('click', onResetGame);
+	document.getElementById('open-valve-button').addEventListener('click', onOpenValve);
+	document.getElementById('reset-game-button').addEventListener('click', onResetGame);
 };
 
 const clearGameState = () => {
@@ -196,7 +234,7 @@ const setNewGameState = () => {
 const drawStartPoint = () => {
 	globals.startPoint.position.row = randomNum(1, 7);
 	globals.startPoint.position.column = randomNum(1, 10);
-	
+
 	// Generate start point
 	let isStartPointChosen = false;
 
@@ -238,7 +276,7 @@ const drawStartPoint = () => {
 					}
 				}
 				break;
-			}	
+			}
 			default:
 			{
 				if (globals.startPoint.position.column === 1) {
@@ -388,7 +426,7 @@ const animateComponent = (type, row, column, ent) => {
 			let interval = null;
 			let i = 0;
 			let s = 0;
-		
+
 			switch (type) {
 				case 'pump':
 				{
@@ -418,7 +456,7 @@ const animateComponent = (type, row, column, ent) => {
 					resolve();
 				} else {
 					const ctx = cell.getContext('2d');
-					
+
 					ctx.fillStyle = 'lightblue';
 
 					switch (type) {
@@ -492,7 +530,7 @@ const animateElement = (row, column, ent) => {
 	return new Promise(async (resolve) => {
 		if (!globals.isGameOver) {
 			const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0] || {};
-			
+
 			switch (element.type) {
 				case 0:
 				{
@@ -500,7 +538,7 @@ const animateElement = (row, column, ent) => {
 						animateComponent('pump', row, column, element.direction),
 						animateComponent('pipe-out', row, column, element.direction),
 					]);
-					
+
 					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
 
 					await animateElement(nextRow, nextColumn, nextEnt);
@@ -521,7 +559,7 @@ const animateElement = (row, column, ent) => {
 
 					const spec = constants.elementsSpec.filter(e => e.type === element.type)[0];
 					const outlets = spec.outlets[element.direction].filter(e => e !== ent);
-					
+
 					for (const out of outlets) {
 						animatePromises.push(animateComponent('pipe-out', row, column, out));
 					}
@@ -533,7 +571,7 @@ const animateElement = (row, column, ent) => {
 
 						if (next) {
 							const { nextRow, nextColumn, nextEnt } = next;
-							
+
 							nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
 						} else {
 							globals.isGameOver = true;
@@ -605,8 +643,8 @@ const onOpenValve = () => {
 };
 
 const onResetGame = () => {
-	if (globals.elementsMap.length > 1) {
-		if (!confirm('Are you sure you want to reset the game?')) {
+	if (globals.elementsMap.length > 1 && !globals.isGameOver) {
+		if (!confirm('Are you sure you want start a new game?')) {
 			return;
 		}
 	}
@@ -615,10 +653,14 @@ const onResetGame = () => {
 };
 
 const startNewGame = () => {
-	createWorkspace();
+	createGameWorkspace();
 	setNewGameState();
 };
 
 window.onload = () => {
-	startNewGame();
+	if (globals.userName === '') {
+		setUsernameModal();
+	} else {
+		startNewGame();
+	}
 }
