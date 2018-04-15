@@ -10,11 +10,11 @@ const constants = {
 	elementsSpec: [
 		{
 			/*
-			 *       _____
-			 *      |     |
-			 *      |_   _|
-			 *        | |
-			 *        | |
+			 *       ______
+			 *      |      |
+			 *      |_    _|
+			 *        |  |
+			 *        |  |
 			 */
 			type: 0,
 			outlets: [
@@ -26,11 +26,11 @@ const constants = {
 		},
 		{
 			/*
-			 *        | |
-			 *        | |
-			 *        | |
-			 *        | |
-			 *        | |
+			 *        |  |
+			 *        |  |
+			 *        |  |
+			 *        |  |
+			 *        |  |
 			 */
 			type: 1,
 			outlets: [
@@ -42,9 +42,9 @@ const constants = {
 		},
 		{
 			/*
-			 *        | |
-			 *        | |
-			 *        |_|
+			 *        |  |
+			 *        |  |
+			 *        |__|
 			 *
 			 *
 			 */
@@ -58,11 +58,11 @@ const constants = {
 		},
 		{
 			/*
-			 *        | |
-			 *    ____| |____
-			 *    ____   ____
-			 *        | |
-			 *        | |
+			 *        |  |
+			 *    ____|  |____
+			 *    ____    ____
+			 *        |  |
+			 *        |  |
 			 */
 			type: 3,
 			outlets: [
@@ -74,9 +74,9 @@ const constants = {
 		},
 		{
 			/*
-			 *        | |
-			 *    ____| |____
-			 *    ___________
+			 *        |  |
+			 *    ____|  |____
+			 *    ____________
 			 *
 			 *
 			 */
@@ -90,9 +90,9 @@ const constants = {
 		},
 		{
 			/*
-			 *        | |
-			 *        | |____
-			 *        |______
+			 *        |  |
+			 *        |  |____
+			 *        |_______
 			 *
 			 *
 			 */
@@ -493,10 +493,7 @@ const updateElementsMap = (type, row, column, direction, locked) => {
 	globals.elementsMap = [
 		...globals.elementsMap.filter(e => JSON.stringify({ row, column }) !== JSON.stringify(e.position)),
 		{
-			position: {
-				row,
-				column,
-			},
+			position: { row, column },
 			type,
 			direction,
 			locked,
@@ -505,9 +502,7 @@ const updateElementsMap = (type, row, column, direction, locked) => {
 };
 
 const onBoardCellClick = (row, column) => {
-	const searchCell = globals.elementsMap.filter(e => {
-		return JSON.stringify({ row, column }) === JSON.stringify(e.position);
-	})[0];
+	const searchCell = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
 
 	if ((!searchCell || (searchCell && searchCell.locked === false)) && JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
 		const currentCell = document.getElementById(`cell-${row}-${column}`);
@@ -652,11 +647,7 @@ const animateElement = (row, column, ent) => {
 					await animateElement(nextRow, nextColumn, nextEnt);
 					break;
 				}
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5:
+				default:
 				{
 					const animatePromises = [];
 					const nextPromises = [];
@@ -736,11 +727,7 @@ const getNextElement = (row, column, ent) => {
 	if (globals.elementsMap.filter((e) => {
 		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position) && e.locked === false
 	}).length > 0) {
-		return {
-			nextRow,
-			nextColumn,
-			nextEnt,
-		};
+		return { nextRow, nextColumn, nextEnt };
 	}
 
 	return false;
@@ -776,7 +763,7 @@ const startNewGame = () => {
 };
 
 window.onload = () => {
-	if (globals.userName === '') {
+	if (!globals.userName) {
 		displayUsernameModal();
 	} else {
 		displayMainMenuModal();
