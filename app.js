@@ -1,14 +1,3 @@
-const globals = {
-	userName: getData('username') || '',
-	expectedElements: [],
-	startPoint: {
-		position: {},
-	},
-	elementsMap: [],
-	animationSpeed: 20,
-	isGameOver: false,
-};
-
 /*
  *	Directions:
  *	0 -> N
@@ -98,6 +87,33 @@ const constants = {
 			],
 		},
 	],
+	difficultyMatrix: [
+		{
+			speed: 100,
+		},
+		{
+			speed: 60,
+		},
+		{
+			speed: 20,
+		},
+	],
+};
+
+const storageData = {
+	username: getData('username') || '',
+	difficulty: parseInt(getData('difficulty')) || 0,
+};
+
+const globals = {
+	userName: storageData.username,
+	expectedElements: [],
+	startPoint: {
+		position: {},
+	},
+	elementsMap: [],
+	gameDifficulty: storageData.difficulty,
+	isGameOver: false,
 };
 
 function getData(item) {
@@ -153,6 +169,39 @@ const displayUsernameModal = () => {
 	});
 };
 
+const displayDifficultyModal = () => {
+	const appRoot = document.getElementById('root');
+	const difficultyModal = document.createElement('div');
+
+	// Reset app root element
+	appRoot.innerHTML = '';
+
+	difficultyModal.className = 'modal buttons-list small';
+	difficultyModal.innerHTML = (`
+		<div>
+			<button difficulty="0" class="fullwidth">Easy</button>
+		</div>
+		<div>
+			<button difficulty="1" class="fullwidth">Hard</button>
+		</div>
+		<div>
+			<button difficulty="2" class="fullwidth">Nightmare</button>
+		</div>
+	`);
+
+	appRoot.appendChild(difficultyModal);
+
+	[...document.getElementsByTagName('button')].map((btn) => {
+		btn.addEventListener('click', (e) => {
+			const difficulty = parseInt(e.currentTarget.getAttribute('difficulty'));
+
+			globals.gameDifficulty = difficulty;
+			saveData('difficulty', difficulty);
+			displayMainMenuModal();
+		});
+	});
+};
+
 const displayMainMenuModal = () => {
 	const appRoot = document.getElementById('root');
 	const mainMenuModal = document.createElement('div');
@@ -160,13 +209,13 @@ const displayMainMenuModal = () => {
 	// Reset app root element
 	appRoot.innerHTML = '';
 
-	mainMenuModal.className = 'modal main-menu small';
+	mainMenuModal.className = 'modal buttons-list small';
 	mainMenuModal.innerHTML = (`
 		<div>
 			<button id="start-new-game" class="fullwidth">Play</button>
 		</div>
 		<div>
-			<button class="fullwidth">Choose difficulty</button>
+			<button id="display-difficulty-modal" class="fullwidth">Choose difficulty</button>
 		</div>
 		<div>
 			<button id="display-username-modal" class="fullwidth">Change username</button>
@@ -178,13 +227,10 @@ const displayMainMenuModal = () => {
 
 	appRoot.appendChild(mainMenuModal);
 
-	document.getElementById('start-new-game').addEventListener('click', () => {
-		startNewGame();
-	});
-	document.getElementById('display-username-modal').addEventListener('click', () => {
-		displayUsernameModal();
-	});
-}
+	document.getElementById('start-new-game').addEventListener('click', startNewGame);
+	document.getElementById('display-difficulty-modal').addEventListener('click', displayDifficultyModal);
+	document.getElementById('display-username-modal').addEventListener('click', displayUsernameModal);
+};
 
 const createGameWorkspace = () => {
 	const appRoot = document.getElementById('root');
@@ -565,7 +611,7 @@ const animateComponent = (type, row, column, ent) => {
 						}
 					}
 				}
-			}, globals.animationSpeed);
+			}, constants.difficultyMatrix[globals.gameDifficulty].speed);
 		}
 	});
 };

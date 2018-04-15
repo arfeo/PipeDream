@@ -65,10 +65,10 @@ input {
 .submit-block {
 	display: flex;
 	justify-content: center;
-	margin-top: 1vmin;
+	margin-top: 2vmin;
 }
 
-.main-menu > div:not(:last-child) {
+.buttons-list > div:not(:last-child) {
 	margin-bottom: 2vmin;
 }
 
