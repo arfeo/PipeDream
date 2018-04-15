@@ -93,6 +93,15 @@ input {
 	color: white;
 }
 
+.status-panel span {
+	margin-right: .5vmin;
+	opacity: .7;
+}
+
+.status-panel strong {
+	opacity: 1;
+}
+
 .board {
 	display: flex;
 	flex-wrap: wrap;

@@ -266,9 +266,9 @@ const createGameWorkspace = () => {
 	// Create the workspace
 	gameStatusPanel.className = 'status-panel';
 	gameStatusPanel.innerHTML = (`
-		<div>Score: <strong>0</strong></div>
-		<div>Time: <strong>0:00</strong></div>
-		<div>Difficulty: <strong>${constants.difficultyMatrix[globals.gameDifficulty].name}</strong></div>
+		<div><span>Score:</span><strong>0</strong></div>
+		<div><span>Time:</span><strong>0:00</strong></div>
+		<div><span>Difficulty:</span><strong>${constants.difficultyMatrix[globals.gameDifficulty].name}</strong></div>
 	`);
 	gameBoard.className = 'board';
 	gameToolbox.className = 'toolbox';
