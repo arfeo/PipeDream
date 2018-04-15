@@ -1,8 +1,8 @@
 @keyframes glowing {
-  0% { box-shadow: 0 0 -2vmin yellow; }
-  40% { box-shadow: 0 0 4.5vmin yellow; }
-  60% { box-shadow: 0 0 4.5vmin yellow; }
-  100% { box-shadow: 0 0 -2vmin yellow; }
+  0% { box-shadow: 0 0 -2vmin gold; }
+  40% { box-shadow: 0 0 4.5vmin gold; }
+  60% { box-shadow: 0 0 4.5vmin gold; }
+  100% { box-shadow: 0 0 -2vmin gold; }
 }
 
 * {
@@ -124,7 +124,7 @@ input {
 	height: 73vmin;
 	margin-left: 1vmin;
 	padding: 2vmin 0;
-	background-color: red;
+	background-color: crimson;
 }
 
 .toolbox__expected {
@@ -139,7 +139,7 @@ input {
 	width: calc(11vmin - 2px);
 	height: calc(11vmin - 2px);
 	border: 1px solid white;
-	opacity: .8;
+	opacity: .7;
 }
 
 .toolbox__expected-element:nth-child(1) {
