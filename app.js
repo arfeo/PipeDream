@@ -605,6 +605,12 @@ const onOpenValve = () => {
 };
 
 const onResetGame = () => {
+	if (globals.elementsMap.length > 1) {
+		if (!confirm('Are you sure you want to reset the game?')) {
+			return;
+		}
+	}
+
 	setNewGameState();
 };
 
