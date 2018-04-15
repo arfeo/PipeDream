@@ -109,14 +109,17 @@ const constants = {
 		{
 			name: 'Easy',
 			speed: 100,
+			time: 180,
 		},
 		{
 			name: 'Hard',
 			speed: 60,
+			time: 120,
 		},
 		{
 			name: 'Nightmare',
 			speed: 20,
+			time: 60,
 		},
 	],
 };
@@ -135,6 +138,7 @@ const globals = {
 	elementsMap: [],
 	gameDifficulty: storageData.difficulty,
 	isGameOver: false,
+	gameTimer: null,
 };
 
 function getData(item) {
@@ -154,6 +158,27 @@ function saveData(item, data) {
   	console.error(error);
   }
 }
+
+const timeTicker = (ticker) => {
+	const gameTimeTicker = document.getElementById('game-time-ticker');
+
+	if (gameTimeTicker) {
+		const min = parseInt(ticker / 60);
+		const sec = parseInt(ticker - min * 60);
+
+		if (min === 0 && sec === 0) {
+			clearTimeout(globals.gameTimer);
+
+			onOpenValve();
+		}
+
+		gameTimeTicker.innerHTML = (min < 10 ? `0${min}` : min) + ':' + (sec < 10 ? `0${sec}` : sec);
+
+		if (ticker > 0) {
+			globals.gameTimer = setTimeout(() => timeTicker(ticker - 1), 1000);
+		}
+	}
+};
 
 const randomNum = (min = 1, max = 1) => {
 	return Math.floor(min + Math.random() * (max + 1 - min));
@@ -267,7 +292,7 @@ const createGameWorkspace = () => {
 	gameStatusPanel.className = 'status-panel';
 	gameStatusPanel.innerHTML = (`
 		<div><span>Score:</span><strong>0</strong></div>
-		<div><span>Time:</span><strong>0:00</strong></div>
+		<div><span>Time:</span><strong id="game-time-ticker"></strong></div>
 		<div><span>Difficulty:</span><strong>${constants.difficultyMatrix[globals.gameDifficulty].name}</strong></div>
 	`);
 	gameBoard.className = 'board';
@@ -326,6 +351,9 @@ const clearGameState = () => {
 	globals.elementsMap = [];
 	globals.startPoint.position = {};
 	globals.isGameOver = false;
+
+	clearTimeout(globals.gameTimer);
+	timeTicker(constants.difficultyMatrix[globals.gameDifficulty].time);
 
 	for (let row = 1; row <= 7; row += 1) {
 		for (let column = 1; column <= 10; column += 1) {
