@@ -4,7 +4,8 @@ const globals = {
 		position: {},
 	},
 	elementsMap: [],
-	animationSpeed: 30,
+	animationSpeed: 20,
+	isGameOver: false,
 };
 
 const constants = {
@@ -152,6 +153,35 @@ const createWorkspace = () => {
 	openValveButton.innerHTML = '▶';
 	appToolbox.appendChild(openValveButton);
 	openValveButton.addEventListener('click', openValve);
+};
+
+const clearGameState = () => {
+	globals.expectedElements = [];
+	globals.elementsMap = [];
+	globals.startPoint.position = {};
+	globals.isGameOver = false;
+
+	for (let row = 1; row <= 7; row += 1) {
+		for (let column = 1; column <= 10; column += 1) {
+			const cell = document.getElementById(`cell-${row}-${column}`);
+			const cellAnimation = document.getElementById(`cell-animation-${row}-${column}`);
+			const ctx = cell.getContext('2d');
+			const ctxAnimation = cellAnimation.getContext('2d');
+
+			ctx.clearRect(0, 0, 100, 100);
+			ctxAnimation.clearRect(0, 0, 100, 100);
+		}
+	}
+};
+
+const setNewGameState = () => {
+	clearGameState();
+
+	for (let i = 0; i < 5; i += 1) {
+		pushNewExpectedElement();
+	}
+
+	drawStartPoint();
 };
 
 const drawStartPoint = () => {
@@ -451,52 +481,64 @@ const animateComponent = (type, row, column, ent) => {
 
 const animateElement = (row, column, ent) => {
 	return new Promise(async (resolve) => {
-		const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0] || {};
-		
-		switch (element.type) {
-			case 0:
-			{
-				await Promise.all([
-					animateComponent('pump', row, column, element.direction),
-					animateComponent('pipe-out', row, column, element.direction),
-				]);
-				
-				const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
-
-				await animateElement(nextRow, nextColumn, nextEnt);
-				break;
-			}
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			{
-				const animatePromises = [];
-				const nextPromises = [];
-
-				updateElementsMap(element.type, row, column, element.direction, true);
-
-				await animateComponent('pipe-in', row, column, ent);
-				
-				for (const out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
-					animatePromises.push(animateComponent('pipe-out', row, column, out));
-				}
-
-				await Promise.all(animatePromises);
-
-				for (const out of constants.elementsSpec[element.type].outlets[element.direction].filter(e => e !== ent)) {
-					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, out);
+		if (!globals.isGameOver) {
+			const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0] || {};
+			
+			switch (element.type) {
+				case 0:
+				{
+					await Promise.all([
+						animateComponent('pump', row, column, element.direction),
+						animateComponent('pipe-out', row, column, element.direction),
+					]);
 					
-					nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
+
+					await animateElement(nextRow, nextColumn, nextEnt);
+					break;
 				}
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				{
+					const animatePromises = [];
+					const nextPromises = [];
 
-				await Promise.all(nextPromises);
-				break;
+					updateElementsMap(element.type, row, column, element.direction, true);
+
+					await animateComponent('pipe-in', row, column, ent);
+
+					const spec = constants.elementsSpec.filter(e => e.type === element.type)[0];
+					const outlets = spec.outlets[element.direction].filter(e => e !== ent);
+					
+					for (const out of outlets) {
+						animatePromises.push(animateComponent('pipe-out', row, column, out));
+					}
+
+					await Promise.all(animatePromises);
+
+					for (const out of outlets) {
+						const next = await getNextElement(row, column, out);
+
+						if (next) {
+							const { nextRow, nextColumn, nextEnt } = next;
+							
+							nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+						} else {
+							globals.isGameOver = true;
+							console.log('GAME OVER!');
+						}
+					}
+
+					await Promise.all(nextPromises);
+					break;
+				}
 			}
-		}
 
-		resolve();
+			resolve();
+		}
 	});
 };
 
@@ -547,7 +589,7 @@ const getNextElement = (row, column, ent) => {
 	}
 
 	return false;
-}
+};
 
 const openValve = () => {
 	animateElement(globals.startPoint.position.row, globals.startPoint.position.column);
@@ -555,11 +597,7 @@ const openValve = () => {
 
 const startNewGame = () => {
 	createWorkspace();
-	drawStartPoint();
-
-	for (let i = 0; i < 5; i += 1) {
-		pushNewExpectedElement();
-	}
+	setNewGameState();
 };
 
 window.onload = () => {
