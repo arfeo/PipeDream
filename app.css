@@ -40,11 +40,22 @@ input {
 	flex-direction: row;
 }
 
+.fullwidth {
+	width: 100%;
+}
+
 .modal {
-	width: 50vmin;
 	height: auto;
 	padding: 2vmin;
 	background-color: lightgrey;
+}
+
+.modal.medium {
+	width: 50vmin;
+}
+
+.modal.small {
+	width: 30vmin;
 }
 
 .label {
@@ -55,6 +66,10 @@ input {
 	display: flex;
 	justify-content: center;
 	margin-top: 1vmin;
+}
+
+.main-menu > div:not(:last-child) {
+	margin-bottom: 2vmin;
 }
 
 .board {
@@ -121,6 +136,7 @@ input {
 .toolbox__buttons {
 	display: flex;
 	justify-content: space-between;
+	flex-wrap: wrap;
 	width: 11vmin;
 }
 
@@ -128,6 +144,10 @@ input {
 .reset-game-button {
 	width: 5vmin;
 	max-width: 5vmin;
+}
+
+.main-menu-button {
+	margin-top: 2vmin;
 }
 
 @media screen and (orientation:portrait) and (max-device-width: 900px) {

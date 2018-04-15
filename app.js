@@ -9,9 +9,24 @@ const globals = {
 	isGameOver: false,
 };
 
+/*
+ *	Directions:
+ *	0 -> N
+ *	1 -> E
+ *	2 -> S
+ *	3 -> W
+ */
+
 const constants = {
 	elementsSpec: [
 		{
+			/*
+			 *       _____
+			 *      |     |
+			 *      |_   _|
+			 *        | |
+			 *        | |
+			 */
 			type: 0,
 			outlets: [
 				[ 0 ], [ 1 ], [ 2 ], [ 3 ],
@@ -19,13 +34,12 @@ const constants = {
 		},
 		{
 			/*
-			 *			| |
-			 *			| |
-			 *			| |
-			 *			| |
-			 *			| |
+			 *        | |
+			 *        | |
+			 *        | |
+			 *        | |
+			 *        | |
 			 */
-
 			type: 1,
 			outlets: [
 				[ 0, 2 ], [ 1, 3 ], [ 2, 0 ], [ 3, 1 ],
@@ -33,13 +47,12 @@ const constants = {
 		},
 		{
 			/*
-			 *			| |
-			 *			| |
-			 *			|_|
+			 *        | |
+			 *        | |
+			 *        |_|
 			 *
 			 *
 			 */
-
 			type: 2,
 			outlets: [
 				[ 0 ], [ 1 ], [ 2 ], [ 3 ],
@@ -47,13 +60,12 @@ const constants = {
 		},
 		{
 			/*
-			 *				| |
-			 *		____| |____
-			 *		____   ____
-			 *				| |
-			 *				| |
+			 *        | |
+			 *    ____| |____
+			 *    ____   ____
+			 *        | |
+			 *        | |
 			 */
-
 			type: 3,
 			outlets: [
 				[ 0, 1, 2, 3 ], [ 1, 2, 3, 0 ], [ 2, 3, 0, 1 ], [ 3, 0, 1, 2 ],
@@ -61,13 +73,12 @@ const constants = {
 		},
 		{
 			/*
-			 *				| |
-			 *		____| |____
-			 *		___________
+			 *        | |
+			 *    ____| |____
+			 *    ___________
 			 *
 			 *
 			 */
-
 			type: 4,
 			outlets: [
 				[ 0, 1, 3 ], [ 0, 1, 2 ], [ 1, 2, 3 ], [ 2, 3, 0 ],
@@ -75,23 +86,18 @@ const constants = {
 		},
 		{
 			/*
-			 *			| |
-			 *			| |____
-			 *			|______
+			 *        | |
+			 *        | |____
+			 *        |______
 			 *
 			 *
 			 */
-
 			type: 5,
 			outlets: [
 				[ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 0 ],
 			],
 		},
 	],
-};
-
-const randomNum = (min = 1, max = 1) => {
-	return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
 function getData(item) {
@@ -101,7 +107,7 @@ function getData(item) {
   } catch (error) {
     console.error(error);
   }
-};
+}
 
 function saveData(item, data) {
   try {
@@ -110,22 +116,24 @@ function saveData(item, data) {
   } catch (error) {
   	console.error(error);
   }
+}
+
+const randomNum = (min = 1, max = 1) => {
+	return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
-const setUsernameModal = () => {
+const displayUsernameModal = () => {
 	const appRoot = document.getElementById('root');
 	const userNameModal = document.createElement('div');
 
 	// Reset app root element
 	appRoot.innerHTML = '';
 
-	userNameModal.className = 'modal';
+	userNameModal.className = 'modal medium';
 	userNameModal.innerHTML = (`
-		<div class="label">
-			Set user name:
-		</div>
+		<div class="label">Set user name:</div>
 		<div>
-			<input id="username-input" type="text" value="" />
+			<input id="username-input" type="text" value="${globals.userName}" />
 		</div>
 		<div class="submit-block">
 			<button id="username-contimue">Continue</button>
@@ -138,11 +146,45 @@ const setUsernameModal = () => {
 		const userName = document.getElementById('username-input').value;
 
 		if (userName !== '') {
+			globals.userName = userName;
 			saveData('username', userName);
-			startNewGame();
+			displayMainMenuModal();
 		}
 	});
 };
+
+const displayMainMenuModal = () => {
+	const appRoot = document.getElementById('root');
+	const mainMenuModal = document.createElement('div');
+
+	// Reset app root element
+	appRoot.innerHTML = '';
+
+	mainMenuModal.className = 'modal main-menu small';
+	mainMenuModal.innerHTML = (`
+		<div>
+			<button id="start-new-game" class="fullwidth">Play</button>
+		</div>
+		<div>
+			<button class="fullwidth">Choose difficulty</button>
+		</div>
+		<div>
+			<button id="display-username-modal" class="fullwidth">Change username</button>
+		</div>
+		<div>
+			<button class="fullwidth">Scoreboard</button>
+		</div>
+	`);
+
+	appRoot.appendChild(mainMenuModal);
+
+	document.getElementById('start-new-game').addEventListener('click', () => {
+		startNewGame();
+	});
+	document.getElementById('display-username-modal').addEventListener('click', () => {
+		displayUsernameModal();
+	});
+}
 
 const createGameWorkspace = () => {
 	const appRoot = document.getElementById('root');
@@ -160,6 +202,7 @@ const createGameWorkspace = () => {
 		<div class="toolbox__buttons">
 			<button id="open-valve-button" class="open-valve-button">▶</button>
 			<button id="reset-game-button" class="reset-game-button">⟲</button>
+			<button id="main-menu-button" class="main-menu-button fullwidth">Menu</button>
 		</div>
 	`);
 	toolboxExpected.className = 'toolbox__expected';
@@ -200,6 +243,7 @@ const createGameWorkspace = () => {
 
 	document.getElementById('open-valve-button').addEventListener('click', onOpenValve);
 	document.getElementById('reset-game-button').addEventListener('click', onResetGame);
+	document.getElementById('main-menu-button').addEventListener('click', onGotoMainMenu);
 };
 
 const clearGameState = () => {
@@ -652,6 +696,16 @@ const onResetGame = () => {
 	setNewGameState();
 };
 
+const onGotoMainMenu = () => {
+	if (globals.elementsMap.length > 1 && !globals.isGameOver) {
+		if (!confirm('Are you sure you want to abort game?')) {
+			return;
+		}
+	}
+
+	displayMainMenuModal();
+}
+
 const startNewGame = () => {
 	createGameWorkspace();
 	setNewGameState();
@@ -659,8 +713,8 @@ const startNewGame = () => {
 
 window.onload = () => {
 	if (globals.userName === '') {
-		setUsernameModal();
+		displayUsernameModal();
 	} else {
-		startNewGame();
+		displayMainMenuModal();
 	}
 }
