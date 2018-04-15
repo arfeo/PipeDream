@@ -98,17 +98,22 @@ const createWorkspace = () => {
 	const appBoard = document.createElement('div');
 	const appToolbox = document.createElement('div');
 	const toolboxNext = document.createElement('div');
+	const toolboxButtons = document.createElement('div');
 	const openValveButton = document.createElement('button');
+	const resetGameButton = document.createElement('button');
 
 	// Create the workspace
 	appBoard.className = 'board';
 	appToolbox.className = 'toolbox';
 	toolboxNext.className = 'toolbox__expected';
+	toolboxButtons.className = 'toolbox__buttons';
 	openValveButton.className = 'open-valve-button';
+	resetGameButton.className = 'reset-game-button';
 
 	appRoot.appendChild(appBoard);
 	appRoot.appendChild(appToolbox);
 	appToolbox.appendChild(toolboxNext);
+	appToolbox.appendChild(toolboxButtons);
 
 	// Create game board cell containers
 	for (let row = 1; row <= 7; row += 1) {
@@ -151,8 +156,12 @@ const createWorkspace = () => {
 
 	// Create open valve button
 	openValveButton.innerHTML = '▶';
-	appToolbox.appendChild(openValveButton);
-	openValveButton.addEventListener('click', openValve);
+	toolboxButtons.appendChild(openValveButton);
+	openValveButton.addEventListener('click', onOpenValve);
+
+	resetGameButton.innerHTML = '⟲';
+	toolboxButtons.appendChild(resetGameButton);
+	resetGameButton.addEventListener('click', onResetGame);
 };
 
 const clearGameState = () => {
@@ -591,8 +600,12 @@ const getNextElement = (row, column, ent) => {
 	return false;
 };
 
-const openValve = () => {
+const onOpenValve = () => {
 	animateElement(globals.startPoint.position.row, globals.startPoint.position.column);
+};
+
+const onResetGame = () => {
+	setNewGameState();
 };
 
 const startNewGame = () => {

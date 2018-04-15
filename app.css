@@ -89,9 +89,18 @@ button {
 	border: 1px solid white;
 }
 
-.open-valve-button {
-	padding: 1vmin 2vmin;
-	font-size: 3vmin;
+.toolbox__buttons {
+	display: flex;
+	justify-content: space-between;
+	width: 11vmin;
+}
+
+.open-valve-button,
+.reset-game-button {
+	width: 5vmin;
+	max-width: 5vmin;
+	padding: 1vmin;
+	font-size: 2.5vmin;
 }
 
 @media screen and (orientation:portrait) and (max-device-width: 900px) {
