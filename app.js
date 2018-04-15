@@ -107,12 +107,15 @@ const constants = {
 	],
 	difficultyMatrix: [
 		{
+			name: 'Easy',
 			speed: 100,
 		},
 		{
+			name: 'Hard',
 			speed: 60,
 		},
 		{
+			name: 'Nightmare',
 			speed: 20,
 		},
 	],
@@ -252,6 +255,7 @@ const displayMainMenuModal = () => {
 
 const createGameWorkspace = () => {
 	const appRoot = document.getElementById('root');
+	const gameStatusPanel = document.createElement('div');
 	const gameBoard = document.createElement('div');
 	const gameToolbox = document.createElement('div');
 	const toolboxExpected = document.createElement('div');
@@ -260,6 +264,12 @@ const createGameWorkspace = () => {
 	appRoot.innerHTML = '';
 
 	// Create the workspace
+	gameStatusPanel.className = 'status-panel';
+	gameStatusPanel.innerHTML = (`
+		<div>Score: <strong>0</strong></div>
+		<div>Time: <strong>0:00</strong></div>
+		<div>Difficulty: <strong>${constants.difficultyMatrix[globals.gameDifficulty].name}</strong></div>
+	`);
 	gameBoard.className = 'board';
 	gameToolbox.className = 'toolbox';
 	gameToolbox.innerHTML = (`
@@ -271,6 +281,7 @@ const createGameWorkspace = () => {
 	`);
 	toolboxExpected.className = 'toolbox__expected';
 
+	appRoot.appendChild(gameStatusPanel);
 	appRoot.appendChild(gameBoard);
 	appRoot.appendChild(gameToolbox);
 	gameToolbox.appendChild(toolboxExpected);

@@ -14,7 +14,6 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 100vw;
 	height: 100vh;
 	background-color: black;
 	font-family: 'Helvetica', 'Arial', 'sans-serif';
@@ -46,6 +45,8 @@ input {
 #root {
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap;
+	max-width: 126vmin;
 }
 
 .fullwidth {
@@ -78,6 +79,18 @@ input {
 
 .buttons-list > div:not(:last-child) {
 	margin-bottom: 2vmin;
+}
+
+.status-panel {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 126vmin;
+	height: 5vmin;
+	margin-bottom: 1vmin;
+	border-bottom: 1px solid azure;
+	font-weight: 100;
+	color: white;
 }
 
 .board {
