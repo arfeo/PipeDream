@@ -128,12 +128,12 @@ const constants = {
 };
 
 const storageData = {
-	username: getData('username') || '',
+	playername: getData('playername') || '',
 	difficulty: parseInt(getData('difficulty')) || 0,
 };
 
 const globals = {
-	userName: storageData.username,
+	playerName: storageData.playername,
 	expectedElements: [],
 	startPoint: {
 		position: {},
@@ -203,32 +203,32 @@ const randomNum = (min = 1, max = 1) => {
 	return Math.floor(min + Math.random() * (max + 1 - min));
 };
 
-const displayUsernameModal = () => {
+const displayPlayerNameModal = () => {
 	const appRoot = document.getElementById('root');
-	const userNameModal = document.createElement('div');
+	const playerNameModal = document.createElement('div');
 
 	// Reset app root element
 	appRoot.innerHTML = '';
 
-	userNameModal.className = 'modal medium';
-	userNameModal.innerHTML = (`
-		<div class="label">Set user name:</div>
+	playerNameModal.className = 'modal medium';
+	playerNameModal.innerHTML = (`
+		<div class="label">Set player name:</div>
 		<div>
-			<input id="username-input" type="text" value="${globals.userName}" />
+			<input id="playername-input" type="text" value="${globals.playerName}" />
 		</div>
 		<div class="submit-block">
-			<button id="username-contimue">Continue</button>
+			<button id="playername-contimue">Continue</button>
 		</div>
 	`);
 
-	appRoot.appendChild(userNameModal);
+	appRoot.appendChild(playerNameModal);
 
-	document.getElementById('username-contimue').addEventListener('click', () => {
-		const userName = document.getElementById('username-input').value;
+	document.getElementById('playername-contimue').addEventListener('click', () => {
+		const playerName = document.getElementById('playername-input').value;
 
-		if (userName !== '') {
-			globals.userName = userName;
-			saveData('username', userName);
+		if (playerName !== '') {
+			globals.playerName = playerName;
+			saveData('playername', playerName);
 			displayMainMenuModal();
 		}
 	});
@@ -283,7 +283,7 @@ const displayMainMenuModal = () => {
 			<button id="display-difficulty-modal" class="fullwidth">Choose difficulty</button>
 		</div>
 		<div>
-			<button id="display-username-modal" class="fullwidth">Change username</button>
+			<button id="display-playername-modal" class="fullwidth">Change player name</button>
 		</div>
 		<div>
 			<button class="fullwidth">Scoreboard</button>
@@ -294,7 +294,7 @@ const displayMainMenuModal = () => {
 
 	document.getElementById('start-new-game').addEventListener('click', startNewGame);
 	document.getElementById('display-difficulty-modal').addEventListener('click', displayDifficultyModal);
-	document.getElementById('display-username-modal').addEventListener('click', displayUsernameModal);
+	document.getElementById('display-playername-modal').addEventListener('click', displayPlayerNameModal);
 };
 
 const createGameWorkspace = () => {
@@ -823,8 +823,8 @@ const startNewGame = () => {
 };
 
 window.onload = () => {
-	if (!globals.userName) {
-		displayUsernameModal();
+	if (!globals.playerName) {
+		displayPlayerNameModal();
 	} else {
 		displayMainMenuModal();
 	}
