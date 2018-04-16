@@ -192,11 +192,11 @@ const scoreCounter = (score) => {
 
 	if (globals.isGameOver) {
 		clearTimeout(globals.gameScoreCounter);
+	} else {
+		gameScoreCounter.innerHTML = score * constants.difficultyMatrix[globals.gameDifficulty].scorex;
+
+		globals.gameScoreCounter = setTimeout(() => scoreCounter(score + 1), 100);
 	}
-
-	gameScoreCounter.innerHTML = score * constants.difficultyMatrix[globals.gameDifficulty].scorex;
-
-	globals.gameScoreCounter = setTimeout(() => scoreCounter(score + 1), 100);
 };
 
 const randomNum = (min = 1, max = 1) => {
@@ -785,7 +785,7 @@ const getNextElement = (row, column, ent) => {
 	}
 
 	if (globals.elementsMap.filter((e) => {
-		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position) && e.locked === false
+		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position)
 	}).length > 0) {
 		return { nextRow, nextColumn, nextEnt };
 	}
