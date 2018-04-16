@@ -49,6 +49,10 @@ input {
 	max-width: 126vmin;
 }
 
+.orangered {
+	color: orangered;
+}
+
 .fullwidth {
 	width: 100%;
 }

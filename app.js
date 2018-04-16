@@ -110,16 +110,19 @@ const constants = {
 			name: 'Easy',
 			speed: 100,
 			time: 180,
+			scorex: 1,
 		},
 		{
 			name: 'Hard',
 			speed: 60,
 			time: 120,
+			scorex: 2,
 		},
 		{
 			name: 'Nightmare',
 			speed: 20,
 			time: 60,
+			scorex: 3,
 		},
 	],
 };
@@ -139,6 +142,7 @@ const globals = {
 	gameDifficulty: storageData.difficulty,
 	isGameOver: false,
 	gameTimer: null,
+	gameScoreCounter: null,
 };
 
 function getData(item) {
@@ -170,14 +174,29 @@ const timeTicker = (ticker) => {
 			clearTimeout(globals.gameTimer);
 
 			onOpenValve();
+			scoreCounter(0);
 		}
 
-		gameTimeTicker.innerHTML = (min < 10 ? `0${min}` : min) + ':' + (sec < 10 ? `0${sec}` : sec);
+		const timeString = (min < 10 ? `0${min}` : min) + ':' + (sec < 10 ? `0${sec}` : sec);
+
+		gameTimeTicker.innerHTML = (min === 0 && sec <= 10) ? `<span class="orangered">${timeString}</span>` : timeString;
 
 		if (ticker > 0) {
 			globals.gameTimer = setTimeout(() => timeTicker(ticker - 1), 1000);
 		}
 	}
+};
+
+const scoreCounter = (score) => {
+	const gameScoreCounter = document.getElementById('game-score-counter');
+
+	if (globals.isGameOver) {
+		clearTimeout(globals.gameScoreCounter);
+	}
+
+	gameScoreCounter.innerHTML = score * constants.difficultyMatrix[globals.gameDifficulty].scorex;
+
+	globals.gameScoreCounter = setTimeout(() => scoreCounter(score + 1), 100);
 };
 
 const randomNum = (min = 1, max = 1) => {
@@ -291,7 +310,7 @@ const createGameWorkspace = () => {
 	// Create the workspace
 	gameStatusPanel.className = 'status-panel';
 	gameStatusPanel.innerHTML = (`
-		<div><span>Score:</span><strong>0</strong></div>
+		<div><span>Score:</span><strong id="game-score-counter">0</strong></div>
 		<div><span>Time:</span><strong id="game-time-ticker"></strong></div>
 		<div><span>Difficulty:</span><strong>${constants.difficultyMatrix[globals.gameDifficulty].name}</strong></div>
 	`);
@@ -541,22 +560,24 @@ const updateElementsMap = (type, row, column, direction, locked) => {
 };
 
 const onBoardCellClick = (row, column) => {
-	const searchCell = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
+	if (!globals.isGameOver) {
+		const searchCell = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
 
-	if ((!searchCell || (searchCell && searchCell.locked === false)) && JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
-		const currentCell = document.getElementById(`cell-${row}-${column}`);
-		const nextElement = globals.expectedElements[0];
-		const ctx = currentCell.getContext('2d');
+		if ((!searchCell || (searchCell && searchCell.locked === false)) && JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
+			const currentCell = document.getElementById(`cell-${row}-${column}`);
+			const nextElement = globals.expectedElements[0];
+			const ctx = currentCell.getContext('2d');
 
-		ctx.fillStyle = 'black';
+			ctx.fillStyle = 'black';
 
-		drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
-		currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
+			drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
+			currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
 
-		updateElementsMap(globals.expectedElements[0].type, row, column, globals.expectedElements[0].direction, false);
+			updateElementsMap(globals.expectedElements[0].type, row, column, globals.expectedElements[0].direction, false);
 
-		globals.expectedElements.shift();
-		pushNewExpectedElement();
+			globals.expectedElements.shift();
+			pushNewExpectedElement();
+		}
 	}
 };
 
