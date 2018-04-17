@@ -171,10 +171,7 @@ const timeTicker = (ticker) => {
 		const sec = parseInt(ticker - min * 60);
 
 		if (min === 0 && sec === 0) {
-			clearTimeout(globals.gameTimer);
-
 			onOpenValve();
-			scoreCounter(0);
 		}
 
 		const timeString = (min < 10 ? `0${min}` : min) + ':' + (sec < 10 ? `0${sec}` : sec);
@@ -798,6 +795,10 @@ const getNextElement = (row, column, ent) => {
 };
 
 const onOpenValve = () => {
+	clearTimeout(globals.gameTimer);
+
+	scoreCounter(0);
+
 	animateElement(globals.startPoint.position.row, globals.startPoint.position.column);
 };
 
