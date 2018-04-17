@@ -582,7 +582,7 @@ const onBoardCellClick = (row, column) => {
 };
 
 const animateComponent = (type, row, column, ent) => {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const cell = document.getElementById(`cell-animation-${row}-${column}`);
 
 		if (cell) {
@@ -689,63 +689,61 @@ const animateComponent = (type, row, column, ent) => {
 	});
 };
 
-const animateElement = (row, column, ent) => {
-	return new Promise(async (resolve) => {
-		if (!globals.isGameOver) {
-			const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0] || {};
+const animateElement = async (row, column, ent) => {
+	if (!globals.isGameOver) {
+		const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0] || {};
 
-			switch (element.type) {
-				case 0:
-				{
-					await Promise.all([
-						animateComponent('pump', row, column, element.direction),
-						animateComponent('pipe-out', row, column, element.direction),
-					]);
+		switch (element.type) {
+			case 0:
+			{
+				await Promise.all([
+					animateComponent('pump', row, column, element.direction),
+					animateComponent('pipe-out', row, column, element.direction),
+				]);
 
-					const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
+				const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
 
-					await animateElement(nextRow, nextColumn, nextEnt);
-					break;
-				}
-				default:
-				{
-					const animatePromises = [];
-					const nextPromises = [];
-
-					await animateComponent('pipe-in', row, column, ent);
-
-					const spec = constants.elementsSpec.filter(e => e.type === element.type)[0];
-					const outlets = spec.outlets[element.direction].filter(e => e !== ent);
-
-					for (const out of outlets) {
-						animatePromises.push(animateComponent('pipe-out', row, column, out));
-					}
-
-					await Promise.all(animatePromises);
-
-					for (const out of outlets) {
-						const next = await getNextElement(row, column, out);
-
-						if (next) {
-							const { nextRow, nextColumn, nextEnt } = next;
-
-							nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
-						} else {
-							globals.isGameOver = true;
-							console.log('GAME OVER!');
-						}
-					}
-
-					await Promise.all(nextPromises);
-
-					updateElementsMap(element.type, row, column, element.direction, true);
-					break;
-				}
+				await animateElement(nextRow, nextColumn, nextEnt);
+				break;
 			}
+			default:
+			{
+				const animatePromises = [];
+				const nextPromises = [];
 
-			resolve();
+				await animateComponent('pipe-in', row, column, ent);
+
+				const spec = constants.elementsSpec.filter(e => e.type === element.type)[0];
+				const outlets = spec.outlets[element.direction].filter(e => e !== ent);
+
+				for (const out of outlets) {
+					animatePromises.push(animateComponent('pipe-out', row, column, out));
+				}
+
+				await Promise.all(animatePromises);
+
+				for (const out of outlets) {
+					const next = getNextElement(row, column, out);
+
+					if (next) {
+						const { nextRow, nextColumn, nextEnt } = next;
+
+						nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
+					} else {
+						globals.isGameOver = true;
+						console.log('GAME OVER!');
+					}
+				}
+
+				await Promise.all(nextPromises);
+
+				updateElementsMap(element.type, row, column, element.direction, true);
+				break;
+			}
 		}
-	});
+
+		return Promise.resolve();
+	}
 };
 
 const getNextElement = (row, column, ent) => {
@@ -785,6 +783,12 @@ const getNextElement = (row, column, ent) => {
 	}
 
 	if (globals.elementsMap.filter((e) => {
+		const nextSpec = constants.elementsSpec.filter(s => s.type === e.type)[0];
+
+		if (nextSpec && nextSpec.outlets[e.direction].indexOf(nextEnt) === -1) {
+			return null;
+		}
+
 		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position)
 	}).length > 0) {
 		return { nextRow, nextColumn, nextEnt };
