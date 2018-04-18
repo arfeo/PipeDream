@@ -698,9 +698,16 @@ const animateElement = async (row, column, ent) => {
 					animateComponent('pipe-out', row, column, element.direction),
 				]);
 
-				const { nextRow, nextColumn, nextEnt } = await getNextElement(row, column, element.direction);
+				const next = getNextElement(row, column, element.direction);
 
-				await animateElement(nextRow, nextColumn, nextEnt);
+				const { nextRow, nextColumn, nextEnt } = next;
+
+				if (next) {
+					await animateElement(nextRow, nextColumn, nextEnt);
+				} else {
+					globals.isGameOver = true;
+					console.log('GAME OVER!');
+				}
 				break;
 			}
 			default:
