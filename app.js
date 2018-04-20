@@ -710,7 +710,7 @@ const animateElement = async (row, column, ent) => {
 					globals.isGameOver = true;
 					console.log('GAME OVER!');
 
-					return Promise.reject(false);
+					return Promise.reject();
 				}
 
 				await animateElement(nextRow, nextColumn, nextEnt);
@@ -723,32 +723,33 @@ const animateElement = async (row, column, ent) => {
 				const spec = constants.elementsSpec.filter(e => e.type === element.type)[0];
 				const outlets = spec.outlets[element.direction].filter(e => e !== ent);
 
-				console.log(outlets);
-
 				await Promise.all(outlets.map(out => animateComponent('pipe-out', row, column, out)));
+
+				updateElementsMap(element.type, row, column, element.direction, true);
 
 				const nextElements = [];
 
 				for (out of outlets) {
 					const next = getNextElement(row, column, out);
 
+					if (next === false) {
+						globals.isGameOver = true;
+						console.log('GAME OVER!');
+
+						return Promise.reject();
+					}
+
 					if (next) {
 						nextElements.push(next);
 					}
 				}
-
-				console.log(nextElements);
 
 				await Promise.all(nextElements.map(n => animateElement(n.nextRow, n.nextColumn, n.nextEnt)));
 				break;
 			}
 		}
 
-		updateElementsMap(element.type, row, column, element.direction, true);
-
 		globals.animationPromisesCount -= 1;
-
-		console.log(globals.animationPromisesCount);
 
 		if (!globals.isGameOver && globals.animationPromisesCount === 0) {
 			globals.isGameOver = true;
@@ -795,19 +796,25 @@ const getNextElement = (row, column, ent) => {
 		}
 	}
 
-	if (globals.elementsMap.filter((e) => {
-		const nextSpec = constants.elementsSpec.filter(s => s.type === e.type)[0];
+	let next = false;
 
-		if (nextSpec && nextSpec.outlets[e.direction].indexOf(nextEnt) === -1) {
-			return null;
+	globals.elementsMap.map((e) => {
+		if (JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position)) {
+			const nextSpec = constants.elementsSpec.filter(s => s.type === e.type)[0];
+
+			if (nextSpec && nextSpec.outlets[e.direction].indexOf(nextEnt) !== -1 && !e.locked) {
+				next = { nextRow, nextColumn, nextEnt };
+			}
+
+			if (e.locked) {
+				next = null;
+			}
 		}
 
-		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position) && !e.locked
-	}).length > 0) {
-		return { nextRow, nextColumn, nextEnt };
-	}
+		return;
+	});
 
-	return false;
+	return next;
 };
 
 const onOpenValve = () => {
