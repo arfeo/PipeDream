@@ -143,6 +143,7 @@ const globals = {
 	isGameOver: false,
 	gameTimer: null,
 	gameScoreCounter: null,
+	animationPromisesCount: 0,
 };
 
 function getData(item) {
@@ -367,6 +368,7 @@ const clearGameState = () => {
 	globals.elementsMap = [];
 	globals.startPoint.position = {};
 	globals.isGameOver = false;
+	globals.animationPromisesCount = 0;
 
 	clearTimeout(globals.gameTimer);
 	timeTicker(constants.difficultyMatrix[globals.gameDifficulty].time);
@@ -688,6 +690,8 @@ const animateComponent = (type, row, column, ent) => {
 
 const animateElement = async (row, column, ent) => {
 	if (!globals.isGameOver) {
+		globals.animationPromisesCount += 1;
+
 		const element = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0] || {};
 
 		switch (element.type) {
@@ -702,48 +706,53 @@ const animateElement = async (row, column, ent) => {
 
 				const { nextRow, nextColumn, nextEnt } = next;
 
-				if (next) {
-					await animateElement(nextRow, nextColumn, nextEnt);
-				} else {
+				if (!next) {
 					globals.isGameOver = true;
 					console.log('GAME OVER!');
+
+					return Promise.reject(false);
 				}
+
+				await animateElement(nextRow, nextColumn, nextEnt);
 				break;
 			}
 			default:
 			{
-				const animatePromises = [];
-				const nextPromises = [];
-
 				await animateComponent('pipe-in', row, column, ent);
 
 				const spec = constants.elementsSpec.filter(e => e.type === element.type)[0];
 				const outlets = spec.outlets[element.direction].filter(e => e !== ent);
 
-				for (const out of outlets) {
-					animatePromises.push(animateComponent('pipe-out', row, column, out));
-				}
+				console.log(outlets);
 
-				await Promise.all(animatePromises);
+				await Promise.all(outlets.map(out => animateComponent('pipe-out', row, column, out)));
 
-				for (const out of outlets) {
+				const nextElements = [];
+
+				for (out of outlets) {
 					const next = getNextElement(row, column, out);
 
 					if (next) {
-						const { nextRow, nextColumn, nextEnt } = next;
-
-						nextPromises.push(animateElement(nextRow, nextColumn, nextEnt));
-					} else {
-						globals.isGameOver = true;
-						console.log('GAME OVER!');
+						nextElements.push(next);
 					}
 				}
 
-				await Promise.all(nextPromises);
+				console.log(nextElements);
 
-				updateElementsMap(element.type, row, column, element.direction, true);
+				await Promise.all(nextElements.map(n => animateElement(n.nextRow, n.nextColumn, n.nextEnt)));
 				break;
 			}
+		}
+
+		updateElementsMap(element.type, row, column, element.direction, true);
+
+		globals.animationPromisesCount -= 1;
+
+		console.log(globals.animationPromisesCount);
+
+		if (!globals.isGameOver && globals.animationPromisesCount === 0) {
+			globals.isGameOver = true;
+			console.log('SUCCESS!');
 		}
 
 		return Promise.resolve();
@@ -793,7 +802,7 @@ const getNextElement = (row, column, ent) => {
 			return null;
 		}
 
-		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position)
+		return JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(e.position) && !e.locked
 	}).length > 0) {
 		return { nextRow, nextColumn, nextEnt };
 	}
