@@ -1,6 +1,7 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass');
 const minify = require('gulp-babel-minify');
+const cssmin = require('gulp-cssmin');
 const watch = require('gulp-watch');
 const runSequence = require('run-sequence');
 const jsImport = require('gulp-js-import');
@@ -23,6 +24,7 @@ gulp.task('watch', function() {
 gulp.task('sass', function() {
 	return gulp.src('./app/scss/app.scss')
 		.pipe(sass())
+		.pipe(cssmin())
 		.pipe(gulp.dest('./dist'));
 });
 
