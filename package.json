@@ -24,10 +24,10 @@
   "devDependencies": {
     "babel-eslint": "^8.2.3",
     "gulp": "^3.9.1",
+    "gulp-babel-minify": "^0.4.0",
     "gulp-eslint": "^4.0.2",
     "gulp-js-import": "^1.0.6",
     "gulp-sass": "^1.4.0",
-    "gulp-uglify": "^3.0.0",
     "gulp-watch": "^5.0.0",
     "run-sequence": "^2.2.1"
   }

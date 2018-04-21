@@ -1,6 +1,6 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass');
-const uglify = require('gulp-uglify');
+const minify = require('gulp-babel-minify');
 const watch = require('gulp-watch');
 const runSequence = require('run-sequence');
 const jsImport = require('gulp-js-import');
@@ -41,7 +41,11 @@ gulp.task('eslint', function () {
 gulp.task('js', ['eslint'], function() {
 	gulp.src('./app/js/app.js')
 		.pipe(jsImport({ hideConsole: true }))
-		//.pipe(uglify())
+		.pipe(minify({
+			mangle: {
+				keepClassName: true
+			}
+		}))
 		.pipe(gulp.dest('./dist'));
 });
 
