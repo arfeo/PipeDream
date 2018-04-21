@@ -1,34 +1,3 @@
-const displayPlayerNameModal = () => {
-	const appRoot = document.getElementById('root');
-	const playerNameModal = document.createElement('div');
-
-	// Reset app root element
-	appRoot.innerHTML = '';
-
-	playerNameModal.className = 'modal medium';
-	playerNameModal.innerHTML = (`
-		<div class="label">Set player name:</div>
-		<div>
-			<input id="playername-input" type="text" value="${globals.playerName}" />
-		</div>
-		<div class="submit-block">
-			<button id="playername-continue">Continue</button>
-		</div>
-	`);
-
-	appRoot.appendChild(playerNameModal);
-
-	document.getElementById('playername-continue').addEventListener('click', () => {
-		const playerName = document.getElementById('playername-input').value;
-
-		if (playerName !== '') {
-			globals.playerName = playerName;
-			saveData('playername', playerName);
-			displayMainMenuModal();
-		}
-	});
-};
-
 const displayMainMenuModal = () => {
     const appRoot = document.getElementById('root');
     const mainMenuModal = document.createElement('div');
@@ -50,6 +19,9 @@ const displayMainMenuModal = () => {
 		<div>
 			<button id="display-scoreboard-modal" class="fullwidth">Scoreboard</button>
 		</div>
+		<div>
+			<button id="display-rules-modal" class="fullwidth">Rules</button>
+		</div>
 	`);
 
     appRoot.appendChild(mainMenuModal);
@@ -58,6 +30,38 @@ const displayMainMenuModal = () => {
     document.getElementById('display-difficulty-modal').addEventListener('click', displayDifficultyModal);
     document.getElementById('display-playername-modal').addEventListener('click', displayPlayerNameModal);
     document.getElementById('display-scoreboard-modal').addEventListener('click', displayScoreboardModal);
+    document.getElementById('display-rules-modal').addEventListener('click', displayRulesModal);
+};
+
+const displayPlayerNameModal = () => {
+    const appRoot = document.getElementById('root');
+    const playerNameModal = document.createElement('div');
+
+    // Reset app root element
+    appRoot.innerHTML = '';
+
+    playerNameModal.className = 'modal small';
+    playerNameModal.innerHTML = (`
+		<div class="label">Set player name:</div>
+		<div>
+			<input id="playername-input" type="text" value="${globals.playerName}" />
+		</div>
+		<div class="submit-block">
+			<button id="playername-continue">Continue</button>
+		</div>
+	`);
+
+    appRoot.appendChild(playerNameModal);
+
+    document.getElementById('playername-continue').addEventListener('click', () => {
+        const playerName = document.getElementById('playername-input').value;
+
+        if (playerName !== '') {
+            globals.playerName = playerName;
+            saveData('playername', playerName);
+            displayMainMenuModal();
+        }
+    });
 };
 
 const displayDifficultyModal = () => {
@@ -194,6 +198,28 @@ const displayScoreboardModal = () => {
     appRoot.appendChild(scoreboardModal);
 
     document.getElementById('clear-scores').addEventListener('click', clearScores);
+    document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
+};
+
+const displayRulesModal = () => {
+    const appRoot = document.getElementById('root');
+    const rulesModal = document.createElement('div');
+
+    // Reset app root element
+    appRoot.innerHTML = '';
+
+    rulesModal.className = 'modal medium';
+    rulesModal.innerHTML = (`
+    	<div>
+    		Using a variety of pipe pieces presented randomly in a queue, the player must construct a path from the start piece for the onrushing sewer slime, or "flooz", which begins flowing after a time delay from the start of the round. Pieces may not be rotated; they must be placed as presented in the queue. The player can replace a previously laid piece by clicking on it, as long as the flooz has not yet reached it; however, doing so causes a short time delay before the next piece can be laid. The flooz is required to pass through a given number of pipe pieces.
+    	</div>
+    	<div class="submit-block">
+    		<button id="return-to-menu">Go to menu</button>
+		</div>
+    `);
+
+    appRoot.appendChild(rulesModal);
+
     document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
 };
 
