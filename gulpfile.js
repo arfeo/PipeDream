@@ -7,26 +7,26 @@ var runSequence = require('run-sequence');
 
 gulp.task('build', function(done) {
 	return runSequence(
-    'static',
-    'js',
+		'static',
+		'js',
 		'sass',
 		function () { done(); }
 	);
 });
 
 gulp.task('watch', function() {
-  gulp.watch('./app/js/**/*', ['js']);
+	gulp.watch('./app/js/**/*', ['js']);
 	gulp.watch('./app/scss/**/*', ['sass']);
 });
 
 gulp.task('sass', function() {
-  return gulp.src('./app/scss/app.scss')
-    .pipe(sass())
-    .pipe(gulp.dest('./dist'));
+	return gulp.src('./app/scss/app.scss')
+		.pipe(sass())
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('js', function() {
-  gulp.src('./app/js/*.js')
+	gulp.src('./app/js/*.js')
 		.pipe(concat('app.js'))
 		//.pipe(uglify())
 		.pipe(gulp.dest('./dist'));
