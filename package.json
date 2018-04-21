@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/arfeo/PipeDream#readme",
   "devDependencies": {
+    "babel-eslint": "^8.2.3",
     "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^4.0.2",
+    "gulp-js-import": "^1.0.6",
     "gulp-sass": "^1.4.0",
     "gulp-uglify": "^3.0.0",
     "gulp-watch": "^5.0.0",

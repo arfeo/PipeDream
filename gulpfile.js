@@ -1,9 +1,10 @@
-var gulp = require('gulp');
-var sass = require('gulp-sass');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
-var watch = require('gulp-watch');
-var runSequence = require('run-sequence');
+const gulp = require('gulp');
+const sass = require('gulp-sass');
+const uglify = require('gulp-uglify');
+const watch = require('gulp-watch');
+const runSequence = require('run-sequence');
+const jsImport = require('gulp-js-import');
+const eslint = require('gulp-eslint');
 
 gulp.task('build', function(done) {
 	return runSequence(
@@ -25,9 +26,21 @@ gulp.task('sass', function() {
 		.pipe(gulp.dest('./dist'));
 });
 
-gulp.task('js', function() {
-	gulp.src('./app/js/*.js')
-		.pipe(concat('app.js'))
+gulp.task('eslint', function () {
+  return gulp.src([
+		'**/*.js',
+		'!app/js/app.js',
+		'!node_modules/**',
+		'!dist/**',
+	])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
+
+gulp.task('js', ['eslint'], function() {
+	gulp.src('./app/js/app.js')
+		.pipe(jsImport({ hideConsole: true }))
 		//.pipe(uglify())
 		.pipe(gulp.dest('./dist'));
 });
