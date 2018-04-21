@@ -1,10 +1,3 @@
-@keyframes glowing {
-  0% { box-shadow: 0 0 -2vmin gold; }
-  40% { box-shadow: 0 0 4.5vmin gold; }
-  60% { box-shadow: 0 0 4.5vmin gold; }
-  100% { box-shadow: 0 0 -2vmin gold; }
-}
-
 * {
 	margin: 0;
 	padding: 0;
@@ -61,14 +54,14 @@ input {
 	height: auto;
 	padding: 2vmin;
 	background-color: lightgrey;
-}
 
-.modal.medium {
-	width: 50vmin;
-}
+	&.medium {
+		width: 50vmin;
+	}
 
-.modal.small {
-	width: 30vmin;
+	&.small {
+		width: 30vmin;
+	}
 }
 
 .label {
@@ -81,8 +74,10 @@ input {
 	margin-top: 2vmin;
 }
 
-.buttons-list > div:not(:last-child) {
-	margin-bottom: 2vmin;
+.buttons-list {
+	& > div:not(:last-child) {
+		margin-bottom: 2vmin;
+	}
 }
 
 .status-panel {
@@ -95,15 +90,15 @@ input {
 	border-bottom: 1px solid azure;
 	font-weight: 100;
 	color: white;
-}
 
-.status-panel span {
-	margin-right: .5vmin;
-	opacity: .7;
-}
+	span {
+		margin-right: .5vmin;
+		opacity: .7;
+	}
 
-.status-panel strong {
-	opacity: 1;
+	strong {
+		opacity: 1;
+	}
 }
 
 .board {
@@ -166,11 +161,11 @@ input {
 	height: calc(11vmin - 2px);
 	border: 1px solid white;
 	opacity: .7;
-}
 
-.toolbox__expected-element:nth-child(1) {
-	animation: glowing 1500ms infinite;
-	opacity: 1;
+	&:nth-child(1) {
+		animation: glowing 1500ms infinite;
+		opacity: 1;
+	}
 }
 
 .toolbox__buttons {
@@ -188,10 +183,4 @@ input {
 
 .main-menu-button {
 	margin-top: 2vmin;
-}
-
-@media screen and (orientation:portrait) and (max-device-width: 900px) {
-	body {
-		transform: rotate(90deg);
-	}
 }

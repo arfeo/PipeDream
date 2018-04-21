@@ -1,0 +1,32 @@
+{
+  "name": "pipedream",
+  "version": "1.0.0",
+  "description": "An a la PipeDream game",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arfeo/PipeDream.git"
+  },
+  "keywords": [
+    "pipedream",
+    "game",
+    "puzzle"
+  ],
+  "author": "Arfeo.net",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arfeo/PipeDream/issues"
+  },
+  "homepage": "https://github.com/arfeo/PipeDream#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-sass": "^1.4.0",
+    "gulp-uglify": "^3.0.0",
+    "gulp-watch": "^5.0.0",
+    "run-sequence": "^2.2.1"
+  }
+}

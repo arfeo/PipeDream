@@ -1,0 +1,6 @@
+@keyframes glowing {
+  0% { box-shadow: 0 0 -2vmin gold; }
+  40% { box-shadow: 0 0 4.5vmin gold; }
+  60% { box-shadow: 0 0 4.5vmin gold; }
+  100% { box-shadow: 0 0 -2vmin gold; }
+}
