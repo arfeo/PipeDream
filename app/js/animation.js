@@ -125,8 +125,7 @@ const animateElement = async (row, column, ent) => {
 				const { nextRow, nextColumn, nextEnt } = next;
 
 				if (!next) {
-					globals.isGameOver = true;
-					console.log('GAME OVER!');
+                    gameResult(false);
 
 					return Promise.reject();
 				}
@@ -151,8 +150,7 @@ const animateElement = async (row, column, ent) => {
 					const next = getNextElement(row, column, out);
 
 					if (next === false) {
-						globals.isGameOver = true;
-						console.log('GAME OVER!');
+                        gameResult(false);
 
 						return Promise.reject();
 					}
@@ -170,8 +168,7 @@ const animateElement = async (row, column, ent) => {
 		globals.animationPromisesCount -= 1;
 
 		if (!globals.isGameOver && globals.animationPromisesCount === 0) {
-			globals.isGameOver = true;
-			console.log('SUCCESS!');
+			gameResult(true);
 		}
 
 		return Promise.resolve();
@@ -233,4 +230,10 @@ const getNextElement = (row, column, ent) => {
 	});
 
 	return next;
+};
+
+const gameResult = (result) => {
+    globals.isGameOver = true;
+
+    displayGameResultModal(result);
 };

@@ -12,13 +12,13 @@ const displayPlayerNameModal = () => {
 			<input id="playername-input" type="text" value="${globals.playerName}" />
 		</div>
 		<div class="submit-block">
-			<button id="playername-contimue">Continue</button>
+			<button id="playername-continue">Continue</button>
 		</div>
 	`);
 
 	appRoot.appendChild(playerNameModal);
 
-	document.getElementById('playername-contimue').addEventListener('click', () => {
+	document.getElementById('playername-continue').addEventListener('click', () => {
 		const playerName = document.getElementById('playername-input').value;
 
 		if (playerName !== '') {
@@ -90,4 +90,34 @@ const displayMainMenuModal = () => {
 	document.getElementById('start-new-game').addEventListener('click', startNewGame);
 	document.getElementById('display-difficulty-modal').addEventListener('click', displayDifficultyModal);
 	document.getElementById('display-playername-modal').addEventListener('click', displayPlayerNameModal);
+};
+
+const displayGameResultModal = (result) => {
+    const appRoot = document.getElementById('root');
+    const modalContainer = document.createElement('div');
+    const modalOverlay = document.createElement('div');
+    const gameResultModal = document.createElement('div');
+
+    modalContainer.className = 'modal-container';
+    modalOverlay.className = 'modal-overlay';
+    gameResultModal.className = 'modal medium';
+    gameResultModal.innerHTML = (`
+    	<div id="game-result-message">${result ? 'You have won!' : 'Game over'}</div>
+    	<div class="submit-block">
+    		<button id="return-to-menu">Go to menu</button>
+			<button id="game-continue">Continue</button>
+		</div>
+    `);
+
+    appRoot.appendChild(modalContainer);
+    modalContainer.appendChild(modalOverlay);
+    modalContainer.appendChild(gameResultModal);
+
+    document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
+    document.getElementById('game-continue').addEventListener('click', startNewGame);
+};
+
+const startNewGame = () => {
+    createGameWorkspace();
+    setNewGameState();
 };

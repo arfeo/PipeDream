@@ -1,0 +1,56 @@
+.modal-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vmin;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vmin;
+  background-color: black;
+  opacity: .5;
+  z-index: 100;
+}
+
+.modal {
+  height: auto;
+  padding: 2vmin;
+  background-color: lightgrey;
+  z-index: 101;
+
+  &.medium {
+    width: 50vmin;
+  }
+
+  &.small {
+    width: 30vmin;
+  }
+}
+
+.label {
+  margin-bottom: 1vmin;
+}
+
+.submit-block {
+  display: flex;
+  justify-content: center;
+  margin-top: 2vmin;
+
+  button {
+    margin: 0 1vmin;
+  }
+}
+
+.buttons-list {
+  & > div:not(:last-child) {
+    margin-bottom: 2vmin;
+  }
+}
