@@ -130,6 +130,7 @@ const constants = {
 const storage = {
 	playername: getData('playername') || '',
 	difficulty: parseInt(getData('difficulty')) || 0,
+	scoreboard: getData('scoreboard') || [],
 };
 
 const globals = {
@@ -144,4 +145,5 @@ const globals = {
 	gameTimer: null,
 	gameScoreCounter: null,
 	animationPromisesCount: 0,
+	gameScoreboard: storage.scoreboard,
 };

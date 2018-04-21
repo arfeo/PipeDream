@@ -235,5 +235,19 @@ const getNextElement = (row, column, ent) => {
 const gameResult = (result) => {
     globals.isGameOver = true;
 
+    if (result) {
+        const gameScoreCounter = parseInt(document.getElementById('game-score-counter').innerText);
+
+    	const score = {
+    		playername: globals.playerName,
+			difficulty: globals.gameDifficulty,
+			score: gameScoreCounter,
+		};
+
+		globals.gameScoreboard.push(score);
+
+        saveData('scoreboard', globals.gameScoreboard);
+	}
+
     displayGameResultModal(result);
 };
