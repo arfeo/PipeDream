@@ -58,3 +58,42 @@
     margin-bottom: 2vmin;
   }
 }
+
+.game-scoreboard {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    th {
+      border-bottom: 1px solid black;
+      padding: 0 0 1vmin;
+      text-align: left;
+
+      &.player {
+        width: 35%;
+      }
+      &.difficulty {
+        width: 35%;
+      }
+      &.score {
+        width: 30%;
+      }
+    }
+  }
+
+  tbody {
+    margin: 1vmin 0 0;
+
+    tr {
+      &:nth-child(1) {
+        td {
+          padding-top: 1vmin;
+        }
+      }
+
+      td {
+        padding: 0 0 1vmin;
+      }
+    }
+  }
+}

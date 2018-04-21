@@ -127,6 +127,18 @@ const displayScoreboardModal = () => {
 
     scoreboardModal.className = 'modal large';
     scoreboardModal.innerHTML = (`
+		<table class="game-scoreboard">
+			<thead>
+				<tr>
+					<th class="player">Player</th>
+					<th class="difficulty">Difficulty</th>
+					<th class="score">Score</th>
+				</tr>	
+			</thead>
+			<tbody>
+				${buildScoreList()}
+			</tbody>
+		</table>
     	<div class="submit-block">
 			<button id="return-to-menu">Go to menu</button>
 		</div>
@@ -135,6 +147,35 @@ const displayScoreboardModal = () => {
     appRoot.appendChild(scoreboardModal);
 
     document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
+};
+
+const buildScoreList = () => {
+	const scoreArray = sortArrayByKey(globals.gameScoreboard, 'score');
+	let scoreList = '';
+
+	if (globals.gameScoreboard.length === 0) {
+		return (`
+			<tr>
+				<td colspan="3" class="center">
+					<em>Scoreboard is empty at the moment.</em>
+				</td>
+			</tr>
+		`);
+	}
+
+    for (let i = 0; i < 10; i += 1) {
+		if (scoreArray[i]) {
+            scoreList += (`
+				<tr>
+					<td>${scoreArray[i].playername}</td>
+					<td>${constants.difficultyMatrix[scoreArray[i].difficulty].name}</td>
+					<td>${scoreArray[i].score}</td>
+				</tr>
+			`);
+        }
+    }
+
+    return scoreList;
 };
 
 const startNewGame = () => {
