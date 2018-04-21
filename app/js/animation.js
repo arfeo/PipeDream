@@ -242,11 +242,14 @@ const onGameStop = (result) => {
     		playername: globals.playerName,
 			difficulty: globals.gameDifficulty,
 			score: gameScoreCounter,
+			date: (new Date()).getTime(),
 		};
 
 		globals.gameScoreboard.push(score);
 
         saveData('scoreboard', globals.gameScoreboard);
+
+        console.log(globals.gameScoreboard);
 	}
 
     displayGameResultModal(result);

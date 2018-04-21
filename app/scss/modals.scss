@@ -27,7 +27,7 @@
   z-index: 101;
 
   &.large {
-    width: 80vmin;
+    width: 100vmin;
   }
 
   &.medium {
@@ -70,13 +70,13 @@
       text-align: left;
 
       &.player {
-        width: 35%;
+        width: 45%;
       }
       &.difficulty {
         width: 35%;
       }
       &.score {
-        width: 30%;
+        width: 20%;
       }
     }
   }

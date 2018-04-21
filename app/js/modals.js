@@ -29,24 +29,62 @@ const displayPlayerNameModal = () => {
 	});
 };
 
+const displayMainMenuModal = () => {
+    const appRoot = document.getElementById('root');
+    const mainMenuModal = document.createElement('div');
+
+    // Reset app root element
+    appRoot.innerHTML = '';
+
+    mainMenuModal.className = 'modal buttons-list small';
+    mainMenuModal.innerHTML = (`
+		<div>
+			<button id="start-new-game" class="fullwidth">Play</button>
+		</div>
+		<div>
+			<button id="display-difficulty-modal" class="fullwidth">Choose difficulty</button>
+		</div>
+		<div>
+			<button id="display-playername-modal" class="fullwidth">Change player name</button>
+		</div>
+		<div>
+			<button id="display-scoreboard-modal" class="fullwidth">Scoreboard</button>
+		</div>
+	`);
+
+    appRoot.appendChild(mainMenuModal);
+
+    document.getElementById('start-new-game').addEventListener('click', startNewGame);
+    document.getElementById('display-difficulty-modal').addEventListener('click', displayDifficultyModal);
+    document.getElementById('display-playername-modal').addEventListener('click', displayPlayerNameModal);
+    document.getElementById('display-scoreboard-modal').addEventListener('click', displayScoreboardModal);
+};
+
 const displayDifficultyModal = () => {
 	const appRoot = document.getElementById('root');
 	const difficultyModal = document.createElement('div');
+
+	const buildDifficultyList = () => {
+		const difficulties = constants.difficultyMatrix;
+		let difficultyList = '';
+
+		for (let i = 0; i < difficulties.length; i += 1) {
+			difficultyList += (`
+				<div>
+					<button difficulty="${i}" class="fullwidth">${difficulties[i].name}</button>
+				</div>
+			`);
+		}
+
+		return difficultyList;
+	};
 
 	// Reset app root element
 	appRoot.innerHTML = '';
 
 	difficultyModal.className = 'modal buttons-list small';
 	difficultyModal.innerHTML = (`
-		<div>
-			<button difficulty="0" class="fullwidth">Easy</button>
-		</div>
-		<div>
-			<button difficulty="1" class="fullwidth">Hard</button>
-		</div>
-		<div>
-			<button difficulty="2" class="fullwidth">Nightmare</button>
-		</div>
+		${buildDifficultyList()}
 	`);
 
 	appRoot.appendChild(difficultyModal);
@@ -62,37 +100,6 @@ const displayDifficultyModal = () => {
 	});
 };
 
-const displayMainMenuModal = () => {
-	const appRoot = document.getElementById('root');
-	const mainMenuModal = document.createElement('div');
-
-	// Reset app root element
-	appRoot.innerHTML = '';
-
-	mainMenuModal.className = 'modal buttons-list small';
-	mainMenuModal.innerHTML = (`
-		<div>
-			<button id="start-new-game" class="fullwidth">Play</button>
-		</div>
-		<div>
-			<button id="display-difficulty-modal" class="fullwidth">Choose difficulty</button>
-		</div>
-		<div>
-			<button id="display-playername-modal" class="fullwidth">Change player name</button>
-		</div>
-		<div>
-			<button id="display-scoreboard-modal" class="fullwidth">Scoreboard</button>
-		</div>
-	`);
-
-	appRoot.appendChild(mainMenuModal);
-
-	document.getElementById('start-new-game').addEventListener('click', startNewGame);
-	document.getElementById('display-difficulty-modal').addEventListener('click', displayDifficultyModal);
-	document.getElementById('display-playername-modal').addEventListener('click', displayPlayerNameModal);
-	document.getElementById('display-scoreboard-modal').addEventListener('click', displayScoreboardModal);
-};
-
 const displayGameResultModal = (result) => {
     const appRoot = document.getElementById('root');
     const modalContainer = document.createElement('div');
@@ -106,7 +113,7 @@ const displayGameResultModal = (result) => {
     	<div id="game-result-message">${result ? 'You have won!' : 'Game over'}</div>
     	<div class="submit-block">
     		<button id="return-to-menu">Go to menu</button>
-			<button id="game-continue">Continue</button>
+			<button id="play-again">Play gain</button>
 		</div>
     `);
 
@@ -115,12 +122,51 @@ const displayGameResultModal = (result) => {
     modalContainer.appendChild(gameResultModal);
 
     document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
-    document.getElementById('game-continue').addEventListener('click', startNewGame);
+    document.getElementById('play-again').addEventListener('click', startNewGame);
 };
 
 const displayScoreboardModal = () => {
     const appRoot = document.getElementById('root');
     const scoreboardModal = document.createElement('div');
+
+    const clearScores = () => {
+        if (confirm('Are you sure you want to clear scores?')) {
+            globals.gameScoreboard = [];
+
+            saveData('scoreboard', globals.gameScoreboard);
+
+            displayScoreboardModal();
+        }
+    };
+
+    const buildScoreList = () => {
+        const scoreArray = sortArrayByKey(globals.gameScoreboard, 'score');
+        let scoreList = '';
+
+        if (globals.gameScoreboard.length === 0) {
+            return (`
+			<tr>
+				<td colspan="3" class="center">
+					<em>Scoreboard is empty at the moment.</em>
+				</td>
+			</tr>
+		`);
+        }
+
+        for (let i = 0; i < 10; i += 1) {
+            if (scoreArray[i]) {
+                scoreList += (`
+				<tr>
+					<td>${scoreArray[i].playername}</td>
+					<td>${constants.difficultyMatrix[scoreArray[i].difficulty].name}</td>
+					<td>${scoreArray[i].score}</td>
+				</tr>
+			`);
+            }
+        }
+
+        return scoreList;
+    };
 
     // Reset app root element
     appRoot.innerHTML = '';
@@ -140,42 +186,15 @@ const displayScoreboardModal = () => {
 			</tbody>
 		</table>
     	<div class="submit-block">
+    		<button id="clear-scores">Clear scores</button>
 			<button id="return-to-menu">Go to menu</button>
 		</div>
     `);
 
     appRoot.appendChild(scoreboardModal);
 
+    document.getElementById('clear-scores').addEventListener('click', clearScores);
     document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
-};
-
-const buildScoreList = () => {
-	const scoreArray = sortArrayByKey(globals.gameScoreboard, 'score');
-	let scoreList = '';
-
-	if (globals.gameScoreboard.length === 0) {
-		return (`
-			<tr>
-				<td colspan="3" class="center">
-					<em>Scoreboard is empty at the moment.</em>
-				</td>
-			</tr>
-		`);
-	}
-
-    for (let i = 0; i < 10; i += 1) {
-		if (scoreArray[i]) {
-            scoreList += (`
-				<tr>
-					<td>${scoreArray[i].playername}</td>
-					<td>${constants.difficultyMatrix[scoreArray[i].difficulty].name}</td>
-					<td>${scoreArray[i].score}</td>
-				</tr>
-			`);
-        }
-    }
-
-    return scoreList;
 };
 
 const startNewGame = () => {
