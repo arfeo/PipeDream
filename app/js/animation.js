@@ -125,7 +125,7 @@ const animateElement = async (row, column, ent) => {
 				const { nextRow, nextColumn, nextEnt } = next;
 
 				if (!next) {
-                    gameResult(false);
+                    onGameStop(false);
 
 					return Promise.reject();
 				}
@@ -150,7 +150,7 @@ const animateElement = async (row, column, ent) => {
 					const next = getNextElement(row, column, out);
 
 					if (next === false) {
-                        gameResult(false);
+                        onGameStop(false);
 
 						return Promise.reject();
 					}
@@ -168,7 +168,7 @@ const animateElement = async (row, column, ent) => {
 		globals.animationPromisesCount -= 1;
 
 		if (!globals.isGameOver && globals.animationPromisesCount === 0) {
-			gameResult(true);
+            onGameStop(true);
 		}
 
 		return Promise.resolve();
@@ -232,7 +232,7 @@ const getNextElement = (row, column, ent) => {
 	return next;
 };
 
-const gameResult = (result) => {
+const onGameStop = (result) => {
     globals.isGameOver = true;
 
     if (result) {

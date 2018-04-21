@@ -81,7 +81,7 @@ const displayMainMenuModal = () => {
 			<button id="display-playername-modal" class="fullwidth">Change player name</button>
 		</div>
 		<div>
-			<button class="fullwidth">Scoreboard</button>
+			<button id="display-scoreboard-modal" class="fullwidth">Scoreboard</button>
 		</div>
 	`);
 
@@ -90,6 +90,7 @@ const displayMainMenuModal = () => {
 	document.getElementById('start-new-game').addEventListener('click', startNewGame);
 	document.getElementById('display-difficulty-modal').addEventListener('click', displayDifficultyModal);
 	document.getElementById('display-playername-modal').addEventListener('click', displayPlayerNameModal);
+	document.getElementById('display-scoreboard-modal').addEventListener('click', displayScoreboardModal);
 };
 
 const displayGameResultModal = (result) => {
@@ -115,6 +116,25 @@ const displayGameResultModal = (result) => {
 
     document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
     document.getElementById('game-continue').addEventListener('click', startNewGame);
+};
+
+const displayScoreboardModal = () => {
+    const appRoot = document.getElementById('root');
+    const scoreboardModal = document.createElement('div');
+
+    // Reset app root element
+    appRoot.innerHTML = '';
+
+    scoreboardModal.className = 'modal large';
+    scoreboardModal.innerHTML = (`
+    	<div class="submit-block">
+			<button id="return-to-menu">Go to menu</button>
+		</div>
+    `);
+
+    appRoot.appendChild(scoreboardModal);
+
+    document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
 };
 
 const startNewGame = () => {

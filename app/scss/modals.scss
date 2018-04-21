@@ -26,6 +26,10 @@
   background-color: lightgrey;
   z-index: 101;
 
+  &.large {
+    width: 80vmin;
+  }
+
   &.medium {
     width: 50vmin;
   }
