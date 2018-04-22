@@ -105,28 +105,31 @@ const displayDifficultyModal = () => {
 };
 
 const displayGameResultModal = (result) => {
-    const appRoot = document.getElementById('root');
-    const modalContainer = document.createElement('div');
-    const modalOverlay = document.createElement('div');
-    const gameResultModal = document.createElement('div');
+    if (!document.getElementById('game-result-modal')) {
+        const appRoot = document.getElementById('root');
+        const modalContainer = document.createElement('div');
+        const modalOverlay = document.createElement('div');
+        const gameResultModal = document.createElement('div');
 
-    modalContainer.className = 'modal-container';
-    modalOverlay.className = 'modal-overlay';
-    gameResultModal.className = 'modal medium';
-    gameResultModal.innerHTML = (`
-    	<div id="game-result-message">${result ? 'You have won!' : 'Game over'}</div>
-    	<div class="submit-block">
-    		<button id="return-to-menu">Go to menu</button>
-			<button id="play-again">Play gain</button>
-		</div>
-    `);
+        modalContainer.id = 'game-result-modal';
+        modalContainer.className = 'modal-container';
+        modalOverlay.className = 'modal-overlay';
+        gameResultModal.className = 'modal medium';
+        gameResultModal.innerHTML = (`
+            <div id="game-result-message">${result ? 'You have won!' : 'Game over'}</div>
+            <div class="submit-block">
+                <button id="return-to-menu">Go to menu</button>
+                <button id="play-again">Play gain</button>
+            </div>
+        `);
 
-    appRoot.appendChild(modalContainer);
-    modalContainer.appendChild(modalOverlay);
-    modalContainer.appendChild(gameResultModal);
+        appRoot.appendChild(modalContainer);
+        modalContainer.appendChild(modalOverlay);
+        modalContainer.appendChild(gameResultModal);
 
-    document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
-    document.getElementById('play-again').addEventListener('click', startNewGame);
+        document.getElementById('return-to-menu').addEventListener('click', displayMainMenuModal);
+        document.getElementById('play-again').addEventListener('click', startNewGame);
+    }
 };
 
 const displayScoreboardModal = () => {
