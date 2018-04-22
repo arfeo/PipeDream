@@ -108,19 +108,19 @@ const constants = {
 	difficultyMatrix: [
 		{
 			name: 'Easy',
-			speed: 100,
-			time: 180,
+			speed: 40,
+			time: 120,
 			scorex: 1,
 		},
 		{
 			name: 'Hard',
-			speed: 60,
-			time: 120,
+			speed: 25,
+			time: 90,
 			scorex: 2,
 		},
 		{
 			name: 'Nightmare',
-			speed: 20,
+			speed: 10,
 			time: 60,
 			scorex: 3,
 		},

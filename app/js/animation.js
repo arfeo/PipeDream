@@ -248,8 +248,6 @@ const onGameStop = (result) => {
 		globals.gameScoreboard.push(score);
 
         saveData('scoreboard', globals.gameScoreboard);
-
-        console.log(globals.gameScoreboard);
 	}
 
     displayGameResultModal(result);
