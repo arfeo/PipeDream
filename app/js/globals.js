@@ -116,13 +116,13 @@ const constants = {
 			name: 'Hard',
 			speed: 25,
 			time: 90,
-			scorex: 2,
+			scorex: 3,
 		},
 		{
 			name: 'Nightmare',
 			speed: 10,
 			time: 60,
-			scorex: 3,
+			scorex: 5,
 		},
 	],
 };
