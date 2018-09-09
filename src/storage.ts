@@ -1,15 +1,15 @@
-function getData(item) {
+export function getData(item: string) {
   try {
-    const data = JSON.parse(localStorage.getItem(item));
-    return data;
+    return JSON.parse(localStorage.getItem(item));
   } catch (error) {
     console.error(error);
   }
 }
 
-function saveData(item, data) {
+export function saveData(item: string, data: any) {
   try {
     localStorage.setItem(item, JSON.stringify(data));
+
     return data;
   } catch (error) {
   	console.error(error);

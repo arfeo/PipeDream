@@ -1,57 +1,82 @@
 const gulp = require('gulp');
+const del = require('del');
+const buffer = require('vinyl-buffer');
+const source = require('vinyl-source-stream');
+const browserify = require('browserify');
+const tsify = require('tsify');
+const tslint = require('gulp-tslint');
 const sass = require('gulp-sass');
-const minify = require('gulp-babel-minify');
-const cssmin = require('gulp-cssmin');
-const watch = require('gulp-watch');
-const runSequence = require('run-sequence');
-const jsImport = require('gulp-js-import');
-const eslint = require('gulp-eslint');
+const concat = require('gulp-concat');
+const browserSync = require('browser-sync').create();
 
-gulp.task('build', function(done) {
-	return runSequence(
-		'static',
-		'js',
-		'sass',
-		function () { done(); }
-	);
-});
+function clean() {
+    return del(['dist']);
+}
 
-gulp.task('watch', function() {
-	gulp.watch('./app/js/**/*', ['js']);
-	gulp.watch('./app/scss/**/*', ['sass']);
-});
+function build(done) {
+    gulp.series(
+        clean,
+        combine,
+        linter,
+        ts,
+        scss,
+    )(done);
+}
 
-gulp.task('sass', function() {
-	return gulp.src('./app/scss/app.scss')
-		.pipe(sass())
-		.pipe(cssmin())
-		.pipe(gulp.dest('./dist'));
-});
+function serve(done) {
+    browserSync.init({
+        server: {
+            baseDir: './dist'
+        }
+    });
 
-gulp.task('eslint', function () {
-  return gulp.src([
-		'**/*.js',
-		'!app/js/app.js',
-		'!node_modules/**',
-		'!dist/**',
-	])
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
-});
+    done();
+}
 
-gulp.task('js', ['eslint'], function() {
-	gulp.src('./app/js/app.js')
-		.pipe(jsImport({ hideConsole: true }))
-		.pipe(minify({
-			mangle: {
-				keepClassName: true
-			}
-		}))
-		.pipe(gulp.dest('./dist'));
-});
+function reload(done) {
+    browserSync.reload();
+    done();
+}
 
-gulp.task('static', function() {
-	gulp.src('./app/index.html')
-		.pipe(gulp.dest('./dist'));
-});
+function run(done) {
+    gulp.series(
+        build,
+        serve,
+        watchers,
+    )(done);
+}
+
+function watchers() {
+    gulp.watch('./src/**/*.ts', gulp.series(linter, ts, reload));
+    gulp.watch('./src/**/*/*.scss', gulp.series(scss, reload));
+}
+
+function scss() {
+    return gulp.src('./src/**/*/*.scss')
+        .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+        .pipe(concat('app.css'))
+        .pipe(gulp.dest('./dist'));
+}
+
+function linter() {
+    return gulp.src('./src/**/*.ts')
+        .pipe(tslint())
+        .pipe(tslint.report());
+}
+
+function ts() {
+    return browserify().add('./src/main.ts')
+        .plugin(tsify)
+        .bundle().on('error', function (error) { console.error(error.toString()); })
+        .pipe(source('app.js'))
+        .pipe(buffer())
+        .pipe(gulp.dest('./dist'));
+}
+
+function combine() {
+    return gulp.src('./public/index.html')
+        .pipe(gulp.dest('./dist'));
+}
+
+gulp.task('build', build);
+gulp.task('default', run);

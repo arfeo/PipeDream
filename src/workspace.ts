@@ -1,11 +1,22 @@
-const createGameWorkspace = () => {
-	const appRoot = document.getElementById('root');
-	const gameStatusPanel = document.createElement('div');
-	const gameBoard = document.createElement('div');
-	const gameToolbox = document.createElement('div');
-	const toolboxExpected = document.createElement('div');
+/* tslint:disable:max-file-line-count */
+import { globals } from './globals';
+import { constants } from './constants';
 
-	// Reset app root element
+import { setNewGameState, updateElementsMap } from './state';
+import { randomNum } from './utils';
+import { animateElement } from './animation';
+import { displayMainMenuModal } from './modals';
+
+import { IElementMapItem } from './types';
+
+export const createGameWorkspace = () => {
+	const appRoot: HTMLElement = document.getElementById('root');
+	const gameStatusPanel: HTMLElement = document.createElement('div');
+	const gameBoard: HTMLElement = document.createElement('div');
+	const gameToolbox: HTMLElement = document.createElement('div');
+	const toolboxExpected: HTMLElement = document.createElement('div');
+
+	// Reset src root element
 	appRoot.innerHTML = '';
 
 	// Create the workspace
@@ -34,7 +45,7 @@ const createGameWorkspace = () => {
 	// Create game board cell containers
 	for (let row = 1; row <= 7; row += 1) {
 		for (let column = 1; column <= 10; column += 1) {
-			const boardCellContainer = document.createElement('div');
+			const boardCellContainer: HTMLElement = document.createElement('div');
 
 			boardCellContainer.className = 'board__cell-container';
 			boardCellContainer.innerHTML = (`
@@ -44,14 +55,15 @@ const createGameWorkspace = () => {
 
 			gameBoard.appendChild(boardCellContainer);
 
-			document.getElementById(`cell-animation-${row}-${column}`)
+			document
+				.getElementById(`cell-animation-${row}-${column}`)
 				.addEventListener('click', () => onBoardCellClick(row, column));
 		}
 	}
 
 	// Create expected elements view
 	for (let i = 0; i < 5; i += 1) {
-		const toolboxExpectedElement = document.createElement('canvas');
+		const toolboxExpectedElement: HTMLCanvasElement = document.createElement('canvas');
 
 		toolboxExpectedElement.id = `element-${i}`;
 		toolboxExpectedElement.className = 'toolbox__expected-element';
@@ -66,9 +78,11 @@ const createGameWorkspace = () => {
 	document.getElementById('main-menu-button').addEventListener('click', onGotoMainMenu);
 };
 
-const drawStartPoint = () => {
-	globals.startPoint.position.row = randomNum(1, 7);
-	globals.startPoint.position.column = randomNum(1, 10);
+export const drawStartPoint = () => {
+	globals.startPoint.position = {
+		row: randomNum(1, 7),
+    column: randomNum(1, 10),
+  };
 
 	// Generate start point
 	let isStartPointChosen = false;
@@ -131,18 +145,39 @@ const drawStartPoint = () => {
 	}
 
 	// Draw start point
-	const startCell = document.getElementById(`cell-${globals.startPoint.position.row}-${globals.startPoint.position.column}`);
-	const ctx = startCell.getContext('2d');
+	const startCell: HTMLCanvasElement = document.getElementById(
+		`cell-${globals.startPoint.position.row}-${globals.startPoint.position.column}`
+	) as HTMLCanvasElement;
+	const ctx: CanvasRenderingContext2D = startCell.getContext('2d');
 
 	ctx.fillStyle = 'black';
-	ctx.fillRect(startCell.width / 2 - startCell.width / 8, 0, startCell.width / 4, startCell.height / 2);
+	ctx.fillRect(
+		startCell.width / 2 - startCell.width / 8,
+		0,
+		startCell.width / 4,
+		startCell.height / 2
+	);
 	ctx.beginPath();
-	ctx.arc(startCell.width / 2, startCell.height / 2, 25, 0, 2 * Math.PI, false);
+	ctx.arc(
+		startCell.width / 2,
+		startCell.height / 2,
+		25,
+		0,
+		Math.PI * 2,
+		false
+	);
 	ctx.fill();
 
 	ctx.fillStyle = 'lightblue';
 	ctx.beginPath();
-	ctx.arc(startCell.width / 2, startCell.height / 2, 12, 0, 2 * Math.PI, false);
+	ctx.arc(
+		startCell.width / 2,
+		startCell.height / 2,
+		12,
+		0,
+		Math.PI * 2,
+		false
+	);
 	ctx.fill();
 
 	startCell.style.transform = `rotate(${globals.startPoint.direction * 90}deg)`;
@@ -156,10 +191,12 @@ const drawStartPoint = () => {
 	);
 };
 
-const drawExpectedElements = () => {
-	for (el in globals.expectedElements) {
-		const expectedElement = document.getElementById(`element-${el}`);
-		const ctx = expectedElement.getContext('2d');
+export const drawExpectedElements = () => {
+	for (const el in globals.expectedElements) {
+		const expectedElement: HTMLCanvasElement = document.getElementById(
+			`element-${el}`
+		) as HTMLCanvasElement;
+		const ctx: CanvasRenderingContext2D = expectedElement.getContext('2d');
 
 		ctx.fillStyle = 'white';
 
@@ -169,87 +206,152 @@ const drawExpectedElements = () => {
 	}
 };
 
-const drawElementByType = (type, ctx, item) => {
+export const drawElementByType = (type: number, ctx: CanvasRenderingContext2D, item: HTMLCanvasElement) => {
 	ctx.clearRect(0, 0, item.width, item.height);
 
 	switch (type) {
 		case 1:
 		{
-			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height);
+			ctx.fillRect(
+				item.width / 2 - item.width / 8,
+				0,
+				item.width / 4,
+				item.height,
+			);
 			break;
 		}
 		case 2:
 		{
-			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
+			ctx.fillRect(
+				item.width / 2 - item.width / 8,
+				0,
+				item.width / 4,
+				item.height / 2
+			);
 			ctx.beginPath();
-			ctx.arc(item.width / 2, item.height / 2, 12, 0, 2 * Math.PI, false);
+			ctx.arc(
+				item.width / 2,
+				item.height / 2,
+				12,
+				0,
+				Math.PI * 2,
+				false,
+			);
 			ctx.fill();
 			break;
 		}
 		case 3:
 		{
-			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height);
-			ctx.fillRect(0, item.height / 2 - item.height / 8, item.width, item.height / 4);
+			ctx.fillRect(
+				item.width / 2 - item.width / 8,
+				0,
+				item.width / 4,
+				item.height,
+			);
+			ctx.fillRect(
+				0,
+				item.height / 2 - item.height / 8,
+				item.width,
+				item.height / 4,
+			);
 			break;
 		}
 		case 4:
 		{
-			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
-			ctx.fillRect(0, item.height / 2 - item.height / 8, item.width, item.height / 4);
+			ctx.fillRect(
+				item.width / 2 - item.width / 8,
+				0,
+				item.width / 4,
+				item.height / 2,
+			);
+			ctx.fillRect(
+				0,
+				item.height / 2 - item.height / 8,
+				item.width,
+				item.height / 4,
+			);
 			break;
 		}
 		case 5:
 		{
-			ctx.fillRect(item.width / 2 - item.width / 8, 0, item.width / 4, item.height / 2);
-			ctx.fillRect(item.width / 2 - item.width / 8, item.height / 2 - item.height / 8, item.width, item.height / 4);
+			ctx.fillRect(
+				item.width / 2 - item.width / 8,
+				0,
+				item.width / 4,
+				item.height / 2,
+			);
+			ctx.fillRect(
+				item.width / 2 - item.width / 8,
+				item.height / 2 - item.height / 8,
+				item.width,
+				item.height / 4,
+			);
 			break;
 		}
+		default: break;
 	}
 };
 
-const pushNewExpectedElement = () => {
-	const type = randomNum(1, 5);
-	const direction = randomNum(0, 3);
+export const pushNewExpectedElement = () => {
+	const type: number = randomNum(1, 5);
+	const direction: number = randomNum(0, 3);
 
 	globals.expectedElements.push({ type, direction });
 
 	drawExpectedElements();
 };
 
-const onBoardCellClick = (row, column) => {
+export const onBoardCellClick = (row: number, column: number) => {
 	if (!globals.isGameOver) {
-		const searchCell = globals.elementsMap.filter(e => JSON.stringify({ row, column }) === JSON.stringify(e.position))[0];
+		const searchCell = globals.elementsMap.filter((item: IElementMapItem) => {
+			return JSON.stringify({ row, column }) === JSON.stringify(item.position);
+    })[0] || null;
+		const isUnlockedCell = !(searchCell && searchCell.locked);
+		const isStartPosition = JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position);
 
-		if ((!searchCell || (searchCell && searchCell.locked === false)) && JSON.stringify({ row, column }) !== JSON.stringify(globals.startPoint.position)) {
-			const currentCell = document.getElementById(`cell-${row}-${column}`);
-			const nextElement = globals.expectedElements[0];
-			const ctx = currentCell.getContext('2d');
+		if (isUnlockedCell && isStartPosition) {
+			const currentCell: HTMLCanvasElement = document.getElementById(
+				`cell-${row}-${column}`
+			) as HTMLCanvasElement;
+			const ctx: CanvasRenderingContext2D = currentCell.getContext('2d');
 
 			ctx.fillStyle = 'black';
 
-			drawElementByType(globals.expectedElements[0].type, ctx, currentCell);
+			drawElementByType(
+				globals.expectedElements[0].type,
+				ctx,
+				currentCell
+			);
+
 			currentCell.style.transform = `rotate(${globals.expectedElements[0].direction * 90}deg)`;
 
-			updateElementsMap(globals.expectedElements[0].type, row, column, globals.expectedElements[0].direction, false);
+			updateElementsMap(
+				globals.expectedElements[0].type,
+				row,
+				column,
+				globals.expectedElements[0].direction,
+				false,
+			);
 
 			globals.expectedElements.shift();
+
 			pushNewExpectedElement();
 		}
 	}
 };
 
-const timeTicker = (ticker) => {
-	const gameTimeTicker = document.getElementById('game-time-ticker');
+export const timeTicker = async (ticker: number) => {
+	const gameTimeTicker: HTMLElement = document.getElementById('game-time-ticker');
 
 	if (gameTimeTicker) {
-		const min = parseInt(ticker / 60);
-		const sec = parseInt(ticker - min * 60);
+		const min = Math.floor(ticker / 60);
+		const sec = Math.floor(ticker - min * 60);
 
 		if (min === 0 && sec === 0) {
-			onOpenValve();
+			await onOpenValve();
 		}
 
-		const timeString = (min < 10 ? `0${min}` : min) + ':' + (sec < 10 ? `0${sec}` : sec);
+		const timeString = `${(min < 10 ? `0${min}` : min)}:${(sec < 10 ? `0${sec}` : sec)}`;
 
 		gameTimeTicker.innerHTML = (min === 0 && sec <= 10) ? `<span class="orangered">${timeString}</span>` : timeString;
 
@@ -259,42 +361,42 @@ const timeTicker = (ticker) => {
 	}
 };
 
-const scoreCounter = (score) => {
+export const scoreCounter = (score: number) => {
 	const gameScoreCounter = document.getElementById('game-score-counter');
 
 	if (globals.isGameOver) {
 		clearTimeout(globals.gameScoreCounter);
 	} else {
-		gameScoreCounter.innerHTML = score * constants.difficultyMatrix[globals.gameDifficulty].scorex;
+		gameScoreCounter.innerHTML = (score * constants.difficultyMatrix[globals.gameDifficulty].scorex).toString();
 
 		globals.gameScoreCounter = setTimeout(() => scoreCounter(score + 1), 100);
 	}
 };
 
-const onOpenValve = () => {
-    clearTimeout(globals.gameTimer);
+export const onOpenValve = async () => {
+	clearTimeout(globals.gameTimer);
 
-    scoreCounter(0);
+	scoreCounter(0);
 
-    animateElement(globals.startPoint.position.row, globals.startPoint.position.column);
+	await animateElement(globals.startPoint.position.row, globals.startPoint.position.column);
 };
 
-const onResetGame = () => {
-    if (globals.elementsMap.length > 1 && !globals.isGameOver) {
-        if (!confirm('Are you sure you want start a new game?')) {
-            return;
-        }
-    }
+const onResetGame = async () => {
+	if (globals.elementsMap.length > 1 && !globals.isGameOver) {
+		if (!confirm('Are you sure you want start a new game?')) {
+			return;
+		}
+	}
 
-    setNewGameState();
+	await setNewGameState();
 };
 
 const onGotoMainMenu = () => {
-    if (globals.elementsMap.length > 1 && !globals.isGameOver) {
-        if (!confirm('Are you sure you want to abort game?')) {
-            return;
-        }
-    }
+	if (globals.elementsMap.length > 1 && !globals.isGameOver) {
+		if (!confirm('Are you sure you want to abort game?')) {
+			return;
+		}
+	}
 
-    displayMainMenuModal();
+	displayMainMenuModal();
 };
