@@ -1,3 +1,5 @@
+import { IGameScoreboardItem } from '../../types/global';
+
 export interface IGame {
   playerName: string;
   expectedElements: IExpectedElements[];
@@ -13,12 +15,7 @@ export interface IGame {
   animationPromisesCount: number;
   gameScoreboard: IGameScoreboardItem[];
 
-  gameInit(): void;
-}
-
-export interface IConstants {
-  elementsSpec: IElementSpecItem[];
-  difficultyMatrix: IDifficultyMatrixItem[];
+  onMount(): void;
 }
 
 export interface IElementMapItem {
@@ -26,24 +23,6 @@ export interface IElementMapItem {
   direction: number;
   position: IPosition;
   locked: boolean;
-}
-
-export interface IElementSpecItem {
-  type: number;
-  outlets: number[][];
-}
-
-export interface IDifficultyMatrixItem {
-  name: string;
-  speed: number;
-  time: number;
-  scorex: number;
-}
-
-export interface IGameScoreboardItem {
-  playername: string;
-  score: number;
-  difficulty: number;
 }
 
 export interface INextElement {

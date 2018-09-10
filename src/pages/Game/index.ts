@@ -1,13 +1,13 @@
-import { displayMainMenuModal, displayPlayerNameModal } from './modals';
-import { getData } from '../utils/storage';
+import { getData } from '../../utils/storage';
+import { createGameWorkspace, setNewGameState } from './gameboard';
 
+import { IGameScoreboardItem } from '../../types/global';
 import {
-  IGame,
   IElementMapItem,
   IExpectedElements,
-  IGameScoreboardItem,
+  IGame,
   IPosition,
-} from '../types';
+} from './types';
 
 class Game implements IGame {
   playerName: string;
@@ -45,22 +45,18 @@ class Game implements IGame {
     this.gameScoreboard = null;
     this.gameScoreboard = [];
 
-    this.gameInit();
+    this.onMount().catch(() => console.error('Could not initialize game'));
   }
 
-  gameInit = () => {
+  onMount = async () => {
     this.playerName = getData('playername') || '';
     this.gameDifficulty = parseInt(getData('difficulty')) || 0;
     this.gameScoreboard = getData('scoreboard') || [];
 
-    if (!this.playerName) {
-      displayPlayerNameModal.call(this);
+    createGameWorkspace.call(this);
 
-      return;
-    }
-
-    displayMainMenuModal.call(this);
-  }
+    await setNewGameState.call(this);
+  };
 }
 
 export { Game };

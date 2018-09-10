@@ -1,11 +1,11 @@
 /* tslint:disable:max-file-line-count */
-import { displayGameResultModal } from './modals';
-import { saveData } from '../utils/storage';
-import { updateElementsMap } from './state';
+import { constants } from '../../constants';
 
-import { constants } from '../constants';
+import { saveData } from '../../utils/storage';
+import { displayGameResultModal, updateElementsMap } from './gameboard';
 
-import { IElementMapItem, IElementSpecItem, INextElement } from '../types';
+import { IElementSpecItem } from '../../types/global';
+import { IElementMapItem, INextElement } from './types';
 
 export function animateComponent(type: string, row: number, column: number, ent: number): Promise<void> {
   return new Promise((resolve) => {

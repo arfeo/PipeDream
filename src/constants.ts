@@ -6,7 +6,7 @@
  *	3 -> W
  */
 
-import { IConstants } from './types';
+import { IConstants } from './types/global';
 
 export const constants: IConstants = {
   elementsSpec: [

@@ -1,12 +1,13 @@
 /* tslint:disable:max-file-line-count */
-import { constants } from '../constants';
+import { Menu } from '../Menu';
+import { Game } from './index';
+
+import { constants } from '../../constants';
 
 import { animateElement } from './animation';
-import { displayMainMenuModal } from './modals';
-import { randomNum } from '../utils/common';
-import { onResetGame, setNewGameState, updateElementsMap } from './state';
+import { randomNum } from '../../utils/common';
 
-import { IElementMapItem } from '../types';
+import { IElementMapItem } from './types';
 
 export function createGameWorkspace() {
   const appRoot: HTMLElement = document.getElementById('root');
@@ -395,11 +396,97 @@ export function onGotoMainMenu() {
     }
   }
 
-  displayMainMenuModal.call(this);
+  new Menu();
 }
 
-export async function startNewGame() {
-  createGameWorkspace.call(this);
+export function displayGameResultModal(result: boolean) {
+  if (!document.getElementById('game-result-modal')) {
+    const appRoot: HTMLElement = document.getElementById('root');
+    const modalContainer: HTMLElement = document.createElement('div');
+    const modalOverlay: HTMLElement = document.createElement('div');
+    const gameResultModal: HTMLElement = document.createElement('div');
+
+    modalContainer.id = 'game-result-modal';
+    modalContainer.className = 'modal-container';
+    modalOverlay.className = 'modal-overlay';
+    gameResultModal.className = 'modal medium';
+    gameResultModal.innerHTML = (`
+        <div id="game-result-message">${result ? 'You have won!' : 'Game over'}</div>
+        <div class="submit-block">
+            <button id="return-to-menu">Go to menu</button>
+            <button id="play-again">Play gain</button>
+        </div>
+    `);
+
+    appRoot.appendChild(modalContainer);
+    modalContainer.appendChild(modalOverlay);
+    modalContainer.appendChild(gameResultModal);
+
+    document
+      .getElementById('return-to-menu')
+      .addEventListener('click', () => new Menu());
+    document
+      .getElementById('play-again')
+      .addEventListener('click', () => new Game());
+  }
+}
+
+export async function clearGameState() {
+  this.expectedElements = [];
+  this.elementsMap = [];
+  this.startPoint.position = null;
+  this.isGameOver = false;
+  this.animationPromisesCount = 0;
+
+  clearTimeout(this.gameTimer);
+
+  await timeTicker.call(this, constants.difficultyMatrix[this.gameDifficulty].time);
+
+  for (let row = 1; row <= 7; row += 1) {
+    for (let column = 1; column <= 10; column += 1) {
+      const cell: HTMLCanvasElement = document.getElementById(
+        `cell-${row}-${column}`,
+      ) as HTMLCanvasElement;
+      const cellAnimation: any = document.getElementById(`cell-animation-${row}-${column}`);
+      const ctx: CanvasRenderingContext2D = cell.getContext('2d');
+      const ctxAnimation: CanvasRenderingContext2D = cellAnimation.getContext('2d');
+
+      ctx.clearRect(0, 0, 100, 100);
+      ctxAnimation.clearRect(0, 0, 100, 100);
+    }
+  }
+}
+
+export async function setNewGameState() {
+  await clearGameState.call(this);
+
+  for (let i = 0; i < 5; i += 1) {
+    pushNewExpectedElement.call(this);
+  }
+
+  drawStartPoint.call(this);
+}
+
+export function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean) {
+  this.elementsMap = [
+    ...this.elementsMap.filter((item: IElementMapItem) => {
+      return JSON.stringify({ row, column }) !== JSON.stringify(item.position);
+    }),
+    {
+      position: { row, column },
+      type,
+      direction,
+      locked,
+    },
+  ];
+}
+
+export async function onResetGame() {
+  if (this.elementsMap.length > 1 && !this.isGameOver) {
+    if (!confirm('Are you sure you want start a new game?')) {
+      return;
+    }
+  }
 
   await setNewGameState.call(this);
 }

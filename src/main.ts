@@ -1,5 +1,5 @@
-import { Game } from './Game';
+import { Menu } from './pages/Menu';
 
 window.onload = () => {
-  new Game();
+  new Menu();
 };
