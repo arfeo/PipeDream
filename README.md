@@ -1,6 +1,6 @@
 # PipeDream
 
-An a la Pipe Dream (Pipe Mania) puzzle game written in pure JS.
+A la Pipe Dream (Pipe Mania) puzzle game.
 
 ![Interface](http://arfeo.net/static/pipedream/interface.png "Interface")
 
@@ -18,13 +18,17 @@ Clone the project:
 $ git clone https://github.com/arfeo/PipeDream.git && cd PipeDream
 ```
 
-Run
+Run:
 
 ```
-$ npm install
+$ yarn
 ```
 
-Then
+```
+$ gulp
+```
+
+Build:
 
 ```
 $ gulp build

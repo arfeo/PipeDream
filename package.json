@@ -1,14 +1,15 @@
 {
   "name": "pipedream",
   "version": "1.0.0",
-  "description": "An a la PipeDream game",
+  "description": "A la Pipe Dream (Pipe Mania) puzzle game",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arfeo/PipeDream.git"
   },
   "keywords": [
-    "pipedream",
     "game",
+    "pipe dream",
+    "pipe mania",
     "puzzle"
   ],
   "author": "Arfeo.net",
