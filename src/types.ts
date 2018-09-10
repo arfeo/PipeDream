@@ -1,10 +1,4 @@
-export interface IStorage {
-  playername: string;
-  difficulty: number;
-  scoreboard: any[]; // TODO
-}
-
-export interface IGlobals {
+export interface IGame {
   playerName: string;
   expectedElements: IExpectedElements[];
   startPoint: {
@@ -18,6 +12,8 @@ export interface IGlobals {
   gameScoreCounter: number;
   animationPromisesCount: number;
   gameScoreboard: IGameScoreboardItem[];
+
+  gameInit(): void;
 }
 
 export interface IConstants {

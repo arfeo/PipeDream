@@ -1,12 +1,5 @@
-import { displayMainMenuModal, displayPlayerNameModal } from './modals';
-import { globals } from './globals';
+import { Game } from './Game';
 
 window.onload = () => {
-	if (!globals.playerName) {
-		displayPlayerNameModal();
-
-		return;
-	}
-
-	displayMainMenuModal();
+	new Game();
 };

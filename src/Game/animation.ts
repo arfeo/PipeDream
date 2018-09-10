@@ -1,14 +1,13 @@
 /* tslint:disable:max-file-line-count */
 import { displayGameResultModal } from './modals';
+import { saveData } from '../utils/storage';
 import { updateElementsMap } from './state';
-import { saveData } from './storage';
 
-import { globals } from './globals';
-import { constants } from './constants';
+import { constants } from '../constants';
 
-import { IElementMapItem, IElementSpecItem, INextElement } from './types';
+import { IElementMapItem, IElementSpecItem, INextElement } from '../types';
 
-export const animateComponent = (type: string, row: number, column: number, ent: number): Promise<void> => {
+export function animateComponent(type: string, row: number, column: number, ent: number): Promise<void> {
 	return new Promise((resolve) => {
 		const cell: HTMLCanvasElement = document.getElementById(
 			`cell-animation-${row}-${column}`
@@ -163,16 +162,16 @@ export const animateComponent = (type: string, row: number, column: number, ent:
 						default: break;
 					}
 				}
-			}, constants.difficultyMatrix[globals.gameDifficulty].speed);
+			}, constants.difficultyMatrix[this.gameDifficulty].speed);
 		}
 	});
-};
+}
 
-export const animateElement = async (row: number, column: number, ent?: number): Promise<void> => {
-	if (!globals.isGameOver) {
-		globals.animationPromisesCount += 1;
+export async function animateElement(row: number, column: number, ent?: number): Promise<void> {
+	if (!this.isGameOver) {
+    this.animationPromisesCount += 1;
 
-		const element: IElementMapItem = globals.elementsMap.filter((item: IElementMapItem) => {
+		const element: IElementMapItem = this.elementsMap.filter((item: IElementMapItem) => {
 			return JSON.stringify({ row, column }) === JSON.stringify(item.position)
     })[0] || null;
 
@@ -180,25 +179,25 @@ export const animateElement = async (row: number, column: number, ent?: number):
 			case 0:
 			{
 				await Promise.all([
-					animateComponent('pump', row, column, element.direction),
-					animateComponent('pipe-out', row, column, element.direction),
+					animateComponent.call(this, 'pump', row, column, element.direction),
+					animateComponent.call(this, 'pipe-out', row, column, element.direction),
 				]);
 
-				const next: INextElement | boolean = getNextElement(row, column, element.direction);
+				const next: INextElement | boolean = getNextElement.call(this, row, column, element.direction);
 				const { nextRow, nextColumn, nextEnt } = next as INextElement;
 
 				if (!next) {
-					onGameStop(false);
+					onGameStop.call(this, false);
 
 					return Promise.reject();
 				}
 
-				await animateElement(nextRow, nextColumn, nextEnt);
+				await animateElement.call(this, nextRow, nextColumn, nextEnt);
 				break;
 			}
 			default:
 			{
-				await animateComponent('pipe-in', row, column, ent);
+				await animateComponent.call(this, 'pipe-in', row, column, ent);
 
 				const spec: IElementSpecItem = constants.elementsSpec.filter((item: IElementSpecItem) => {
 					return item.type === element.type;
@@ -208,18 +207,18 @@ export const animateElement = async (row: number, column: number, ent?: number):
         });
 
 				await Promise.all(outlets.map((out: number) => {
-					return animateComponent('pipe-out', row, column, out);
+					return animateComponent.call(this, 'pipe-out', row, column, out);
         }));
 
-				updateElementsMap(element.type, row, column, element.direction, true);
+				updateElementsMap.call(this, element.type, row, column, element.direction, true);
 
 				const nextElements: INextElement[] = [];
 
 				for (const out of outlets) {
-					const next = getNextElement(row, column, out);
+					const next = getNextElement.call(this, row, column, out);
 
           if (next === false) {
-            onGameStop(false);
+            onGameStop.call(this, false);
 
             return Promise.reject();
           }
@@ -231,24 +230,24 @@ export const animateElement = async (row: number, column: number, ent?: number):
 
 				await Promise.all(
 					nextElements.map((item: INextElement) => {
-						return animateElement(item.nextRow, item.nextColumn, item.nextEnt)
+						return animateElement.call(this, item.nextRow, item.nextColumn, item.nextEnt)
         	})
 				);
 				break;
 			}
 		}
 
-		globals.animationPromisesCount -= 1;
+    this.animationPromisesCount -= 1;
 
-		if (!globals.isGameOver && globals.animationPromisesCount === 0) {
-			onGameStop(true);
+		if (!this.isGameOver && this.animationPromisesCount === 0) {
+			onGameStop.call(this, true);
 		}
 
 		return Promise.resolve();
 	}
-};
+}
 
-export const getNextElement = (row: number, column: number, ent: number): INextElement | boolean => {
+export function getNextElement(row: number, column: number, ent: number): INextElement | boolean {
 	let nextRow = 0;
 	let nextColumn = 0;
 	let nextEnt = 0;
@@ -287,7 +286,7 @@ export const getNextElement = (row: number, column: number, ent: number): INextE
 
 	let next: INextElement | boolean = false;
 
-	globals.elementsMap.map((item: IElementMapItem) => {
+  this.elementsMap.map((item: IElementMapItem) => {
 		if (JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(item.position)) {
 			const nextSpec = constants.elementsSpec.filter(s => s.type === item.type)[0] || null;
 
@@ -304,25 +303,25 @@ export const getNextElement = (row: number, column: number, ent: number): INextE
 	});
 
 	return next;
-};
+}
 
-export const onGameStop = (result: boolean) => {
-	globals.isGameOver = true;
+export function onGameStop(result: boolean) {
+  this.isGameOver = true;
 
 	if (result) {
 		const gameScoreCounter = parseInt(document.getElementById('game-score-counter').innerText);
 
 		const score = {
-			playername: globals.playerName,
-			difficulty: globals.gameDifficulty,
+			playername: this.playerName,
+			difficulty: this.gameDifficulty,
 			score: gameScoreCounter,
 			date: (new Date()).getTime(),
 		};
 
-		globals.gameScoreboard.push(score);
+    this.gameScoreboard.push(score);
 
-		saveData('scoreboard', globals.gameScoreboard);
+		saveData('scoreboard', this.gameScoreboard);
 	}
 
-	displayGameResultModal(result);
-};
+	displayGameResultModal.call(this, result);
+}

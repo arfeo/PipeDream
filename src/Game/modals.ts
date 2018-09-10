@@ -1,14 +1,12 @@
-import { globals } from './globals';
-import { constants } from './constants';
+import { sortArrayByKey } from '../utils/common';
+import { saveData } from '../utils/storage';
+import { startNewGame } from './gameboard';
 
-import { sortArrayByKey } from './utils';
-import { createGameWorkspace } from './workspace';
-import { setNewGameState } from './state';
+import { constants } from '../constants';
 
-import { IDifficultyMatrixItem, IGameScoreboardItem } from './types';
-import { saveData } from './storage';
+import { IDifficultyMatrixItem, IGameScoreboardItem } from '../types';
 
-export const displayMainMenuModal = () => {
+export function displayMainMenuModal() {
   const appRoot: HTMLElement = document.getElementById('root');
   const mainMenuModal: HTMLElement = document.createElement('div');
 
@@ -38,22 +36,22 @@ export const displayMainMenuModal = () => {
 
   document
     .getElementById('start-new-game')
-    .addEventListener('click', startNewGame);
+    .addEventListener('click', startNewGame.bind(this));
   document
     .getElementById('display-difficulty-modal')
-    .addEventListener('click', displayDifficultyModal);
+    .addEventListener('click', displayDifficultyModal.bind(this));
   document
     .getElementById('display-playername-modal')
-    .addEventListener('click', displayPlayerNameModal);
+    .addEventListener('click', displayPlayerNameModal.bind(this));
   document
     .getElementById('display-scoreboard-modal')
-    .addEventListener('click', displayScoreboardModal);
+    .addEventListener('click', displayScoreboardModal.bind(this));
   document
     .getElementById('display-rules-modal')
-    .addEventListener('click', displayRulesModal);
-};
+    .addEventListener('click', displayRulesModal.bind(this));
+}
 
-export const displayPlayerNameModal = () => {
+export function displayPlayerNameModal() {
   const appRoot: HTMLElement = document.getElementById('root');
   const playerNameModal: HTMLElement = document.createElement('div');
 
@@ -64,7 +62,7 @@ export const displayPlayerNameModal = () => {
   playerNameModal.innerHTML = (`
     <div class="label">Set player name:</div>
     <div>
-      <input id="playername-input" type="text" value="${globals.playerName}" />
+      <input id="playername-input" type="text" value="${this.playerName}" />
     </div>
     <div class="submit-block">
       <button id="playername-continue">Continue</button>
@@ -82,16 +80,16 @@ export const displayPlayerNameModal = () => {
       const playerName: string = playerNameInput.value;
 
       if (playerName !== '') {
-        globals.playerName = playerName;
+        this.playerName = playerName;
 
         saveData('playername', playerName);
 
-        displayMainMenuModal();
+        displayMainMenuModal.call(this);
       }
   });
-};
+}
 
-export const displayDifficultyModal = () => {
+export function displayDifficultyModal() {
 	const appRoot: HTMLElement = document.getElementById('root');
 	const difficultyModal: HTMLElement = document.createElement('div');
 
@@ -127,14 +125,16 @@ export const displayDifficultyModal = () => {
 		  const currentTarget: HTMLElement = event.currentTarget as HTMLElement;
 			const difficulty = parseInt(currentTarget.getAttribute('difficulty'));
 
-			globals.gameDifficulty = difficulty;
+      this.gameDifficulty = difficulty;
+
 			saveData('difficulty', difficulty);
-			displayMainMenuModal();
+
+			displayMainMenuModal.call(this);
 		});
 	});
-};
+}
 
-export const displayGameResultModal = (result: boolean) => {
+export function displayGameResultModal(result: boolean) {
   if (!document.getElementById('game-result-modal')) {
     const appRoot: HTMLElement = document.getElementById('root');
     const modalContainer: HTMLElement = document.createElement('div');
@@ -159,32 +159,32 @@ export const displayGameResultModal = (result: boolean) => {
 
     document
       .getElementById('return-to-menu')
-      .addEventListener('click', displayMainMenuModal);
+      .addEventListener('click', displayMainMenuModal.bind(this));
     document
       .getElementById('play-again')
-      .addEventListener('click', startNewGame);
+      .addEventListener('click', startNewGame.bind(this));
   }
-};
+}
 
-export const displayScoreboardModal = () => {
+export function displayScoreboardModal() {
   const appRoot: HTMLElement = document.getElementById('root');
   const scoreboardModal: HTMLElement = document.createElement('div');
 
   const clearScores = () => {
     if (confirm('Are you sure you want to clear scores?')) {
-      globals.gameScoreboard = [];
+      this.gameScoreboard = [];
 
-      saveData('scoreboard', globals.gameScoreboard);
+      saveData('scoreboard', this.gameScoreboard);
 
-      displayScoreboardModal();
+      displayScoreboardModal.call(this);
     }
   };
 
   const buildScoreList = (): string => {
-    const scoreArray: IGameScoreboardItem[] = sortArrayByKey(globals.gameScoreboard, 'score');
+    const scoreArray: IGameScoreboardItem[] = sortArrayByKey(this.gameScoreboard, 'score');
     let scoreList = '';
 
-    if (globals.gameScoreboard.length === 0) {
+    if (this.gameScoreboard.length === 0) {
       return (`
         <tr>
           <td colspan="3" class="center">
@@ -239,10 +239,10 @@ export const displayScoreboardModal = () => {
     .addEventListener('click', clearScores);
   document
     .getElementById('return-to-menu')
-    .addEventListener('click', displayMainMenuModal);
-};
+    .addEventListener('click', displayMainMenuModal.bind(this));
+}
 
-export const displayRulesModal = () => {
+export function displayRulesModal() {
   const appRoot: HTMLElement = document.getElementById('root');
   const rulesModal: HTMLElement = document.createElement('div');
 
@@ -274,11 +274,5 @@ export const displayRulesModal = () => {
 
   document
     .getElementById('return-to-menu')
-    .addEventListener('click', displayMainMenuModal);
-};
-
-export const startNewGame = async () => {
-  createGameWorkspace();
-
-  await setNewGameState();
-};
+    .addEventListener('click', displayMainMenuModal.bind(this));
+}
