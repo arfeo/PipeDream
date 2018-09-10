@@ -22,19 +22,19 @@ export function createGameWorkspace() {
   // Create the workspace
   gameStatusPanel.className = 'status-panel';
   gameStatusPanel.innerHTML = (`
-      <div><span>Score:</span><strong id="game-score-counter">0</strong></div>
-      <div><span>Time:</span><strong id="game-time-ticker"></strong></div>
-      <div><span>Difficulty:</span><strong>${constants.difficultyMatrix[this.gameDifficulty].name}</strong></div>
-    `);
+    <div><span>Score:</span><strong id="game-score-counter">0</strong></div>
+    <div><span>Time:</span><strong id="game-time-ticker"></strong></div>
+    <div><span>Difficulty:</span><strong>${constants.difficultyMatrix[this.gameDifficulty].name}</strong></div>
+  `);
   gameBoard.className = 'board';
   gameToolbox.className = 'toolbox';
   gameToolbox.innerHTML = (`
-      <div class="toolbox__buttons">
-        <button id="open-valve-button" class="open-valve-button">▶</button>
-        <button id="reset-game-button" class="reset-game-button">⟲</button>
-        <button id="main-menu-button" class="main-menu-button fullwidth">Menu</button>
-      </div>
-    `);
+    <div class="toolbox__buttons">
+      <button id="open-valve-button" class="open-valve-button">▶</button>
+      <button id="reset-game-button" class="reset-game-button">⟲</button>
+      <button id="main-menu-button" class="main-menu-button fullwidth">Menu</button>
+    </div>
+  `);
   toolboxExpected.className = 'toolbox__expected';
 
   appRoot.appendChild(gameStatusPanel);
@@ -411,11 +411,11 @@ export function displayGameResultModal(result: boolean) {
     modalOverlay.className = 'modal-overlay';
     gameResultModal.className = 'modal medium';
     gameResultModal.innerHTML = (`
-        <div id="game-result-message">${result ? 'You have won!' : 'Game over'}</div>
-        <div class="submit-block">
-            <button id="return-to-menu">Go to menu</button>
-            <button id="play-again">Play gain</button>
-        </div>
+      <div id="game-result-message">${result ? 'You have won!' : 'Game over'}</div>
+      <div class="submit-block">
+        <button id="return-to-menu">Go to menu</button>
+        <button id="play-again">Play gain</button>
+      </div>
     `);
 
     appRoot.appendChild(modalContainer);
