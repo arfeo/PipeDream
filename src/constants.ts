@@ -20,10 +20,10 @@ export const constants: IConstants = {
        */
       type: 0,
       outlets: [
-        [ 0 ],
-        [ 1 ],
-        [ 2 ],
-        [ 3 ],
+        [0],
+        [1],
+        [2],
+        [3],
       ],
     },
     {
@@ -36,10 +36,10 @@ export const constants: IConstants = {
        */
       type: 1,
       outlets: [
-        [ 0, 2 ],
-        [ 1, 3 ],
-        [ 2, 0 ],
-        [ 3, 1 ],
+        [0, 2],
+        [1, 3],
+        [2, 0],
+        [3, 1],
       ],
     },
     {
@@ -52,10 +52,10 @@ export const constants: IConstants = {
        */
       type: 2,
       outlets: [
-        [ 0 ],
-        [ 1 ],
-        [ 2 ],
-        [ 3 ],
+        [0],
+        [1],
+        [2],
+        [3],
       ],
     },
     {
@@ -68,10 +68,10 @@ export const constants: IConstants = {
        */
       type: 3,
       outlets: [
-        [ 0, 1, 2, 3 ],
-        [ 1, 2, 3, 0 ],
-        [ 2, 3, 0, 1 ],
-        [ 3, 0, 1, 2 ],
+        [0, 1, 2, 3],
+        [1, 2, 3, 0],
+        [2, 3, 0, 1],
+        [3, 0, 1, 2],
       ],
     },
     {
@@ -84,10 +84,10 @@ export const constants: IConstants = {
        */
       type: 4,
       outlets: [
-        [ 0, 1, 3 ],
-        [ 0, 1, 2 ],
-        [ 1, 2, 3 ],
-        [ 2, 3, 0 ],
+        [0, 1, 3],
+        [0, 1, 2],
+        [1, 2, 3],
+        [2, 3, 0],
       ],
     },
     {
@@ -100,10 +100,10 @@ export const constants: IConstants = {
        */
       type: 5,
       outlets: [
-        [ 0, 1 ],
-        [ 1, 2 ],
-        [ 2, 3 ],
-        [ 3, 0 ],
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 0],
       ],
     },
   ],

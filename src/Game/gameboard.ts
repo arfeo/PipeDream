@@ -99,8 +99,7 @@ export function drawStartPoint() {
 
     // Prevent dead-end
     switch (position.row) {
-      case 1:
-      {
+      case 1: {
         if (position.column === 1) {
           if (direction !== 0 && direction !== 3) {
             isStartPointChosen = true;
@@ -116,8 +115,7 @@ export function drawStartPoint() {
         }
         break;
       }
-      case 7:
-      {
+      case 7: {
         if (position.column === 1) {
           if (direction !== 2 && direction !== 3) {
             isStartPointChosen = true;
@@ -133,8 +131,7 @@ export function drawStartPoint() {
         }
         break;
       }
-      default:
-      {
+      default: {
         if (position.column === 1) {
           if (direction !== 3) {
             isStartPointChosen = true;
@@ -153,7 +150,7 @@ export function drawStartPoint() {
 
   // Draw start point
   const startCell: HTMLCanvasElement = document.getElementById(
-    `cell-${this.startPoint.position.row}-${this.startPoint.position.column}`
+    `cell-${this.startPoint.position.row}-${this.startPoint.position.column}`,
   ) as HTMLCanvasElement;
   const ctx: CanvasRenderingContext2D = startCell.getContext('2d');
 
@@ -162,7 +159,7 @@ export function drawStartPoint() {
     startCell.width / 2 - startCell.width / 8,
     0,
     startCell.width / 4,
-    startCell.height / 2
+    startCell.height / 2,
   );
   ctx.beginPath();
   ctx.arc(
@@ -171,7 +168,7 @@ export function drawStartPoint() {
     25,
     0,
     Math.PI * 2,
-    false
+    false,
   );
   ctx.fill();
 
@@ -183,7 +180,7 @@ export function drawStartPoint() {
     12,
     0,
     Math.PI * 2,
-    false
+    false,
   );
   ctx.fill();
 
@@ -202,7 +199,7 @@ export function drawStartPoint() {
 export function drawExpectedElements() {
   for (const el in this.expectedElements) {
     const expectedElement: HTMLCanvasElement = document.getElementById(
-      `element-${el}`
+      `element-${el}`,
     ) as HTMLCanvasElement;
     const ctx: CanvasRenderingContext2D = expectedElement.getContext('2d');
 
@@ -218,8 +215,7 @@ export function drawElementByType(type: number, ctx: CanvasRenderingContext2D, i
   ctx.clearRect(0, 0, item.width, item.height);
 
   switch (type) {
-    case 1:
-    {
+    case 1: {
       ctx.fillRect(
         item.width / 2 - item.width / 8,
         0,
@@ -228,13 +224,12 @@ export function drawElementByType(type: number, ctx: CanvasRenderingContext2D, i
       );
       break;
     }
-    case 2:
-    {
+    case 2: {
       ctx.fillRect(
         item.width / 2 - item.width / 8,
         0,
         item.width / 4,
-        item.height / 2
+        item.height / 2,
       );
       ctx.beginPath();
       ctx.arc(
@@ -248,8 +243,7 @@ export function drawElementByType(type: number, ctx: CanvasRenderingContext2D, i
       ctx.fill();
       break;
     }
-    case 3:
-    {
+    case 3: {
       ctx.fillRect(
         item.width / 2 - item.width / 8,
         0,
@@ -264,8 +258,7 @@ export function drawElementByType(type: number, ctx: CanvasRenderingContext2D, i
       );
       break;
     }
-    case 4:
-    {
+    case 4: {
       ctx.fillRect(
         item.width / 2 - item.width / 8,
         0,
@@ -280,8 +273,7 @@ export function drawElementByType(type: number, ctx: CanvasRenderingContext2D, i
       );
       break;
     }
-    case 5:
-    {
+    case 5: {
       ctx.fillRect(
         item.width / 2 - item.width / 8,
         0,
@@ -296,7 +288,8 @@ export function drawElementByType(type: number, ctx: CanvasRenderingContext2D, i
       );
       break;
     }
-    default: break;
+    default:
+      break;
   }
 }
 
@@ -319,7 +312,7 @@ export function onBoardCellClick(row: number, column: number) {
 
     if (isUnlockedCell && isStartPosition) {
       const currentCell: HTMLCanvasElement = document.getElementById(
-        `cell-${row}-${column}`
+        `cell-${row}-${column}`,
       ) as HTMLCanvasElement;
       const ctx: CanvasRenderingContext2D = currentCell.getContext('2d');
 
@@ -329,7 +322,7 @@ export function onBoardCellClick(row: number, column: number) {
         this,
         this.expectedElements[0].type,
         ctx,
-        currentCell
+        currentCell,
       );
 
       currentCell.style.transform = `rotate(${this.expectedElements[0].direction * 90}deg)`;

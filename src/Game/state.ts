@@ -18,7 +18,7 @@ export async function clearGameState() {
   for (let row = 1; row <= 7; row += 1) {
     for (let column = 1; column <= 10; column += 1) {
       const cell: HTMLCanvasElement = document.getElementById(
-        `cell-${row}-${column}`
+        `cell-${row}-${column}`,
       ) as HTMLCanvasElement;
       const cellAnimation: any = document.getElementById(`cell-animation-${row}-${column}`);
       const ctx: CanvasRenderingContext2D = cell.getContext('2d');

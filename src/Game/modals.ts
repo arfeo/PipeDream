@@ -75,7 +75,7 @@ export function displayPlayerNameModal() {
     .getElementById('playername-continue')
     .addEventListener('click', () => {
       const playerNameInput: HTMLInputElement = document.getElementById(
-        'playername-input'
+        'playername-input',
       ) as HTMLInputElement;
       const playerName: string = playerNameInput.value;
 
@@ -86,52 +86,52 @@ export function displayPlayerNameModal() {
 
         displayMainMenuModal.call(this);
       }
-  });
+    });
 }
 
 export function displayDifficultyModal() {
-	const appRoot: HTMLElement = document.getElementById('root');
-	const difficultyModal: HTMLElement = document.createElement('div');
+  const appRoot: HTMLElement = document.getElementById('root');
+  const difficultyModal: HTMLElement = document.createElement('div');
 
-	const buildDifficultyList = (): string => {
-		const difficulties: IDifficultyMatrixItem[] = constants.difficultyMatrix;
-		let difficultyList = '';
+  const buildDifficultyList = (): string => {
+    const difficulties: IDifficultyMatrixItem[] = constants.difficultyMatrix;
+    let difficultyList = '';
 
-		for (let i = 0; i < difficulties.length; i += 1) {
-			difficultyList += (`
+    for (let i = 0; i < difficulties.length; i += 1) {
+      difficultyList += (`
 				<div>
 					<button difficulty="${i}" class="fullwidth">${difficulties[i].name}</button>
 				</div>
 			`);
-		}
+    }
 
-		return difficultyList;
-	};
+    return difficultyList;
+  };
 
-	// Reset src root element
-	appRoot.innerHTML = '';
+  // Reset src root element
+  appRoot.innerHTML = '';
 
-	difficultyModal.className = 'modal buttons-list small';
-	difficultyModal.innerHTML = (`
+  difficultyModal.className = 'modal buttons-list small';
+  difficultyModal.innerHTML = (`
 		${buildDifficultyList()}
 	`);
 
-	appRoot.appendChild(difficultyModal);
+  appRoot.appendChild(difficultyModal);
 
   const buttons: NodeListOf<HTMLButtonElement> = document.getElementsByTagName('button');
 
   Array.from(buttons).map((currentButton: HTMLButtonElement) => {
-		currentButton.addEventListener('click', (event: Event) => {
-		  const currentTarget: HTMLElement = event.currentTarget as HTMLElement;
-			const difficulty = parseInt(currentTarget.getAttribute('difficulty'));
+    currentButton.addEventListener('click', (event: Event) => {
+      const currentTarget: HTMLElement = event.currentTarget as HTMLElement;
+      const difficulty = parseInt(currentTarget.getAttribute('difficulty'));
 
       this.gameDifficulty = difficulty;
 
-			saveData('difficulty', difficulty);
+      saveData('difficulty', difficulty);
 
-			displayMainMenuModal.call(this);
-		});
-	});
+      displayMainMenuModal.call(this);
+    });
+  });
 }
 
 export function displayGameResultModal(result: boolean) {
