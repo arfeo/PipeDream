@@ -395,6 +395,8 @@ export function onGotoMainMenu() {
     }
   }
 
+  this.isGameOver = true;
+
   new Menu();
 }
 
