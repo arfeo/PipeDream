@@ -2,13 +2,15 @@ import { getData } from '../utils/storage';
 
 import { IGameScoreboardItem } from '../types/global';
 
-class Page {
+abstract class Page {
   protected playerName: string;
   protected gameDifficulty: number;
   protected gameScoreboard: IGameScoreboardItem[];
   protected appRoot: HTMLElement;
 
-  constructor() {
+  abstract render(): void;
+
+  protected constructor() {
     this.playerName = getData('playername') || '';
     this.gameDifficulty = parseInt(getData('difficulty')) || 0;
     this.gameScoreboard = getData('scoreboard') || [];

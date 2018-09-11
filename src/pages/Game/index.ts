@@ -34,13 +34,12 @@ class Game extends Page {
     this.gameScoreCounter = null;
     this.animationPromisesCount = 0;
 
-    this.onMount().catch(() => console.error('Could not initialize game board'));
+    this.render();
   }
 
-  private async onMount() {
+  render() {
     createGameGameboard.call(this);
-
-    await setNewGameState.call(this);
+    setNewGameState.call(this);
   }
 }
 

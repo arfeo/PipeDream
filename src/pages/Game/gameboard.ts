@@ -457,14 +457,14 @@ export async function clearGameState() {
   }
 }
 
-export async function setNewGameState() {
-  await clearGameState.call(this);
+export function setNewGameState() {
+  clearGameState.call(this).then(() => {
+    for (let i = 0; i < 5; i += 1) {
+      pushNewExpectedElement.call(this);
+    }
 
-  for (let i = 0; i < 5; i += 1) {
-    pushNewExpectedElement.call(this);
-  }
-
-  drawStartPoint.call(this);
+    drawStartPoint.call(this);
+  });
 }
 
 export function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean) {
@@ -481,12 +481,12 @@ export function updateElementsMap(type: number, row: number, column: number, dir
   ];
 }
 
-export async function onResetGame() {
+export function onResetGame() {
   if (this.elementsMap.length > 1 && !this.isGameOver) {
     if (!confirm('Are you sure you want start a new game?')) {
       return;
     }
   }
 
-  await setNewGameState.call(this);
+  setNewGameState.call(this);
 }
