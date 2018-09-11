@@ -1,27 +1,21 @@
+import { Page } from '../../components/Page';
 import { Game } from '../Game';
 
 import { constants } from '../../constants';
 
 import { sortArrayByKey } from '../../utils/common';
-import { getData, saveData } from '../../utils/storage';
+import { saveData } from '../../utils/storage';
 
 import { IDifficultyMatrixItem, IGameScoreboardItem } from '../../types/global';
-import { IMenu } from './types';
 
-class Menu implements IMenu {
-  playerName: string;
-  gameDifficulty: number;
-  gameScoreboard: IGameScoreboardItem[];
-
+class Menu extends Page {
   constructor() {
+    super();
+
     this.onMount();
   }
 
-  onMount = () => {
-    this.playerName = getData('playername') || '';
-    this.gameDifficulty = parseInt(getData('difficulty')) || 0;
-    this.gameScoreboard = getData('scoreboard') || [];
-
+  private onMount() {
     if (!this.playerName) {
       this.displayPlayerNameModal();
 
@@ -29,14 +23,13 @@ class Menu implements IMenu {
     }
 
     this.displayMainMenuModal();
-  };
+  }
 
-  displayMainMenuModal = () => {
-    const appRoot: HTMLElement = document.getElementById('root');
+  private displayMainMenuModal() {
     const mainMenuModal: HTMLElement = document.createElement('div');
 
     // Reset src root element
-    appRoot.innerHTML = '';
+    this.appRoot.innerHTML = '';
 
     mainMenuModal.className = 'modal buttons-list small';
     mainMenuModal.innerHTML = (`
@@ -57,31 +50,30 @@ class Menu implements IMenu {
       </div>
     `);
 
-    appRoot.appendChild(mainMenuModal);
+    this.appRoot.appendChild(mainMenuModal);
 
     document
       .getElementById('start-new-game')
-      .addEventListener('click', this.startNewGame);
+      .addEventListener('click', () => new Game());
     document
       .getElementById('display-difficulty-modal')
-      .addEventListener('click', this.displayDifficultyModal);
+      .addEventListener('click', () => this.displayDifficultyModal());
     document
       .getElementById('display-playername-modal')
-      .addEventListener('click', this.displayPlayerNameModal);
+      .addEventListener('click', () => this.displayPlayerNameModal());
     document
       .getElementById('display-scoreboard-modal')
-      .addEventListener('click', this.displayScoreboardModal);
+      .addEventListener('click', () => this.displayScoreboardModal());
     document
       .getElementById('display-rules-modal')
-      .addEventListener('click', this.displayRulesModal);
-  };
+      .addEventListener('click', () => this.displayRulesModal());
+  }
 
-  displayPlayerNameModal = () => {
-    const appRoot: HTMLElement = document.getElementById('root');
+  private displayPlayerNameModal() {
     const playerNameModal: HTMLElement = document.createElement('div');
 
     // Reset src root element
-    appRoot.innerHTML = '';
+    this.appRoot.innerHTML = '';
 
     playerNameModal.className = 'modal small';
     playerNameModal.innerHTML = (`
@@ -94,7 +86,7 @@ class Menu implements IMenu {
       </div>
     `);
 
-    appRoot.appendChild(playerNameModal);
+    this.appRoot.appendChild(playerNameModal);
 
     document
       .getElementById('playername-continue')
@@ -112,10 +104,9 @@ class Menu implements IMenu {
           this.displayMainMenuModal();
         }
       });
-  };
+  }
 
-  displayDifficultyModal = () => {
-    const appRoot: HTMLElement = document.getElementById('root');
+  private displayDifficultyModal() {
     const difficultyModal: HTMLElement = document.createElement('div');
 
     const buildDifficultyList = (): string => {
@@ -134,14 +125,14 @@ class Menu implements IMenu {
     };
 
     // Reset src root element
-    appRoot.innerHTML = '';
+    this.appRoot.innerHTML = '';
 
     difficultyModal.className = 'modal buttons-list small';
     difficultyModal.innerHTML = (`
-		${buildDifficultyList()}
-	`);
+      ${buildDifficultyList()}
+    `);
 
-    appRoot.appendChild(difficultyModal);
+    this.appRoot.appendChild(difficultyModal);
 
     const buttons: NodeListOf<HTMLButtonElement> = document.getElementsByTagName('button');
 
@@ -157,10 +148,9 @@ class Menu implements IMenu {
         this.displayMainMenuModal();
       });
     });
-  };
+  }
 
-  displayScoreboardModal = () => {
-    const appRoot: HTMLElement = document.getElementById('root');
+  private displayScoreboardModal() {
     const scoreboardModal: HTMLElement = document.createElement('div');
 
     const clearScores = () => {
@@ -203,7 +193,7 @@ class Menu implements IMenu {
     };
 
     // Reset src root element
-    appRoot.innerHTML = '';
+    this.appRoot.innerHTML = '';
 
     scoreboardModal.className = 'modal large';
     scoreboardModal.innerHTML = (`
@@ -225,22 +215,21 @@ class Menu implements IMenu {
       </div>
     `);
 
-    appRoot.appendChild(scoreboardModal);
+    this.appRoot.appendChild(scoreboardModal);
 
     document
       .getElementById('clear-scores')
-      .addEventListener('click', clearScores);
+      .addEventListener('click', () => clearScores());
     document
       .getElementById('return-to-menu')
-      .addEventListener('click', this.displayMainMenuModal);
-  };
+      .addEventListener('click', () => this.displayMainMenuModal());
+  }
 
-  displayRulesModal = () => {
-    const appRoot: HTMLElement = document.getElementById('root');
+  private displayRulesModal() {
     const rulesModal: HTMLElement = document.createElement('div');
 
     // Reset src root element
-    appRoot.innerHTML = '';
+    this.appRoot.innerHTML = '';
 
     rulesModal.className = 'modal medium';
     rulesModal.innerHTML = (`
@@ -263,16 +252,12 @@ class Menu implements IMenu {
       </div>
     `);
 
-    appRoot.appendChild(rulesModal);
+    this.appRoot.appendChild(rulesModal);
 
     document
       .getElementById('return-to-menu')
-      .addEventListener('click', this.displayMainMenuModal);
-  };
-
-  startNewGame = () => {
-    new Game();
-  };
+      .addEventListener('click', () => this.displayMainMenuModal());
+  }
 }
 
 export { Menu };

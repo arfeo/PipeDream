@@ -9,17 +9,16 @@ import { randomNum } from '../../utils/common';
 
 import { IElementMapItem } from './types';
 
-export function createGameWorkspace() {
-  const appRoot: HTMLElement = document.getElementById('root');
+export function createGameGameboard() {
   const gameStatusPanel: HTMLElement = document.createElement('div');
   const gameBoard: HTMLElement = document.createElement('div');
   const gameToolbox: HTMLElement = document.createElement('div');
   const toolboxExpected: HTMLElement = document.createElement('div');
 
   // Reset src root element
-  appRoot.innerHTML = '';
+  this.appRoot.innerHTML = '';
 
-  // Create the workspace
+  // Create the game board
   gameStatusPanel.className = 'status-panel';
   gameStatusPanel.innerHTML = (`
     <div><span>Score:</span><strong id="game-score-counter">0</strong></div>
@@ -37,9 +36,9 @@ export function createGameWorkspace() {
   `);
   toolboxExpected.className = 'toolbox__expected';
 
-  appRoot.appendChild(gameStatusPanel);
-  appRoot.appendChild(gameBoard);
-  appRoot.appendChild(gameToolbox);
+  this.appRoot.appendChild(gameStatusPanel);
+  this.appRoot.appendChild(gameBoard);
+  this.appRoot.appendChild(gameToolbox);
   gameToolbox.appendChild(toolboxExpected);
 
   // Create game board cell containers
@@ -401,7 +400,6 @@ export function onGotoMainMenu() {
 
 export function displayGameResultModal(result: boolean) {
   if (!document.getElementById('game-result-modal')) {
-    const appRoot: HTMLElement = document.getElementById('root');
     const modalContainer: HTMLElement = document.createElement('div');
     const modalOverlay: HTMLElement = document.createElement('div');
     const gameResultModal: HTMLElement = document.createElement('div');
@@ -418,7 +416,7 @@ export function displayGameResultModal(result: boolean) {
       </div>
     `);
 
-    appRoot.appendChild(modalContainer);
+    this.appRoot.appendChild(modalContainer);
     modalContainer.appendChild(modalOverlay);
     modalContainer.appendChild(gameResultModal);
 

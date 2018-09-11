@@ -1,32 +1,25 @@
-import { getData } from '../../utils/storage';
-import { createGameWorkspace, setNewGameState } from './gameboard';
+import { Page } from '../../components/Page';
 
-import { IGameScoreboardItem } from '../../types/global';
+import { createGameGameboard, setNewGameState } from './gameboard';
+
 import {
   IElementMapItem,
   IExpectedElements,
-  IGame,
   IPosition,
 } from './types';
 
-class Game implements IGame {
-  playerName: string;
+class Game extends Page {
   expectedElements: IExpectedElements[];
-  startPoint: {
-    position: IPosition;
-    direction: number;
-  };
+  startPoint: { position: IPosition; direction: number };
   elementsMap: IElementMapItem[];
-  gameDifficulty: number;
   isGameOver: boolean;
   gameTimer: number;
   gameScoreCounter: number;
   animationPromisesCount: number;
-  gameScoreboard: IGameScoreboardItem[];
 
   constructor() {
-    this.playerName = '';
-    this.playerName = '';
+    super();
+
     this.expectedElements = [];
     this.startPoint = {
       position: {
@@ -36,27 +29,19 @@ class Game implements IGame {
       direction: null,
     };
     this.elementsMap = [];
-    this.gameDifficulty = 0;
-    this.gameDifficulty = 0;
     this.isGameOver = false;
     this.gameTimer = null;
     this.gameScoreCounter = null;
     this.animationPromisesCount = 0;
-    this.gameScoreboard = null;
-    this.gameScoreboard = [];
 
-    this.onMount().catch(() => console.error('Could not initialize game'));
+    this.onMount().catch(() => console.error('Could not initialize game board'));
   }
 
-  onMount = async () => {
-    this.playerName = getData('playername') || '';
-    this.gameDifficulty = parseInt(getData('difficulty')) || 0;
-    this.gameScoreboard = getData('scoreboard') || [];
-
-    createGameWorkspace.call(this);
+  private async onMount() {
+    createGameGameboard.call(this);
 
     await setNewGameState.call(this);
-  };
+  }
 }
 
 export { Game };
