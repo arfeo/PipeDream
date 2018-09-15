@@ -1,9 +1,4 @@
-export interface IConstants {
-  elementsSpec: IElementSpecItem[];
-  difficultyMatrix: IDifficultyMatrixItem[];
-}
-
-export interface IElementSpecItem {
+export interface IElement {
   type: number;
   outlets: number[][];
 }

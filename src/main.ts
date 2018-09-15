@@ -1,4 +1,4 @@
-import { Menu } from './pages/Menu';
+import { Menu } from './components/Menu';
 
 window.onload = () => {
   new Menu();

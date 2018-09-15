@@ -1,13 +1,13 @@
 /* tslint:disable:max-file-line-count */
-import { constants } from '../../constants';
+import { difficultyMatrix, elements } from '../../constants/common';
 
 import { saveData } from '../../utils/storage';
 import { displayGameResultModal, updateElementsMap } from './gameboard';
 
-import { IElementSpecItem } from '../../types/global';
+import { IElement } from '../../types/global';
 import { IElementMapItem, INextElement } from './types';
 
-export function animateComponent(type: string, row: number, column: number, ent: number): Promise<void> {
+function animateComponent(type: string, row: number, column: number, ent: number): Promise<void> {
   return new Promise((resolve) => {
     const cell: HTMLCanvasElement = document.getElementById(
       `cell-animation-${row}-${column}`,
@@ -152,12 +152,12 @@ export function animateComponent(type: string, row: number, column: number, ent:
               break;
           }
         }
-      }, constants.difficultyMatrix[this.gameDifficulty].speed);
+      }, difficultyMatrix[this.gameDifficulty].speed);
     }
   });
 }
 
-export async function animateElement(row: number, column: number, ent?: number): Promise<void> {
+async function animateElement(row: number, column: number, ent?: number): Promise<void> {
   if (!this.isGameOver) {
     this.animationPromisesCount += 1;
 
@@ -187,7 +187,7 @@ export async function animateElement(row: number, column: number, ent?: number):
       default: {
         await animateComponent.call(this, 'pipe-in', row, column, ent);
 
-        const spec: IElementSpecItem = constants.elementsSpec.filter((item: IElementSpecItem) => {
+        const spec: IElement = elements.filter((item: IElement) => {
           return item.type === element.type;
         })[0] || null;
         const outlets: number[] = spec.outlets[element.direction].filter((item: number) => {
@@ -235,7 +235,7 @@ export async function animateElement(row: number, column: number, ent?: number):
   }
 }
 
-export function getNextElement(row: number, column: number, ent: number): INextElement | boolean {
+function getNextElement(row: number, column: number, ent: number): INextElement | boolean {
   let nextRow = 0;
   let nextColumn = 0;
   let nextEnt = 0;
@@ -273,7 +273,7 @@ export function getNextElement(row: number, column: number, ent: number): INextE
 
   this.elementsMap.map((item: IElementMapItem) => {
     if (JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(item.position)) {
-      const nextSpec = constants.elementsSpec.filter(s => s.type === item.type)[0] || null;
+      const nextSpec = elements.filter(s => s.type === item.type)[0] || null;
 
       if (nextSpec && nextSpec.outlets[item.direction].indexOf(nextEnt) !== -1 && !item.locked) {
         next = { nextRow, nextColumn, nextEnt };
@@ -290,7 +290,7 @@ export function getNextElement(row: number, column: number, ent: number): INextE
   return next;
 }
 
-export function onGameStop(result: boolean) {
+function onGameStop(result: boolean) {
   this.isGameOver = true;
 
   if (result) {
@@ -310,3 +310,5 @@ export function onGameStop(result: boolean) {
 
   displayGameResultModal.call(this, result);
 }
+
+export { animateElement };

@@ -1,13 +1,13 @@
 import { Game } from '../Game';
 
-import { constants } from '../../constants';
+import { difficultyMatrix } from '../../constants/common';
 
 import { saveData } from '../../utils/storage';
 import { sortArrayByKey } from '../../utils/common';
 
 import { IDifficultyMatrixItem, IGameScoreboardItem } from '../../types/global';
 
-export function displayMainMenuModal() {
+function displayMainMenuModal() {
   const mainMenuModal: HTMLElement = document.createElement('div');
 
   // Reset src root element
@@ -15,22 +15,22 @@ export function displayMainMenuModal() {
 
   mainMenuModal.className = 'modal buttons-list small';
   mainMenuModal.innerHTML = (`
-      <div>
-        <button id="start-new-game" class="fullwidth">Play</button>
-      </div>
-      <div>
-        <button id="display-difficulty-modal" class="fullwidth">Choose difficulty</button>
-      </div>
-      <div>
-        <button id="display-playername-modal" class="fullwidth">Change player name</button>
-      </div>
-      <div>
-        <button id="display-scoreboard-modal" class="fullwidth">Scoreboard</button>
-      </div>
-      <div>
-        <button id="display-rules-modal" class="fullwidth">Rules</button>
-      </div>
-    `);
+    <div>
+      <button id="start-new-game" class="fullwidth">Play</button>
+    </div>
+    <div>
+      <button id="display-difficulty-modal" class="fullwidth">Choose difficulty</button>
+    </div>
+    <div>
+      <button id="display-playername-modal" class="fullwidth">Change player name</button>
+    </div>
+    <div>
+      <button id="display-scoreboard-modal" class="fullwidth">Scoreboard</button>
+    </div>
+    <div>
+      <button id="display-rules-modal" class="fullwidth">Rules</button>
+    </div>
+  `);
 
   this.appRoot.appendChild(mainMenuModal);
 
@@ -51,7 +51,7 @@ export function displayMainMenuModal() {
     .addEventListener('click', displayRulesModal.bind(this));
 }
 
-export function displayPlayerNameModal() {
+function displayPlayerNameModal() {
   const playerNameModal: HTMLElement = document.createElement('div');
 
   // Reset src root element
@@ -59,14 +59,14 @@ export function displayPlayerNameModal() {
 
   playerNameModal.className = 'modal small';
   playerNameModal.innerHTML = (`
-      <div class="label">Set player name:</div>
-      <div>
-        <input id="playername-input" type="text" value="${this.playerName}" />
-      </div>
-      <div class="submit-block">
-        <button id="playername-continue">Continue</button>
-      </div>
-    `);
+    <div class="label">Set player name:</div>
+    <div>
+      <input id="playername-input" type="text" value="${this.playerName}" />
+    </div>
+    <div class="submit-block">
+      <button id="playername-continue">Continue</button>
+    </div>
+  `);
 
   this.appRoot.appendChild(playerNameModal);
 
@@ -88,19 +88,19 @@ export function displayPlayerNameModal() {
     });
 }
 
-export function displayDifficultyModal() {
+function displayDifficultyModal() {
   const difficultyModal: HTMLElement = document.createElement('div');
 
   const buildDifficultyList = (): string => {
-    const difficulties: IDifficultyMatrixItem[] = constants.difficultyMatrix;
+    const difficulties: IDifficultyMatrixItem[] = difficultyMatrix;
     let difficultyList = '';
 
     for (let i = 0; i < difficulties.length; i += 1) {
       difficultyList += (`
-          <div>
-            <button difficulty="${i}" class="fullwidth">${difficulties[i].name}</button>
-          </div>
-        `);
+        <div>
+          <button difficulty="${i}" class="fullwidth">${difficulties[i].name}</button>
+        </div>
+      `);
     }
 
     return difficultyList;
@@ -110,9 +110,7 @@ export function displayDifficultyModal() {
   this.appRoot.innerHTML = '';
 
   difficultyModal.className = 'modal buttons-list small';
-  difficultyModal.innerHTML = (`
-      ${buildDifficultyList()}
-    `);
+  difficultyModal.innerHTML = buildDifficultyList();
 
   this.appRoot.appendChild(difficultyModal);
 
@@ -132,7 +130,7 @@ export function displayDifficultyModal() {
   });
 }
 
-export function displayScoreboardModal() {
+function displayScoreboardModal() {
   const scoreboardModal: HTMLElement = document.createElement('div');
 
   const clearScores = () => {
@@ -151,23 +149,23 @@ export function displayScoreboardModal() {
 
     if (this.gameScoreboard.length === 0) {
       return (`
-          <tr>
-            <td colspan="3" class="center">
-              <em>Scoreboard is empty at the moment.</em>
-            </td>
-          </tr>
-        `);
+        <tr>
+          <td colspan="3" class="center">
+            <em>Scoreboard is empty at the moment.</em>
+          </td>
+        </tr>
+      `);
     }
 
     for (let i = 0; i < 10; i += 1) {
       if (scoreArray[i]) {
         scoreList += (`
-            <tr>
-              <td>${scoreArray[i].playername}</td>
-              <td>${constants.difficultyMatrix[scoreArray[i].difficulty].name}</td>
-              <td>${scoreArray[i].score}</td>
-            </tr>
-          `);
+          <tr>
+            <td>${scoreArray[i].playername}</td>
+            <td>${difficultyMatrix[scoreArray[i].difficulty].name}</td>
+            <td>${scoreArray[i].score}</td>
+          </tr>
+        `);
       }
     }
 
@@ -179,23 +177,23 @@ export function displayScoreboardModal() {
 
   scoreboardModal.className = 'modal large';
   scoreboardModal.innerHTML = (`
-      <table class="game-scoreboard">
-        <thead>
-          <tr>
-            <th class="player">Player</th>
-            <th class="difficulty">Difficulty</th>
-            <th class="score">Score</th>
-          </tr>	
-        </thead>
-        <tbody>
-          ${buildScoreList()}
-        </tbody>
-      </table>
-        <div class="submit-block">
-          <button id="clear-scores">Clear scores</button>
-        <button id="return-to-menu">Go to menu</button>
-      </div>
-    `);
+    <table class="game-scoreboard">
+      <thead>
+        <tr>
+          <th class="player">Player</th>
+          <th class="difficulty">Difficulty</th>
+          <th class="score">Score</th>
+        </tr>	
+      </thead>
+      <tbody>
+        ${buildScoreList()}
+      </tbody>
+    </table>
+      <div class="submit-block">
+        <button id="clear-scores">Clear scores</button>
+      <button id="return-to-menu">Go to menu</button>
+    </div>
+  `);
 
   this.appRoot.appendChild(scoreboardModal);
 
@@ -207,7 +205,7 @@ export function displayScoreboardModal() {
     .addEventListener('click', displayMainMenuModal.bind(this));
 }
 
-export function displayRulesModal() {
+function displayRulesModal() {
   const rulesModal: HTMLElement = document.createElement('div');
 
   // Reset src root element
@@ -215,24 +213,24 @@ export function displayRulesModal() {
 
   rulesModal.className = 'modal medium';
   rulesModal.innerHTML = (`
-      <div>
-        <p>
-          Using a variety of pipe pieces presented randomly in a queue,
-          the player must construct a path from the start piece for the onrushing sewer slime,
-          or "flooz", which begins flowing after a time delay from the start of the round.
-        </p>
-        <p>Pieces may not be rotated; they must be placed as presented in the queue.</p>
-        <p>
-          The player can replace a previously laid piece by clicking on it,
-          as long as the flooz has not yet reached it; however,
-          doing so causes a short time delay before the next piece can be laid.
-        </p>
-        <p>The flooz is required to pass through a given number of pipe pieces.</p>
-      </div>
-      <div class="submit-block">
-        <button id="return-to-menu">Go to menu</button>
-      </div>
-    `);
+    <div>
+      <p>
+        Using a variety of pipe pieces presented randomly in a queue,
+        the player must construct a path from the start piece for the onrushing sewer slime,
+        or "flooz", which begins flowing after a time delay from the start of the round.
+      </p>
+      <p>Pieces may not be rotated; they must be placed as presented in the queue.</p>
+      <p>
+        The player can replace a previously laid piece by clicking on it,
+        as long as the flooz has not yet reached it; however,
+        doing so causes a short time delay before the next piece can be laid.
+      </p>
+      <p>The flooz is required to pass through a given number of pipe pieces.</p>
+    </div>
+    <div class="submit-block">
+      <button id="return-to-menu">Go to menu</button>
+    </div>
+  `);
 
   this.appRoot.appendChild(rulesModal);
 
@@ -240,3 +238,5 @@ export function displayRulesModal() {
     .getElementById('return-to-menu')
     .addEventListener('click', displayMainMenuModal.bind(this));
 }
+
+export { displayMainMenuModal, displayPlayerNameModal };

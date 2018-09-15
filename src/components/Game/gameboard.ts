@@ -1,15 +1,15 @@
 /* tslint:disable:max-file-line-count */
 import { Menu } from '../Menu';
-import { Game } from './index';
+import { Game } from '../Game';
 
-import { constants } from '../../constants';
+import { difficultyMatrix } from '../../constants/common';
 
 import { animateElement } from './animation';
 import { randomNum } from '../../utils/common';
 
 import { IElementMapItem } from './types';
 
-export function createGameGameboard() {
+function createGameGameboard() {
   const gameStatusPanel: HTMLElement = document.createElement('div');
   const gameBoard: HTMLElement = document.createElement('div');
   const gameToolbox: HTMLElement = document.createElement('div');
@@ -23,7 +23,7 @@ export function createGameGameboard() {
   gameStatusPanel.innerHTML = (`
     <div><span>Score:</span><strong id="game-score-counter">0</strong></div>
     <div><span>Time:</span><strong id="game-time-ticker"></strong></div>
-    <div><span>Difficulty:</span><strong>${constants.difficultyMatrix[this.gameDifficulty].name}</strong></div>
+    <div><span>Difficulty:</span><strong>${difficultyMatrix[this.gameDifficulty].name}</strong></div>
   `);
   gameBoard.className = 'board';
   gameToolbox.className = 'toolbox';
@@ -83,7 +83,7 @@ export function createGameGameboard() {
     .addEventListener('click', onGotoMainMenu.bind(this));
 }
 
-export function drawStartPoint() {
+function drawStartPoint() {
   this.startPoint.position = {
     row: randomNum(1, 7),
     column: randomNum(1, 10),
@@ -196,7 +196,7 @@ export function drawStartPoint() {
   );
 }
 
-export function drawExpectedElements() {
+function drawExpectedElements() {
   for (const el in this.expectedElements) {
     const expectedElement: HTMLCanvasElement = document.getElementById(
       `element-${el}`,
@@ -211,7 +211,7 @@ export function drawExpectedElements() {
   }
 }
 
-export function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HTMLCanvasElement) {
+function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HTMLCanvasElement) {
   ctx.clearRect(0, 0, item.width, item.height);
 
   switch (type) {
@@ -293,7 +293,7 @@ export function drawElementByType(type: number, ctx: CanvasRenderingContext2D, i
   }
 }
 
-export function pushNewExpectedElement() {
+function pushNewExpectedElement() {
   const type: number = randomNum(1, 5);
   const direction: number = randomNum(0, 3);
 
@@ -302,7 +302,7 @@ export function pushNewExpectedElement() {
   drawExpectedElements.call(this);
 }
 
-export function onBoardCellClick(row: number, column: number) {
+function onBoardCellClick(row: number, column: number) {
   if (!this.isGameOver) {
     const searchCell = this.elementsMap.filter((item: IElementMapItem) => {
       return JSON.stringify({ row, column }) === JSON.stringify(item.position);
@@ -343,7 +343,7 @@ export function onBoardCellClick(row: number, column: number) {
   }
 }
 
-export async function timeTicker(ticker: number) {
+async function timeTicker(ticker: number) {
   const gameTimeTicker: HTMLElement = document.getElementById('game-time-ticker');
 
   if (gameTimeTicker) {
@@ -364,19 +364,19 @@ export async function timeTicker(ticker: number) {
   }
 }
 
-export function scoreCounter(score: number) {
+function scoreCounter(score: number) {
   const gameScoreCounter = document.getElementById('game-score-counter');
 
   if (this.isGameOver) {
     clearTimeout(this.gameScoreCounter);
   } else {
-    gameScoreCounter.innerHTML = (score * constants.difficultyMatrix[this.gameDifficulty].scorex).toString();
+    gameScoreCounter.innerHTML = (score * difficultyMatrix[this.gameDifficulty].scorex).toString();
 
     this.gameScoreCounter = setTimeout(() => scoreCounter.call(this, score + 1), 100);
   }
 }
 
-export async function onOpenValve() {
+async function onOpenValve() {
   clearTimeout(this.gameTimer);
 
   scoreCounter.call(this, 0);
@@ -388,19 +388,21 @@ export async function onOpenValve() {
   );
 }
 
-export function onGotoMainMenu() {
+function onGotoMainMenu() {
   if (this.elementsMap.length > 1 && !this.isGameOver) {
     if (!confirm('Are you sure you want to abort game?')) {
       return;
     }
   }
 
+  clearTimeout(this.gameTimer);
+
   this.isGameOver = true;
 
   new Menu();
 }
 
-export function displayGameResultModal(result: boolean) {
+function displayGameResultModal(result: boolean) {
   if (!document.getElementById('game-result-modal')) {
     const modalContainer: HTMLElement = document.createElement('div');
     const modalOverlay: HTMLElement = document.createElement('div');
@@ -431,7 +433,7 @@ export function displayGameResultModal(result: boolean) {
   }
 }
 
-export async function clearGameState() {
+async function clearGameState() {
   this.expectedElements = [];
   this.elementsMap = [];
   this.startPoint.position = null;
@@ -440,7 +442,7 @@ export async function clearGameState() {
 
   clearTimeout(this.gameTimer);
 
-  await timeTicker.call(this, constants.difficultyMatrix[this.gameDifficulty].time);
+  await timeTicker.call(this, difficultyMatrix[this.gameDifficulty].time);
 
   for (let row = 1; row <= 7; row += 1) {
     for (let column = 1; column <= 10; column += 1) {
@@ -457,7 +459,7 @@ export async function clearGameState() {
   }
 }
 
-export function setNewGameState() {
+function setNewGameState() {
   clearGameState.call(this).then(() => {
     for (let i = 0; i < 5; i += 1) {
       pushNewExpectedElement.call(this);
@@ -467,7 +469,7 @@ export function setNewGameState() {
   });
 }
 
-export function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean) {
+function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean) {
   this.elementsMap = [
     ...this.elementsMap.filter((item: IElementMapItem) => {
       return JSON.stringify({ row, column }) !== JSON.stringify(item.position);
@@ -481,12 +483,19 @@ export function updateElementsMap(type: number, row: number, column: number, dir
   ];
 }
 
-export function onResetGame() {
+function onResetGame() {
   if (this.elementsMap.length > 1 && !this.isGameOver) {
-    if (!confirm('Are you sure you want start a new game?')) {
+    if (!confirm('Are you sure you want to start a new game?')) {
       return;
     }
   }
 
   setNewGameState.call(this);
 }
+
+export {
+  createGameGameboard,
+  displayGameResultModal,
+  setNewGameState,
+  updateElementsMap,
+};

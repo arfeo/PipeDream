@@ -1,4 +1,4 @@
-import { Page } from '../../components/Page';
+import { Page } from '../Page';
 
 import { createGameGameboard, setNewGameState } from './gameboard';
 

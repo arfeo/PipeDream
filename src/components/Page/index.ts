@@ -1,6 +1,6 @@
-import { getData } from '../utils/storage';
+import { getData } from '../../utils/storage';
 
-import { IGameScoreboardItem } from '../types/global';
+import { IGameScoreboardItem } from '../../types/global';
 
 abstract class Page {
   protected playerName: string;
