@@ -22,6 +22,7 @@
     "browser-sync": "^2.24.7",
     "browserify": "^16.2.2",
     "del": "^3.0.0",
+    "eslint": "^5.6.1",
     "gulp": "^4.0.0",
     "gulp-babel-minify": "^0.4.1",
     "gulp-concat": "^2.6.1",
