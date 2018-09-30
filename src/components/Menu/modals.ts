@@ -114,7 +114,7 @@ function displayDifficultyModal() {
 
   this.appRoot.appendChild(difficultyModal);
 
-  const buttons: NodeListOf<HTMLButtonElement> = document.getElementsByTagName('button');
+  const buttons: HTMLCollectionOf<HTMLButtonElement> = document.getElementsByTagName('button');
 
   Array.from(buttons).map((currentButton: HTMLButtonElement) => {
     currentButton.addEventListener('click', (event: Event) => {
