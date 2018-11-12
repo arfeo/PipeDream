@@ -2,7 +2,7 @@
 
 A la Pipe Dream (Pipe Mania) puzzle game.
 
-![Interface](http://arfeo.net/static/pipedream/interface.png "Interface")
+![Gameplay](http://arfeo.net/static/pipedream/pipedream.gif "Gameplay")
 
 Live demo: http://arfeo.net/tests/pipedream/
 
