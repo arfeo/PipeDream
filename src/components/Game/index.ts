@@ -17,6 +17,7 @@ class Game extends Page {
   gameTimer: number;
   gameScoreCounter: number;
   animationPromisesCount: number;
+  isElementRedrawing: boolean;
 
   constructor() {
     super();
@@ -34,6 +35,7 @@ class Game extends Page {
     this.gameTimer = null;
     this.gameScoreCounter = null;
     this.animationPromisesCount = 0;
+    this.isElementRedrawing = false;
 
     this.render();
   }

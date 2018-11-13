@@ -2,9 +2,12 @@ import { find, isEqual } from 'lodash';
 
 import { Menu } from '../Menu';
 
-import { drawElementByType, pushNewExpectedElement, scoreCounter, updateElementsMap } from './render';
+import { APP } from '../../constants/app';
+
+import { drawElementInCell, scoreCounter } from './render';
 import { animateElement } from './animation';
 import { initializeGameState } from './state';
+import { wait } from '../../utils/common';
 
 import { IElementMapItem } from './types';
 
@@ -20,35 +23,22 @@ function onBoardCellClick(row: number, column: number) {
     const isUnlockedCell: boolean = !(searchCell && searchCell.locked);
     const isStartPosition: boolean = isEqual({ row, column }, this.startPoint.position);
 
-    if (isUnlockedCell && !isStartPosition) {
-      const currentCell: HTMLCanvasElement = document.getElementById(
-        `cell-${row}-${column}`,
-      ) as HTMLCanvasElement;
-      const ctx: CanvasRenderingContext2D = currentCell.getContext('2d');
+    if (!this.isElementRedrawing) {
+      if (searchCell && !isStartPosition) {
+        this.isElementRedrawing = true;
 
-      ctx.fillStyle = 'black';
+        wait(APP.REDRAW_DELAY).then(() => {
+          this.isElementRedrawing = false;
 
-      drawElementByType.call(
-        this,
-        this.expectedElements[0].type,
-        ctx,
-        currentCell,
-      );
+          drawElementInCell.call(this, row, column);
+        });
 
-      currentCell.style.transform = `rotate(${this.expectedElements[0].direction * 90}deg)`;
+        return;
+      }
 
-      updateElementsMap.call(
-        this,
-        this.expectedElements[0].type,
-        row,
-        column,
-        this.expectedElements[0].direction,
-        false,
-      );
-
-      this.expectedElements.shift();
-
-      pushNewExpectedElement.call(this);
+      if (isUnlockedCell && !isStartPosition) {
+        drawElementInCell.call(this, row, column);
+      }
     }
   }
 }

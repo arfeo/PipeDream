@@ -312,6 +312,43 @@ function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HT
 }
 
 /**
+ * Draw currently available element in the cell
+ *
+ * @param row
+ * @param column
+ */
+function drawElementInCell(row: number, column: number) {
+  const currentCell: HTMLCanvasElement = document.getElementById(
+    `cell-${row}-${column}`,
+  ) as HTMLCanvasElement;
+  const ctx: CanvasRenderingContext2D = currentCell.getContext('2d');
+
+  ctx.fillStyle = 'black';
+
+  drawElementByType.call(
+    this,
+    this.expectedElements[0].type,
+    ctx,
+    currentCell,
+  );
+
+  currentCell.style.transform = `rotate(${this.expectedElements[0].direction * 90}deg)`;
+
+  updateElementsMap.call(
+    this,
+    this.expectedElements[0].type,
+    row,
+    column,
+    this.expectedElements[0].direction,
+    false,
+  );
+
+  this.expectedElements.shift();
+
+  pushNewExpectedElement.call(this);
+};
+
+/**
  * Push a new element to the queue
  */
 function pushNewExpectedElement() {
@@ -431,6 +468,7 @@ export {
   createGameBoard,
   displayGameResultModal,
   drawElementByType,
+  drawElementInCell,
   drawStartPoint,
   pushNewExpectedElement,
   scoreCounter,
