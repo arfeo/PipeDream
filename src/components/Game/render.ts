@@ -1,4 +1,6 @@
 // tslint:disable:max-file-line-count
+import { isEqual } from 'lodash';
+
 import { Menu } from '../Menu';
 import { Game } from '../Game';
 
@@ -310,6 +312,43 @@ function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HT
 }
 
 /**
+ * Draw currently available element in the cell
+ *
+ * @param row
+ * @param column
+ */
+function drawElementInCell(row: number, column: number) {
+  const currentCell: HTMLCanvasElement = document.getElementById(
+    `cell-${row}-${column}`,
+  ) as HTMLCanvasElement;
+  const ctx: CanvasRenderingContext2D = currentCell.getContext('2d');
+
+  ctx.fillStyle = 'black';
+
+  drawElementByType.call(
+    this,
+    this.expectedElements[0].type,
+    ctx,
+    currentCell,
+  );
+
+  currentCell.style.transform = `rotate(${this.expectedElements[0].direction * 90}deg)`;
+
+  updateElementsMap.call(
+    this,
+    this.expectedElements[0].type,
+    row,
+    column,
+    this.expectedElements[0].direction,
+    false,
+  );
+
+  this.expectedElements.shift();
+
+  pushNewExpectedElement.call(this);
+};
+
+/**
  * Push a new element to the queue
  */
 function pushNewExpectedElement() {
@@ -330,16 +369,18 @@ async function timeTicker(ticker: number) {
   const gameTimeTicker: HTMLElement = document.getElementById('game-time-ticker');
 
   if (gameTimeTicker) {
-    const min = Math.floor(ticker / 60);
-    const sec = Math.floor(ticker - min * 60);
-
-    if (min === 0 && sec === 0) {
-      await onOpenValve.call(this);
-    }
+    const min: number = Math.floor(ticker / 60);
+    const sec: number = Math.floor(ticker - min * 60);
 
     const timeString = `${(min < 10 ? `0${min}` : min)}:${(sec < 10 ? `0${sec}` : sec)}`;
 
     gameTimeTicker.innerHTML = (min === 0 && sec <= 10) ? `<span class="orangered">${timeString}</span>` : timeString;
+
+    if (min === 0 && sec === 0) {
+      await onOpenValve.call(this);
+
+      return;
+    }
 
     if (ticker >= 0) {
       this.gameTimer = setTimeout(timeTicker.bind(this, ticker - 1), 1000);
@@ -353,7 +394,7 @@ async function timeTicker(ticker: number) {
  * @param score
  */
 function scoreCounter(score: number) {
-  const gameScoreCounter = document.getElementById('game-score-counter');
+  const gameScoreCounter: HTMLElement = document.getElementById('game-score-counter');
 
   if (this.isGameOver) {
     clearTimeout(this.gameScoreCounter);
@@ -412,7 +453,7 @@ function displayGameResultModal(result: boolean) {
 function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean) {
   this.elementsMap = [
     ...this.elementsMap.filter((item: IElementMapItem) => {
-      return JSON.stringify({ row, column }) !== JSON.stringify(item.position);
+      return !isEqual({ row, column }, item.position);
     }),
     {
       position: { row, column },
@@ -427,6 +468,7 @@ export {
   createGameBoard,
   displayGameResultModal,
   drawElementByType,
+  drawElementInCell,
   drawStartPoint,
   pushNewExpectedElement,
   scoreCounter,

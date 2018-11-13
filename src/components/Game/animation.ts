@@ -1,4 +1,6 @@
 // tslint:disable:max-file-line-count
+import { find, isEqual } from 'lodash';
+
 import { difficultyMatrix, elements } from '../../constants/common';
 
 import { saveData } from '../../utils/storage';
@@ -22,7 +24,6 @@ function animateComponent(type: string, row: number, column: number, ent: number
     ) as HTMLCanvasElement;
 
     if (cell) {
-      let interval: number = null;
       let i = 0;
       let s = 0;
 
@@ -46,7 +47,7 @@ function animateComponent(type: string, row: number, column: number, ent: number
           break;
       }
 
-      interval = setInterval(() => {
+      const interval = setInterval(() => {
         i += 1;
 
         if (i > s) {
@@ -176,9 +177,11 @@ async function animateElement(row: number, column: number, ent?: number): Promis
   if (!this.isGameOver) {
     this.animationPromisesCount += 1;
 
-    const element: IElementMapItem = this.elementsMap.filter((item: IElementMapItem) => {
-      return JSON.stringify({ row, column }) === JSON.stringify(item.position)
-    })[0] || null;
+    const element: IElementMapItem = find<IElementMapItem>(this.elementsMap, { position: { row, column }});
+
+    if (!element) {
+      return;
+    }
 
     switch (element.type) {
       case 0: {
@@ -218,7 +221,7 @@ async function animateElement(row: number, column: number, ent?: number): Promis
         const nextElements: INextElement[] = [];
 
         for (const out of outlets) {
-          const next = getNextElement.call(this, row, column, out);
+          const next: INextElement | boolean = getNextElement.call(this, row, column, out);
 
           if (next === false) {
             onGameStop.call(this, false);
@@ -233,7 +236,7 @@ async function animateElement(row: number, column: number, ent?: number): Promis
 
         await Promise.all(
           nextElements.map((item: INextElement) => {
-            return animateElement.call(this, item.nextRow, item.nextColumn, item.nextEnt)
+            return animateElement.call(this, item.nextRow, item.nextColumn, item.nextEnt);
           }),
         );
         break;
@@ -294,8 +297,8 @@ function getNextElement(row: number, column: number, ent: number): INextElement 
   let next: INextElement | boolean = false;
 
   this.elementsMap.map((item: IElementMapItem) => {
-    if (JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(item.position)) {
-      const nextSpec = elements.filter(s => s.type === item.type)[0] || null;
+    if (isEqual({ row: nextRow, column: nextColumn }, item.position)) {
+      const nextSpec: IElement = elements.filter(s => s.type === item.type)[0] || null;
 
       if (nextSpec && nextSpec.outlets[item.direction].indexOf(nextEnt) !== -1 && !item.locked) {
         next = { nextRow, nextColumn, nextEnt };
@@ -321,7 +324,7 @@ function onGameStop(result: boolean) {
   this.isGameOver = true;
 
   if (result) {
-    const gameScoreCounter = parseInt(document.getElementById('game-score-counter').innerText);
+    const gameScoreCounter: number = parseInt(document.getElementById('game-score-counter').innerText);
 
     const score = {
       playername: this.playerName,
