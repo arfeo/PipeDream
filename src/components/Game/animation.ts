@@ -1,12 +1,20 @@
-/* tslint:disable:max-file-line-count */
+// tslint:disable:max-file-line-count
 import { difficultyMatrix, elements } from '../../constants/common';
 
 import { saveData } from '../../utils/storage';
-import { displayGameResultModal, updateElementsMap } from './gameboard';
+import { displayGameResultModal, updateElementsMap } from './render';
 
 import { IElement } from '../../types/global';
 import { IElementMapItem, INextElement } from './types';
 
+/**
+ * Animate an element's atomic component
+ *
+ * @param type
+ * @param row
+ * @param column
+ * @param ent
+ */
 function animateComponent(type: string, row: number, column: number, ent: number): Promise<void> {
   return new Promise((resolve) => {
     const cell: HTMLCanvasElement = document.getElementById(
@@ -157,6 +165,13 @@ function animateComponent(type: string, row: number, column: number, ent: number
   });
 }
 
+/**
+ * Animate an element
+ *
+ * @param row
+ * @param column
+ * @param ent
+ */
 async function animateElement(row: number, column: number, ent?: number): Promise<void> {
   if (!this.isGameOver) {
     this.animationPromisesCount += 1;
@@ -235,6 +250,13 @@ async function animateElement(row: number, column: number, ent?: number): Promis
   }
 }
 
+/**
+ * Get the next element in the queue
+ *
+ * @param row
+ * @param column
+ * @param ent
+ */
 function getNextElement(row: number, column: number, ent: number): INextElement | boolean {
   let nextRow = 0;
   let nextColumn = 0;
@@ -290,6 +312,11 @@ function getNextElement(row: number, column: number, ent: number): INextElement 
   return next;
 }
 
+/**
+ * Stop the game
+ *
+ * @param result
+ */
 function onGameStop(result: boolean) {
   this.isGameOver = true;
 

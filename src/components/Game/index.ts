@@ -1,6 +1,7 @@
 import { Page } from '../Page';
 
-import { createGameGameboard, setNewGameState } from './gameboard';
+import { createGameBoard } from './render';
+import { initializeGameState } from './state';
 
 import {
   IElementMapItem,
@@ -38,8 +39,8 @@ class Game extends Page {
   }
 
   render() {
-    createGameGameboard.call(this);
-    setNewGameState.call(this);
+    createGameBoard.call(this);
+    initializeGameState.call(this);
   }
 }
 
