@@ -330,8 +330,8 @@ async function timeTicker(ticker: number) {
   const gameTimeTicker: HTMLElement = document.getElementById('game-time-ticker');
 
   if (gameTimeTicker) {
-    const min = Math.floor(ticker / 60);
-    const sec = Math.floor(ticker - min * 60);
+    const min: number = Math.floor(ticker / 60);
+    const sec: number = Math.floor(ticker - min * 60);
 
     const timeString = `${(min < 10 ? `0${min}` : min)}:${(sec < 10 ? `0${sec}` : sec)}`;
 
@@ -355,7 +355,7 @@ async function timeTicker(ticker: number) {
  * @param score
  */
 function scoreCounter(score: number) {
-  const gameScoreCounter = document.getElementById('game-score-counter');
+  const gameScoreCounter: HTMLElement = document.getElementById('game-score-counter');
 
   if (this.isGameOver) {
     clearTimeout(this.gameScoreCounter);

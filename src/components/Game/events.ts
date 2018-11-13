@@ -14,11 +14,11 @@ import { IElementMapItem } from './types';
  */
 function onBoardCellClick(row: number, column: number) {
   if (!this.isGameOver) {
-    const searchCell = this.elementsMap.filter((item: IElementMapItem) => {
+    const searchCell: IElementMapItem = this.elementsMap.filter((item: IElementMapItem) => {
       return JSON.stringify({ row, column }) === JSON.stringify(item.position);
     })[0] || null;
-    const isUnlockedCell = !(searchCell && searchCell.locked);
-    const isStartPosition = JSON.stringify({ row, column }) !== JSON.stringify(this.startPoint.position);
+    const isUnlockedCell: boolean = !(searchCell && searchCell.locked);
+    const isStartPosition: boolean = JSON.stringify({ row, column }) !== JSON.stringify(this.startPoint.position);
 
     if (isUnlockedCell && isStartPosition) {
       const currentCell: HTMLCanvasElement = document.getElementById(

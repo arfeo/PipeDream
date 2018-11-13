@@ -22,7 +22,6 @@ function animateComponent(type: string, row: number, column: number, ent: number
     ) as HTMLCanvasElement;
 
     if (cell) {
-      let interval: number = null;
       let i = 0;
       let s = 0;
 
@@ -46,7 +45,7 @@ function animateComponent(type: string, row: number, column: number, ent: number
           break;
       }
 
-      interval = setInterval(() => {
+      const interval = setInterval(() => {
         i += 1;
 
         if (i > s) {
@@ -218,7 +217,7 @@ async function animateElement(row: number, column: number, ent?: number): Promis
         const nextElements: INextElement[] = [];
 
         for (const out of outlets) {
-          const next = getNextElement.call(this, row, column, out);
+          const next: INextElement | boolean = getNextElement.call(this, row, column, out);
 
           if (next === false) {
             onGameStop.call(this, false);
@@ -295,7 +294,7 @@ function getNextElement(row: number, column: number, ent: number): INextElement 
 
   this.elementsMap.map((item: IElementMapItem) => {
     if (JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(item.position)) {
-      const nextSpec = elements.filter(s => s.type === item.type)[0] || null;
+      const nextSpec: IElement = elements.filter(s => s.type === item.type)[0] || null;
 
       if (nextSpec && nextSpec.outlets[item.direction].indexOf(nextEnt) !== -1 && !item.locked) {
         next = { nextRow, nextColumn, nextEnt };
@@ -321,7 +320,7 @@ function onGameStop(result: boolean) {
   this.isGameOver = true;
 
   if (result) {
-    const gameScoreCounter = parseInt(document.getElementById('game-score-counter').innerText);
+    const gameScoreCounter: number = parseInt(document.getElementById('game-score-counter').innerText);
 
     const score = {
       playername: this.playerName,
