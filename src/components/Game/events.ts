@@ -1,3 +1,5 @@
+import { find, isEqual } from 'lodash';
+
 import { Menu } from '../Menu';
 
 import { drawElementByType, pushNewExpectedElement, scoreCounter, updateElementsMap } from './render';
@@ -14,13 +16,11 @@ import { IElementMapItem } from './types';
  */
 function onBoardCellClick(row: number, column: number) {
   if (!this.isGameOver) {
-    const searchCell: IElementMapItem = this.elementsMap.filter((item: IElementMapItem) => {
-      return JSON.stringify({ row, column }) === JSON.stringify(item.position);
-    })[0] || null;
+    const searchCell: IElementMapItem = find<IElementMapItem>(this.elementsMap, { position: { row, column }});
     const isUnlockedCell: boolean = !(searchCell && searchCell.locked);
-    const isStartPosition: boolean = JSON.stringify({ row, column }) !== JSON.stringify(this.startPoint.position);
+    const isStartPosition: boolean = isEqual({ row, column }, this.startPoint.position);
 
-    if (isUnlockedCell && isStartPosition) {
+    if (isUnlockedCell && !isStartPosition) {
       const currentCell: HTMLCanvasElement = document.getElementById(
         `cell-${row}-${column}`,
       ) as HTMLCanvasElement;

@@ -1,4 +1,6 @@
 // tslint:disable:max-file-line-count
+import { find, isEqual } from 'lodash';
+
 import { difficultyMatrix, elements } from '../../constants/common';
 
 import { saveData } from '../../utils/storage';
@@ -175,9 +177,11 @@ async function animateElement(row: number, column: number, ent?: number): Promis
   if (!this.isGameOver) {
     this.animationPromisesCount += 1;
 
-    const element: IElementMapItem = this.elementsMap.filter((item: IElementMapItem) => {
-      return JSON.stringify({ row, column }) === JSON.stringify(item.position)
-    })[0] || null;
+    const element: IElementMapItem = find<IElementMapItem>(this.elementsMap, { position: { row, column }});
+
+    if (!element) {
+      return;
+    }
 
     switch (element.type) {
       case 0: {
@@ -293,7 +297,7 @@ function getNextElement(row: number, column: number, ent: number): INextElement 
   let next: INextElement | boolean = false;
 
   this.elementsMap.map((item: IElementMapItem) => {
-    if (JSON.stringify({ row: nextRow, column: nextColumn }) === JSON.stringify(item.position)) {
+    if (isEqual({ row: nextRow, column: nextColumn }, item.position)) {
       const nextSpec: IElement = elements.filter(s => s.type === item.type)[0] || null;
 
       if (nextSpec && nextSpec.outlets[item.direction].indexOf(nextEnt) !== -1 && !item.locked) {
