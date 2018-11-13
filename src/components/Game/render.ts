@@ -333,13 +333,15 @@ async function timeTicker(ticker: number) {
     const min = Math.floor(ticker / 60);
     const sec = Math.floor(ticker - min * 60);
 
-    if (min === 0 && sec === 0) {
-      await onOpenValve.call(this);
-    }
-
     const timeString = `${(min < 10 ? `0${min}` : min)}:${(sec < 10 ? `0${sec}` : sec)}`;
 
     gameTimeTicker.innerHTML = (min === 0 && sec <= 10) ? `<span class="orangered">${timeString}</span>` : timeString;
+
+    if (min === 0 && sec === 0) {
+      await onOpenValve.call(this);
+
+      return;
+    }
 
     if (ticker >= 0) {
       this.gameTimer = setTimeout(timeTicker.bind(this, ticker - 1), 1000);
