@@ -236,7 +236,7 @@ async function animateElement(row: number, column: number, ent?: number): Promis
 
         await Promise.all(
           nextElements.map((item: INextElement) => {
-            return animateElement.call(this, item.nextRow, item.nextColumn, item.nextEnt)
+            return animateElement.call(this, item.nextRow, item.nextColumn, item.nextEnt);
           }),
         );
         break;
