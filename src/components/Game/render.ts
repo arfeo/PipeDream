@@ -1,15 +1,18 @@
-/* tslint:disable:max-file-line-count */
+// tslint:disable:max-file-line-count
 import { Menu } from '../Menu';
 import { Game } from '../Game';
 
 import { difficultyMatrix } from '../../constants/common';
 
-import { animateElement } from './animation';
+import { onBoardCellClick, onGotoMainMenu, onOpenValve, onResetGame } from './events';
 import { randomNum } from '../../utils/common';
 
 import { IElementMapItem } from './types';
 
-function createGameGameboard() {
+/**
+ * Render the game board
+ */
+function createGameBoard() {
   const gameStatusPanel: HTMLElement = document.createElement('div');
   const gameBoard: HTMLElement = document.createElement('div');
   const gameToolbox: HTMLElement = document.createElement('div');
@@ -83,6 +86,9 @@ function createGameGameboard() {
     .addEventListener('click', onGotoMainMenu.bind(this));
 }
 
+/**
+ * Draw the start point (pump)
+ */
 function drawStartPoint() {
   this.startPoint.position = {
     row: randomNum(1, 7),
@@ -196,6 +202,9 @@ function drawStartPoint() {
   );
 }
 
+/**
+ * Render the queue of expected elements
+ */
 function drawExpectedElements() {
   for (const el in this.expectedElements) {
     const expectedElement: HTMLCanvasElement = document.getElementById(
@@ -211,6 +220,13 @@ function drawExpectedElements() {
   }
 }
 
+/**
+ * Render a game element
+ *
+ * @param type
+ * @param ctx
+ * @param item
+ */
 function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HTMLCanvasElement) {
   ctx.clearRect(0, 0, item.width, item.height);
 
@@ -293,6 +309,9 @@ function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HT
   }
 }
 
+/**
+ * Push a new element to the queue
+ */
 function pushNewExpectedElement() {
   const type: number = randomNum(1, 5);
   const direction: number = randomNum(0, 3);
@@ -302,47 +321,11 @@ function pushNewExpectedElement() {
   drawExpectedElements.call(this);
 }
 
-function onBoardCellClick(row: number, column: number) {
-  if (!this.isGameOver) {
-    const searchCell = this.elementsMap.filter((item: IElementMapItem) => {
-      return JSON.stringify({ row, column }) === JSON.stringify(item.position);
-    })[0] || null;
-    const isUnlockedCell = !(searchCell && searchCell.locked);
-    const isStartPosition = JSON.stringify({ row, column }) !== JSON.stringify(this.startPoint.position);
-
-    if (isUnlockedCell && isStartPosition) {
-      const currentCell: HTMLCanvasElement = document.getElementById(
-        `cell-${row}-${column}`,
-      ) as HTMLCanvasElement;
-      const ctx: CanvasRenderingContext2D = currentCell.getContext('2d');
-
-      ctx.fillStyle = 'black';
-
-      drawElementByType.call(
-        this,
-        this.expectedElements[0].type,
-        ctx,
-        currentCell,
-      );
-
-      currentCell.style.transform = `rotate(${this.expectedElements[0].direction * 90}deg)`;
-
-      updateElementsMap.call(
-        this,
-        this.expectedElements[0].type,
-        row,
-        column,
-        this.expectedElements[0].direction,
-        false,
-      );
-
-      this.expectedElements.shift();
-
-      pushNewExpectedElement.call(this);
-    }
-  }
-}
-
+/**
+ * Render the game timer
+ *
+ * @param ticker
+ */
 async function timeTicker(ticker: number) {
   const gameTimeTicker: HTMLElement = document.getElementById('game-time-ticker');
 
@@ -364,6 +347,11 @@ async function timeTicker(ticker: number) {
   }
 }
 
+/**
+ * Render the game score board
+ *
+ * @param score
+ */
 function scoreCounter(score: number) {
   const gameScoreCounter = document.getElementById('game-score-counter');
 
@@ -376,32 +364,11 @@ function scoreCounter(score: number) {
   }
 }
 
-async function onOpenValve() {
-  clearTimeout(this.gameTimer);
-
-  scoreCounter.call(this, 0);
-
-  await animateElement.call(
-    this,
-    this.startPoint.position.row,
-    this.startPoint.position.column,
-  );
-}
-
-function onGotoMainMenu() {
-  if (this.elementsMap.length > 1 && !this.isGameOver) {
-    if (!confirm('Are you sure you want to abort game?')) {
-      return;
-    }
-  }
-
-  clearTimeout(this.gameTimer);
-
-  this.isGameOver = true;
-
-  new Menu();
-}
-
+/**
+ * Render modal dialog on the game end
+ *
+ * @param result
+ */
 function displayGameResultModal(result: boolean) {
   if (!document.getElementById('game-result-modal')) {
     const modalContainer: HTMLElement = document.createElement('div');
@@ -433,42 +400,15 @@ function displayGameResultModal(result: boolean) {
   }
 }
 
-async function clearGameState() {
-  this.expectedElements = [];
-  this.elementsMap = [];
-  this.startPoint.position = null;
-  this.isGameOver = false;
-  this.animationPromisesCount = 0;
-
-  clearTimeout(this.gameTimer);
-
-  await timeTicker.call(this, difficultyMatrix[this.gameDifficulty].time);
-
-  for (let row = 1; row <= 7; row += 1) {
-    for (let column = 1; column <= 10; column += 1) {
-      const cell: HTMLCanvasElement = document.getElementById(
-        `cell-${row}-${column}`,
-      ) as HTMLCanvasElement;
-      const cellAnimation: any = document.getElementById(`cell-animation-${row}-${column}`);
-      const ctx: CanvasRenderingContext2D = cell.getContext('2d');
-      const ctxAnimation: CanvasRenderingContext2D = cellAnimation.getContext('2d');
-
-      ctx.clearRect(0, 0, 100, 100);
-      ctxAnimation.clearRect(0, 0, 100, 100);
-    }
-  }
-}
-
-function setNewGameState() {
-  clearGameState.call(this).then(() => {
-    for (let i = 0; i < 5; i += 1) {
-      pushNewExpectedElement.call(this);
-    }
-
-    drawStartPoint.call(this);
-  });
-}
-
+/**
+ * Update the game elements map
+ *
+ * @param type
+ * @param row
+ * @param column
+ * @param direction
+ * @param locked
+ */
 function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean) {
   this.elementsMap = [
     ...this.elementsMap.filter((item: IElementMapItem) => {
@@ -483,19 +423,13 @@ function updateElementsMap(type: number, row: number, column: number, direction:
   ];
 }
 
-function onResetGame() {
-  if (this.elementsMap.length > 1 && !this.isGameOver) {
-    if (!confirm('Are you sure you want to start a new game?')) {
-      return;
-    }
-  }
-
-  setNewGameState.call(this);
-}
-
 export {
-  createGameGameboard,
+  createGameBoard,
   displayGameResultModal,
-  setNewGameState,
+  drawElementByType,
+  drawStartPoint,
+  pushNewExpectedElement,
+  scoreCounter,
+  timeTicker,
   updateElementsMap,
 };
