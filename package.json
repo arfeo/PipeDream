@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/arfeo/PipeDream#readme",
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "browser-sync": "^2.24.7",
     "browserify": "^16.2.2",
     "del": "^3.0.0",
