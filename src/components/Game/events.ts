@@ -1,5 +1,3 @@
-import { find, isEqual } from 'lodash';
-
 import { Menu } from '../Menu';
 
 import { APP } from '../../constants/app';
@@ -19,9 +17,12 @@ import { IElementMapItem } from './types';
  */
 function onBoardCellClick(row: number, column: number) {
   if (!this.isGameOver) {
-    const searchCell: IElementMapItem = find<IElementMapItem>(this.elementsMap, { position: { row, column }});
+    const { position } = this.startPoint;
+    const searchCell: IElementMapItem = this.elementsMap.find((item: IElementMapItem) => {
+      return item.position.row === row && item.position.column === column;
+    });
     const isUnlockedCell: boolean = !(searchCell && searchCell.locked);
-    const isStartPosition: boolean = isEqual({ row, column }, this.startPoint.position);
+    const isStartPosition: boolean = position.row === row && position.column === column;
 
     if (!this.isElementRedrawing) {
       if (searchCell && !isStartPosition) {

@@ -1,6 +1,4 @@
 // tslint:disable:max-file-line-count
-import { isEqual } from 'lodash';
-
 import { Menu } from '../Menu';
 import { Game } from '../Game';
 
@@ -453,7 +451,7 @@ function displayGameResultModal(result: boolean) {
 function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean) {
   this.elementsMap = [
     ...this.elementsMap.filter((item: IElementMapItem) => {
-      return !isEqual({ row, column }, item.position);
+      return !(item.position.row === row && item.position.column === column);
     }),
     {
       position: { row, column },

@@ -65,7 +65,7 @@ function linter() {
 }
 
 function ts() {
-  return browserify().add('./src/main.ts')
+  return browserify().add('./src/index.ts')
     .plugin(tsify)
     .bundle().on('error', function (error) {
       console.error(error.toString());
