@@ -2,7 +2,7 @@ import { Game } from '../Game';
 
 import { difficultyMatrix } from '../../constants/common';
 
-import { saveData } from '../../utils/storage';
+import { saveStorageData } from '../../utils/storage';
 import { sortArrayByKey } from '../../utils/common';
 
 import { IDifficultyMatrixItem, IGameScoreboardItem } from '../../types/global';
@@ -87,7 +87,7 @@ function displayPlayerNameModal() {
       if (playerName) {
         this.playerName = playerName;
 
-        saveData('playername', playerName);
+        saveStorageData('playername', playerName);
 
         displayMainMenuModal.call(this);
       }
@@ -132,7 +132,7 @@ function displayDifficultyModal() {
 
       this.gameDifficulty = difficulty;
 
-      saveData('difficulty', difficulty);
+      saveStorageData('difficulty', difficulty);
 
       displayMainMenuModal.call(this);
     });
@@ -149,7 +149,7 @@ function displayScoreboardModal() {
     if (confirm('Are you sure you want to clear scores?')) {
       this.gameScoreboard = [];
 
-      saveData('scoreboard', this.gameScoreboard);
+      saveStorageData('scoreboard', this.gameScoreboard);
 
       displayScoreboardModal.call(this);
     }

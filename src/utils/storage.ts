@@ -5,7 +5,7 @@ import { STORAGE_PREFIX } from '../constants/app';
  *
  * @param key
  */
-export function getData(key?: string): any | undefined {
+export function getStorageData(key?: string): any | undefined {
   try {
     const data = JSON.parse(window.localStorage.getItem(`${STORAGE_PREFIX}`));
 
@@ -25,10 +25,10 @@ export function getData(key?: string): any | undefined {
  * @param key
  * @param data
  */
-export function saveData(key: string, data: any): void {
+export function saveStorageData(key: string, data: any): void {
   try {
     window.localStorage.setItem(`${STORAGE_PREFIX}`, JSON.stringify({
-      ...getData(),
+      ...getStorageData(),
       [key]: data,
     }));
   } catch (error) {

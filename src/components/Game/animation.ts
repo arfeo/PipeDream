@@ -1,7 +1,7 @@
 // tslint:disable:max-file-line-count
 import { difficultyMatrix, elements } from '../../constants/common';
 
-import { saveData } from '../../utils/storage';
+import { saveStorageData } from '../../utils/storage';
 import { displayGameResultModal, updateElementsMap } from './render';
 
 import { IElement } from '../../types/global';
@@ -335,7 +335,7 @@ function onGameStop(result: boolean) {
 
     this.gameScoreboard.push(score);
 
-    saveData('scoreboard', this.gameScoreboard);
+    saveStorageData('scoreboard', this.gameScoreboard);
   }
 
   displayGameResultModal.call(this, result);

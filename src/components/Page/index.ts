@@ -1,4 +1,4 @@
-import { getData } from '../../utils/storage';
+import { getStorageData } from '../../utils/storage';
 
 import { IGameScoreboardItem } from '../../types/global';
 
@@ -11,9 +11,9 @@ abstract class Page {
   abstract render(): void;
 
   protected constructor() {
-    this.playerName = getData('playername') || '';
-    this.gameDifficulty = parseInt(getData('difficulty')) || 0;
-    this.gameScoreboard = getData('scoreboard') || [];
+    this.playerName = getStorageData('playername') || '';
+    this.gameDifficulty = parseInt(getStorageData('difficulty')) || 0;
+    this.gameScoreboard = getStorageData('scoreboard') || [];
     this.appRoot = document.getElementById('root');
   }
 }
