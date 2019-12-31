@@ -1,27 +1,36 @@
+import { STORAGE_PREFIX } from '../constants/app';
+
 /**
- * Get data from the local storage
+ * Function returns data saved in the local storage under the specified key name
  *
- * @param item
+ * @param key
  */
-export function getData(item: string): any {
+export function getData(key?: string): any | undefined {
   try {
-    return JSON.parse(window.localStorage.getItem(`pipe-dream-${item}`));
+    const data = JSON.parse(window.localStorage.getItem(`${STORAGE_PREFIX}`));
+
+    if (key === undefined) {
+      return data || {};
+    }
+
+    return data && typeof data === 'object' ? data[key] : undefined;
   } catch (error) {
     console.error(error);
   }
 }
 
 /**
- * Save data to the local storage
+ * Function saves data to the local storage under the specified key name
  *
- * @param item
+ * @param key
  * @param data
  */
-export function saveData(item: string, data: any) {
+export function saveData(key: string, data: any): void {
   try {
-    window.localStorage.setItem(`pipe-dream-${item}`, JSON.stringify(data));
-
-    return data;
+    window.localStorage.setItem(`${STORAGE_PREFIX}`, JSON.stringify({
+      ...getData(),
+      [key]: data,
+    }));
   } catch (error) {
     console.error(error);
   }
