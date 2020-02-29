@@ -21,23 +21,23 @@ function animateComponent(type: string, row: number, column: number, ent: number
     ) as HTMLCanvasElement;
 
     if (cell) {
-      let i = 0;
-      let s = 0;
+      let a = 0;
+      let b = 0;
 
       switch (type) {
         case 'pump': {
-          i = 13;
-          s = 21;
+          a = 13;
+          b = 21;
           break;
         }
         case 'pipe-out': {
-          i = 10;
-          s = 50;
+          a = 10;
+          b = 50;
           break;
         }
         case 'pipe-in': {
-          i = 0;
-          s = 59;
+          a = 0;
+          b = 59;
           break;
         }
         default:
@@ -45,9 +45,9 @@ function animateComponent(type: string, row: number, column: number, ent: number
       }
 
       const interval = setInterval(() => {
-        i += 1;
+        a += 1;
 
-        if (i > s) {
+        if (a > b) {
           clearInterval(interval);
           resolve();
         } else {
@@ -60,7 +60,8 @@ function animateComponent(type: string, row: number, column: number, ent: number
               ctx.beginPath();
               ctx.arc(
                 cell.width / 2,
-                cell.height / 2, i,
+                cell.height / 2,
+                a,
                 0,
                 Math.PI * 2,
                 false,
@@ -75,13 +76,13 @@ function animateComponent(type: string, row: number, column: number, ent: number
                     cell.width / 2 - cell.width / 8 + 4,
                     0,
                     cell.width / 4 - 8,
-                    i,
+                    a,
                   );
                   break;
                 }
                 case 1: {
                   ctx.fillRect(
-                    100 - i,
+                    100 - a,
                     cell.height / 2 - cell.height / 8 + 4,
                     100,
                     cell.height / 4 - 8,
@@ -91,9 +92,9 @@ function animateComponent(type: string, row: number, column: number, ent: number
                 case 2: {
                   ctx.fillRect(
                     cell.width / 2 - cell.width / 8 + 4,
-                    100 - i,
+                    100 - a,
                     cell.width / 4 - 8,
-                    100 - i,
+                    100 - a,
                   );
                   break;
                 }
@@ -101,7 +102,7 @@ function animateComponent(type: string, row: number, column: number, ent: number
                   ctx.fillRect(
                     0,
                     cell.height / 2 - cell.height / 8 + 4,
-                    i,
+                    a,
                     cell.height / 4 - 8,
                   );
                   break;
@@ -116,9 +117,9 @@ function animateComponent(type: string, row: number, column: number, ent: number
                 case 0: {
                   ctx.fillRect(
                     cell.width / 2 - cell.width / 8 + 4,
-                    50 - i,
+                    50 - a,
                     cell.width / 4 - 8,
-                    i,
+                    a,
                   );
                   break;
                 }
@@ -126,7 +127,7 @@ function animateComponent(type: string, row: number, column: number, ent: number
                   ctx.fillRect(
                     50,
                     cell.height / 2 - cell.height / 8 + 4,
-                    i,
+                    a,
                     cell.height / 4 - 8,
                   );
                   break;
@@ -136,15 +137,15 @@ function animateComponent(type: string, row: number, column: number, ent: number
                     cell.width / 2 - cell.width / 8 + 4,
                     50,
                     cell.width / 4 - 8,
-                    i,
+                    a,
                   );
                   break;
                 }
                 case 3: {
                   ctx.fillRect(
-                    50 - i,
+                    50 - a,
                     cell.height / 2 - cell.height / 8 + 4,
-                    i,
+                    a,
                     cell.height / 4 - 8,
                   );
                   break;
@@ -297,7 +298,7 @@ function getNextElement(row: number, column: number, ent: number): INextElement 
 
   this.elementsMap.map((item: IElementMapItem) => {
     if (item.position.row === nextRow && item.position.column === nextColumn) {
-      const nextSpec: IElement = elements.filter(s => s.type === item.type)[0] || null;
+      const nextSpec: IElement = elements.filter(element => element.type === item.type)[0] || null;
 
       if (nextSpec && nextSpec.outlets[item.direction].indexOf(nextEnt) !== -1 && !item.locked) {
         next = { nextRow, nextColumn, nextEnt };
