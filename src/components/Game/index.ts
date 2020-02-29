@@ -40,7 +40,7 @@ class Game extends Page {
     this.render();
   }
 
-  render() {
+  render(): void {
     createGameBoard.call(this);
     initializeGameState.call(this);
   }

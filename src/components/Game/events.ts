@@ -15,13 +15,13 @@ import { IElementMapItem } from './types';
  * @param row
  * @param column
  */
-function onBoardCellClick(row: number, column: number) {
+function onBoardCellClick(row: number, column: number): void {
   if (!this.isGameOver) {
     const { position } = this.startPoint;
     const searchCell: IElementMapItem = this.elementsMap.find((item: IElementMapItem) => {
       return item.position.row === row && item.position.column === column;
     });
-    const isUnlockedCell: boolean = !(searchCell && searchCell.locked);
+    const isUnlockedCell = !(searchCell && searchCell.locked);
     const isStartPosition: boolean = position.row === row && position.column === column;
 
     if (!this.isElementRedrawing) {
@@ -47,7 +47,7 @@ function onBoardCellClick(row: number, column: number) {
 /**
  * Start the game
  */
-async function onOpenValve() {
+async function onOpenValve(): Promise<void> {
   clearTimeout(this.gameTimer);
 
   scoreCounter.call(this, 0);
@@ -62,7 +62,7 @@ async function onOpenValve() {
 /**
  * Goto main menu button click handler
  */
-function onGotoMainMenu() {
+function onGotoMainMenu(): void {
   if (this.elementsMap.length > 1 && !this.isGameOver) {
     if (!confirm('Are you sure you want to abort game?')) {
       return;
@@ -79,7 +79,7 @@ function onGotoMainMenu() {
 /**
  * Reset game button click handler
  */
-function onResetGame() {
+function onResetGame(): void {
   if (this.elementsMap.length > 1 && !this.isGameOver) {
     if (!confirm('Are you sure you want to start a new game?')) {
       return;

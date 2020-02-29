@@ -1,4 +1,3 @@
-// tslint:disable:max-file-line-count
 import { difficultyMatrix, elements } from '../../constants/common';
 
 import { saveStorageData } from '../../utils/storage';
@@ -308,8 +307,6 @@ function getNextElement(row: number, column: number, ent: number): INextElement 
         next = null;
       }
     }
-
-    return;
   });
 
   return next;
@@ -320,11 +317,11 @@ function getNextElement(row: number, column: number, ent: number): INextElement 
  *
  * @param result
  */
-function onGameStop(result: boolean) {
+function onGameStop(result: boolean): void {
   this.isGameOver = true;
 
   if (result) {
-    const gameScoreCounter: number = parseInt(document.getElementById('game-score-counter').innerText);
+    const gameScoreCounter: number = parseInt(document.getElementById('game-score-counter').innerText, 10);
 
     const score = {
       playername: this.playerName,

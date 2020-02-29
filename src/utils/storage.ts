@@ -15,7 +15,7 @@ export function getStorageData(key?: string): any | undefined {
 
     return data && typeof data === 'object' ? data[key] : undefined;
   } catch (error) {
-    console.error(error);
+    console.warn(error);
   }
 }
 
@@ -32,6 +32,6 @@ export function saveStorageData(key: string, data: any): void {
       [key]: data,
     }));
   } catch (error) {
-    console.error(error);
+    console.warn(error);
   }
 }

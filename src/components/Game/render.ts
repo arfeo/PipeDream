@@ -12,7 +12,7 @@ import { IElementMapItem } from './types';
 /**
  * Render the game board
  */
-function createGameBoard() {
+function createGameBoard(): void {
   const gameStatusPanel: HTMLElement = document.createElement('div');
   const gameBoard: HTMLElement = document.createElement('div');
   const gameToolbox: HTMLElement = document.createElement('div');
@@ -52,7 +52,12 @@ function createGameBoard() {
       boardCellContainer.className = 'board__cell-container';
       boardCellContainer.innerHTML = (`
 				<canvas id="cell-${row}-${column}" class="board__cell" width="100" height="100"></canvas>
-				<canvas id="cell-animation-${row}-${column}" class="board__cell-animation" width="100" height="100"></canvas>
+				<canvas
+          id="cell-animation-${row}-${column}"
+          class="board__cell-animation"
+          width="100"
+          height="100"
+				></canvas>
 			`);
 
       gameBoard.appendChild(boardCellContainer);
@@ -89,7 +94,7 @@ function createGameBoard() {
 /**
  * Draw the start point (pump)
  */
-function drawStartPoint() {
+function drawStartPoint(): void {
   this.startPoint.position = {
     row: randomNum(1, 7),
     column: randomNum(1, 10),
@@ -205,18 +210,20 @@ function drawStartPoint() {
 /**
  * Render the queue of expected elements
  */
-function drawExpectedElements() {
+function drawExpectedElements(): void {
   for (const el in this.expectedElements) {
-    const expectedElement: HTMLCanvasElement = document.getElementById(
-      `element-${el}`,
-    ) as HTMLCanvasElement;
-    const ctx: CanvasRenderingContext2D = expectedElement.getContext('2d');
+    if (Object.prototype.hasOwnProperty.call(this.expectedElements, el)) {
+      const expectedElement: HTMLCanvasElement = document.getElementById(
+        `element-${el}`,
+      ) as HTMLCanvasElement;
+      const ctx: CanvasRenderingContext2D = expectedElement.getContext('2d');
 
-    ctx.fillStyle = 'white';
+      ctx.fillStyle = 'white';
 
-    drawElementByType.call(this, this.expectedElements[el].type, ctx, expectedElement);
+      drawElementByType.call(this, this.expectedElements[el].type, ctx, expectedElement);
 
-    expectedElement.style.transform = `rotate(${this.expectedElements[el].direction * 90}deg)`;
+      expectedElement.style.transform = `rotate(${this.expectedElements[el].direction * 90}deg)`;
+    }
   }
 }
 
@@ -227,7 +234,7 @@ function drawExpectedElements() {
  * @param ctx
  * @param item
  */
-function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HTMLCanvasElement) {
+function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HTMLCanvasElement): void {
   ctx.clearRect(0, 0, item.width, item.height);
 
   switch (type) {
@@ -315,7 +322,7 @@ function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HT
  * @param row
  * @param column
  */
-function drawElementInCell(row: number, column: number) {
+function drawElementInCell(row: number, column: number): void {
   const currentCell: HTMLCanvasElement = document.getElementById(
     `cell-${row}-${column}`,
   ) as HTMLCanvasElement;
@@ -344,12 +351,12 @@ function drawElementInCell(row: number, column: number) {
   this.expectedElements.shift();
 
   pushNewExpectedElement.call(this);
-};
+}
 
 /**
  * Push a new element to the queue
  */
-function pushNewExpectedElement() {
+function pushNewExpectedElement(): void {
   const type: number = randomNum(1, 5);
   const direction: number = randomNum(0, 3);
 
@@ -363,7 +370,7 @@ function pushNewExpectedElement() {
  *
  * @param ticker
  */
-async function timeTicker(ticker: number) {
+async function timeTicker(ticker: number): Promise<void> {
   const gameTimeTicker: HTMLElement = document.getElementById('game-time-ticker');
 
   if (gameTimeTicker) {
@@ -391,7 +398,7 @@ async function timeTicker(ticker: number) {
  *
  * @param score
  */
-function scoreCounter(score: number) {
+function scoreCounter(score: number): void {
   const gameScoreCounter: HTMLElement = document.getElementById('game-score-counter');
 
   if (this.isGameOver) {
@@ -408,7 +415,7 @@ function scoreCounter(score: number) {
  *
  * @param result
  */
-function displayGameResultModal(result: boolean) {
+function displayGameResultModal(result: boolean): void {
   if (!document.getElementById('game-result-modal')) {
     const modalContainer: HTMLElement = document.createElement('div');
     const modalOverlay: HTMLElement = document.createElement('div');
@@ -448,7 +455,7 @@ function displayGameResultModal(result: boolean) {
  * @param direction
  * @param locked
  */
-function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean) {
+function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean): void {
   this.elementsMap = [
     ...this.elementsMap.filter((item: IElementMapItem) => {
       return !(item.position.row === row && item.position.column === column);

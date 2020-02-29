@@ -12,7 +12,7 @@ abstract class Page {
 
   protected constructor() {
     this.playerName = getStorageData('playername') || '';
-    this.gameDifficulty = parseInt(getStorageData('difficulty')) || 0;
+    this.gameDifficulty = parseInt(getStorageData('difficulty'), 10) || 0;
     this.gameScoreboard = getStorageData('scoreboard') || [];
     this.appRoot = document.getElementById('root');
   }

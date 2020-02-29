@@ -128,7 +128,7 @@ function displayDifficultyModal() {
   Array.from(buttons).map((currentButton: HTMLButtonElement) => {
     currentButton.addEventListener('click', (event: Event) => {
       const currentTarget: HTMLElement = event.currentTarget as HTMLElement;
-      const difficulty = parseInt(currentTarget.getAttribute('difficulty'));
+      const difficulty = parseInt(currentTarget.getAttribute('difficulty'), 10);
 
       this.gameDifficulty = difficulty;
 
