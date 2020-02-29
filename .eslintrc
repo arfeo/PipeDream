@@ -87,6 +87,7 @@
         "comments": 120
       }
     ],
+    "no-alert": "warn",
     "no-cond-assign": ["error", "always"],
     "no-console": [
       "error",
