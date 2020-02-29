@@ -10,7 +10,7 @@ import { IDifficultyMatrixItem, IGameScoreboardItem } from '../../types/global';
 /**
  * Main menu modal dialog
  */
-function displayMainMenuModal() {
+function displayMainMenuModal(): void {
   const mainMenuModal: HTMLElement = document.createElement('div');
 
   // Reset src root element
@@ -57,7 +57,7 @@ function displayMainMenuModal() {
 /**
  * Change player name modal dialog
  */
-function displayPlayerNameModal() {
+function displayPlayerNameModal(): void {
   const playerNameModal: HTMLElement = document.createElement('div');
 
   // Reset src root element
@@ -97,7 +97,7 @@ function displayPlayerNameModal() {
 /**
  * Choose difficulty modal dialog
  */
-function displayDifficultyModal() {
+function displayDifficultyModal(): void {
   const difficultyModal: HTMLElement = document.createElement('div');
 
   const buildDifficultyList = (): string => {
@@ -142,10 +142,10 @@ function displayDifficultyModal() {
 /**
  * Scoreboard modal dialog
  */
-function displayScoreboardModal() {
+function displayScoreboardModal(): void {
   const scoreboardModal: HTMLElement = document.createElement('div');
 
-  const clearScores = () => {
+  const clearScores = (): void => {
     if (confirm('Are you sure you want to clear scores?')) {
       this.gameScoreboard = [];
 
@@ -220,7 +220,7 @@ function displayScoreboardModal() {
 /**
  * Rules modal dialog
  */
-function displayRulesModal() {
+function displayRulesModal(): void {
   const rulesModal: HTMLElement = document.createElement('div');
 
   // Reset src root element

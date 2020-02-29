@@ -5,7 +5,7 @@ import { drawStartPoint, pushNewExpectedElement, timeTicker } from './render';
 /**
  * Clear the game state
  */
-async function clearGameState() {
+async function clearGameState(): Promise<void> {
   this.expectedElements = [];
   this.elementsMap = [];
   this.startPoint.position = null;
@@ -34,7 +34,7 @@ async function clearGameState() {
 /**
  * Initialize the game state
  */
-function initializeGameState() {
+function initializeGameState(): void {
   clearGameState.call(this).then(() => {
     for (let i = 0; i < 5; i += 1) {
       pushNewExpectedElement.call(this);

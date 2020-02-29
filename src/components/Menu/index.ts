@@ -9,7 +9,7 @@ class Menu extends Page {
     this.render();
   }
 
-  render() {
+  render(): void {
     if (!this.playerName) {
       displayPlayerNameModal.call(this);
 
