@@ -7,9 +7,6 @@ import { sortArrayByKey } from '../../utils/common';
 
 import { IDifficultyMatrixItem, IGameScoreboardItem } from '../../types/global';
 
-/**
- * Main menu modal dialog
- */
 function displayMainMenuModal(): void {
   const mainMenuModal: HTMLElement = document.createElement('div');
 
@@ -54,9 +51,6 @@ function displayMainMenuModal(): void {
     .addEventListener('click', displayRulesModal.bind(this));
 }
 
-/**
- * Change player name modal dialog
- */
 function displayPlayerNameModal(): void {
   const playerNameModal: HTMLElement = document.createElement('div');
 
@@ -94,9 +88,6 @@ function displayPlayerNameModal(): void {
     });
 }
 
-/**
- * Choose difficulty modal dialog
- */
 function displayDifficultyModal(): void {
   const difficultyModal: HTMLElement = document.createElement('div');
 
@@ -139,9 +130,6 @@ function displayDifficultyModal(): void {
   });
 }
 
-/**
- * Scoreboard modal dialog
- */
 function displayScoreboardModal(): void {
   const scoreboardModal: HTMLElement = document.createElement('div');
 

@@ -1,20 +1,14 @@
 import { Menu } from '../Menu';
 
-import { APP } from '../../constants/app';
+import { REDRAW_DELAY } from '../../constants/app';
 
 import { drawElementInCell, scoreCounter } from './render';
-import { animateElement } from './animation';
+import { animateElement } from './animations';
 import { initializeGameState } from './state';
 import { wait } from '../../utils/common';
 
 import { IElementMapItem } from './types';
 
-/**
- * Game board cell click handler
- *
- * @param row
- * @param column
- */
 function onBoardCellClick(row: number, column: number): void {
   if (!this.isGameOver) {
     const { position } = this.startPoint;
@@ -28,7 +22,7 @@ function onBoardCellClick(row: number, column: number): void {
       if (searchCell && !isStartPosition) {
         this.isElementRedrawing = true;
 
-        wait(APP.REDRAW_DELAY).then(() => {
+        wait(REDRAW_DELAY).then(() => {
           this.isElementRedrawing = false;
 
           drawElementInCell.call(this, row, column);
@@ -44,9 +38,6 @@ function onBoardCellClick(row: number, column: number): void {
   }
 }
 
-/**
- * Start the game
- */
 async function onOpenValve(): Promise<void> {
   clearTimeout(this.gameTimer);
 
@@ -59,9 +50,6 @@ async function onOpenValve(): Promise<void> {
   );
 }
 
-/**
- * Goto main menu button click handler
- */
 function onGotoMainMenu(): void {
   if (this.elementsMap.length > 1 && !this.isGameOver) {
     if (!confirm('Are you sure you want to abort game?')) {
@@ -76,9 +64,6 @@ function onGotoMainMenu(): void {
   new Menu();
 }
 
-/**
- * Reset game button click handler
- */
 function onResetGame(): void {
   if (this.elementsMap.length > 1 && !this.isGameOver) {
     if (!confirm('Are you sure you want to start a new game?')) {

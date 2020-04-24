@@ -1,4 +1,3 @@
-// tslint:disable:max-file-line-count
 import { Menu } from '../Menu';
 import { Game } from '../Game';
 
@@ -9,9 +8,6 @@ import { randomNum } from '../../utils/common';
 
 import { IElementMapItem } from './types';
 
-/**
- * Render the game board
- */
 function createGameBoard(): void {
   const gameStatusPanel: HTMLElement = document.createElement('div');
   const gameBoard: HTMLElement = document.createElement('div');
@@ -91,9 +87,6 @@ function createGameBoard(): void {
     .addEventListener('click', onGotoMainMenu.bind(this));
 }
 
-/**
- * Draw the start point (pump)
- */
 function drawStartPoint(): void {
   this.startPoint.position = {
     row: randomNum(1, 7),
@@ -207,9 +200,6 @@ function drawStartPoint(): void {
   );
 }
 
-/**
- * Render the queue of expected elements
- */
 function drawExpectedElements(): void {
   for (const el in this.expectedElements) {
     if (Object.prototype.hasOwnProperty.call(this.expectedElements, el)) {
@@ -227,13 +217,6 @@ function drawExpectedElements(): void {
   }
 }
 
-/**
- * Render a game element
- *
- * @param type
- * @param ctx
- * @param item
- */
 function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HTMLCanvasElement): void {
   ctx.clearRect(0, 0, item.width, item.height);
 
@@ -316,12 +299,6 @@ function drawElementByType(type: number, ctx: CanvasRenderingContext2D, item: HT
   }
 }
 
-/**
- * Draw currently available element in the cell
- *
- * @param row
- * @param column
- */
 function drawElementInCell(row: number, column: number): void {
   const currentCell: HTMLCanvasElement = document.getElementById(
     `cell-${row}-${column}`,
@@ -353,9 +330,6 @@ function drawElementInCell(row: number, column: number): void {
   pushNewExpectedElement.call(this);
 }
 
-/**
- * Push a new element to the queue
- */
 function pushNewExpectedElement(): void {
   const type: number = randomNum(1, 5);
   const direction: number = randomNum(0, 3);
@@ -365,11 +339,6 @@ function pushNewExpectedElement(): void {
   drawExpectedElements.call(this);
 }
 
-/**
- * Render the game timer
- *
- * @param ticker
- */
 async function timeTicker(ticker: number): Promise<void> {
   const gameTimeTicker: HTMLElement = document.getElementById('game-time-ticker');
 
@@ -393,11 +362,6 @@ async function timeTicker(ticker: number): Promise<void> {
   }
 }
 
-/**
- * Render the game score board
- *
- * @param score
- */
 function scoreCounter(score: number): void {
   const gameScoreCounter: HTMLElement = document.getElementById('game-score-counter');
 
@@ -410,11 +374,6 @@ function scoreCounter(score: number): void {
   }
 }
 
-/**
- * Render modal dialog on the game end
- *
- * @param result
- */
 function displayGameResultModal(result: boolean): void {
   if (!document.getElementById('game-result-modal')) {
     const modalContainer: HTMLElement = document.createElement('div');
@@ -446,15 +405,6 @@ function displayGameResultModal(result: boolean): void {
   }
 }
 
-/**
- * Update the game elements map
- *
- * @param type
- * @param row
- * @param column
- * @param direction
- * @param locked
- */
 function updateElementsMap(type: number, row: number, column: number, direction: number, locked: boolean): void {
   this.elementsMap = [
     ...this.elementsMap.filter((item: IElementMapItem) => {

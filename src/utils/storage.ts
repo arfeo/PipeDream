@@ -1,10 +1,5 @@
 import { STORAGE_PREFIX } from '../constants/app';
 
-/**
- * Function returns data saved in the local storage under the specified key name
- *
- * @param key
- */
 export function getStorageData(key?: string): any | undefined {
   try {
     const data = JSON.parse(window.localStorage.getItem(`${STORAGE_PREFIX}`));
@@ -19,12 +14,6 @@ export function getStorageData(key?: string): any | undefined {
   }
 }
 
-/**
- * Function saves data to the local storage under the specified key name
- *
- * @param key
- * @param data
- */
 export function saveStorageData(key: string, data: any): void {
   try {
     window.localStorage.setItem(`${STORAGE_PREFIX}`, JSON.stringify({

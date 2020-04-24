@@ -2,9 +2,6 @@ import { difficultyMatrix } from '../../constants/common';
 
 import { drawStartPoint, pushNewExpectedElement, timeTicker } from './render';
 
-/**
- * Clear the game state
- */
 async function clearGameState(): Promise<void> {
   this.expectedElements = [];
   this.elementsMap = [];
@@ -31,9 +28,6 @@ async function clearGameState(): Promise<void> {
   }
 }
 
-/**
- * Initialize the game state
- */
 function initializeGameState(): void {
   clearGameState.call(this).then(() => {
     for (let i = 0; i < 5; i += 1) {
